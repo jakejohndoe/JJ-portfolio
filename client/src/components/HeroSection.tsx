@@ -29,8 +29,9 @@ const HeroSection = () => {
             <Button 
               variant="outline"
               className="px-6 py-6 h-auto border border-primary text-white font-medium rounded hover:bg-primary hover:bg-opacity-10 transition"
+              asChild
             >
-              <a href="#">My resume</a>
+              <a href="/api/resume" target="_blank" rel="noopener noreferrer">My resume</a>
             </Button>
           </div>
         </div>

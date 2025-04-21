@@ -87,6 +87,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/stats", (req, res) => {
     res.json(stats);
   });
+  
+  // Serve resume
+  app.get("/api/resume", (req, res) => {
+    res.sendFile("resume.html", { root: "./public" });
+  });
 
   app.post("/api/contact", (req, res) => {
     const { name, email, subject, message } = req.body;
