@@ -1,0 +1,50 @@
+ESSENTIAL PROJECT FILES
+====================
+
+# Root Configuration Files
+package.json
+package-lock.json
+tsconfig.json
+vite.config.ts
+postcss.config.js
+tailwind.config.ts
+components.json
+drizzle.config.ts
+
+# Server Files
+server/index.ts
+server/routes.ts
+server/storage.ts
+server/vite.ts
+shared/schema.ts
+
+# Client Files
+client/index.html
+client/src/App.tsx
+client/src/main.tsx
+client/src/index.css
+
+# Pages
+client/src/pages/Home.tsx
+client/src/pages/not-found.tsx
+
+# Components
+client/src/components/Navbar.tsx
+client/src/components/HeroSection.tsx
+client/src/components/SkillsSection.tsx
+client/src/components/ServicesSection.tsx
+client/src/components/ProjectsSection.tsx
+client/src/components/ContactSection.tsx
+client/src/components/Footer.tsx
+
+# Hooks
+client/src/hooks/useCounter.tsx
+client/src/hooks/use-mobile.tsx
+client/src/hooks/use-toast.ts
+
+# Utilities
+client/src/lib/queryClient.ts
+client/src/lib/utils.ts
+
+# Public Assets
+public/resume.html
