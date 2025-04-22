@@ -2,12 +2,31 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
+import dotenv from 'dotenv';
+import connectDB from './db/connection';
+import contactRoutes from './routes/contactRoutes';
+import blogRoutes from './routes/blogRoutes';
+import authRoutes from './routes/authRoutes';
+
+dotenv.config();
+
+// Connect to MongoDB
+connectDB();
 
 const app = express();
+const PORT = process.env.PORT || 4747;
+
+// Middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(".", "public")));
 
+// API Routes
+app.use('/api/contact', contactRoutes);
+app.use('/api/blogs', blogRoutes);
+app.use('/api/auth', authRoutes);
+
+// Request logging middleware
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -38,6 +57,15 @@ app.use((req, res, next) => {
   next();
 });
 
+// Production static assets serving
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../dist')));
+  
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../dist', 'index.html'));
+  });
+}
+
 (async () => {
   const server = await registerRoutes(app);
 
@@ -49,7 +77,7 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // importantly only setup vite in development and after
+  // Importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
   if (app.get("env") === "development") {

@@ -21,11 +21,18 @@ const BlogCreation = () => {
     setIsSubmitting(true);
     
     try {
-      // Replace with your actual API call
+      // Get token from localStorage
+      const userInfo = JSON.parse(localStorage.getItem('userInfo') || 'null');
+      
+      if (!userInfo || !userInfo.token) {
+        throw new Error('Not authenticated');
+      }
+      
       const response = await fetch('/api/blogs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${userInfo.token}`
         },
         body: JSON.stringify(data),
       });

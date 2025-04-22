@@ -4,3 +4,6 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+.env              # <-- Add this line - makes sure your password isnt on public github.
+.env.local        # <-- Optional but recommended
+.env.*            # <-- Optional catch-all for other env variants
