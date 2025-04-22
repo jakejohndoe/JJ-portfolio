@@ -58,7 +58,7 @@ app.use((req, res, next) => {
 });
 
 // Production static assets serving
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'development') {
   app.use(express.static(path.join(__dirname, '../dist')));
   
   app.get('*', (req, res) => {
