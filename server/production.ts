@@ -28,7 +28,7 @@ app.use('/api/blogs', blogRoutes);
 app.use('/api/auth', authRoutes);
 
 // Serve static files from both Vite build and public folder
-const distPath = path.resolve(process.cwd(), "dist");
+const distPath = path.resolve(process.cwd(), "client/dist");
 const publicPath = path.resolve(process.cwd(), "public");
 
 if (fs.existsSync(publicPath)) {
