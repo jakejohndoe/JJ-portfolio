@@ -1,3 +1,4 @@
+// src/components/PrivateRoute.tsx
 import { useEffect, useState } from 'react';
 import { Route, Redirect } from 'wouter';
 
