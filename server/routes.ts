@@ -53,8 +53,8 @@ const projects = [
     ]
   },
   {
-    title: "Analytics Dashboard",
-    description: "Interactive business analytics platform with real-time data.",
+    title: "Moodo",
+    description: "A Mood-Based To-Do List App that helps you manage tasks based on your mood.",
     image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTR8fGRhc2hib2FyZHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
     technologies: [
       { name: "Vue.js" },

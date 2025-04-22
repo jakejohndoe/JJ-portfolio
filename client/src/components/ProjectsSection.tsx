@@ -20,13 +20,13 @@ interface ProjectsSectionProps {
 const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
   const defaultProjects = [
     {
-      title: "E-commerce Platform",
-      description: "A full-featured online store with payment integration.",
+      title: "Moodo",
+      description: "A mood-based to-do list app that helps you manage tasks based on your mood.",
       image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTR8fHdlYnNpdGV8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
       technologies: [
-        { name: "React" },
-        { name: "Node.js" },
-        { name: "MongoDB" }
+        { name: "HTML" },
+        { name: "CSS" },
+        { name: "JavaScript" }
       ]
     },
     {

@@ -87,9 +87,11 @@ const ServicesSection = ({ services, stats, isLoading }: ServicesSectionProps) =
           <div className="w-full md:w-1/2 mt-12 md:mt-0" id="about">
             <h2 className="text-4xl font-bold text-white mb-6">About me</h2>
             <p className="text-gray-300 mb-6">
-              I started my software journey from photography. Through that, I learned to 
-              love the process of creating from scratch. Since then, this has led me to 
-              software development as it fulfills my love for learning and building things.
+            I got my start in software through the Metana Bootcamp, and instantly fell in love 
+            with building things from scratch.
+            It combined two things I am passionate about—learning:
+            new skills and creating something real—and that is what keeps me 
+            excited about development every day.
             </p>
             
             {/* Stats section */}

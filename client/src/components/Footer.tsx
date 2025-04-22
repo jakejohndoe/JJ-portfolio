@@ -4,12 +4,12 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
-            <p className="text-gray-400">&copy; {new Date().getFullYear()} Jensen Omega. All rights reserved.</p>
+            <p className="text-gray-400">&copy; {new Date().getFullYear()} Jakob Johnson. All rights reserved.</p>
           </div>
           
           <div className="flex space-x-6">
             <a 
-              href="https://github.com" 
+              href="https://github.com/jakejohndoe" 
               target="_blank" 
               rel="noopener noreferrer" 
               className="text-gray-400 hover:text-primary transition" 
@@ -18,7 +18,7 @@ const Footer = () => {
               <i className="fab fa-github text-xl"></i>
             </a>
             <a 
-              href="https://linkedin.com" 
+              href="https://www.linkedin.com/in/jakejohndoe/" 
               target="_blank" 
               rel="noopener noreferrer" 
               className="text-gray-400 hover:text-primary transition" 
@@ -27,7 +27,7 @@ const Footer = () => {
               <i className="fab fa-linkedin-in text-xl"></i>
             </a>
             <a 
-              href="https://twitter.com" 
+              href="https://x.com/yaekyon" 
               target="_blank" 
               rel="noopener noreferrer" 
               className="text-gray-400 hover:text-primary transition" 
@@ -36,7 +36,7 @@ const Footer = () => {
               <i className="fab fa-twitter text-xl"></i>
             </a>
             <a 
-              href="https://instagram.com" 
+              href="https://www.instagram.com/jakejohndoe/" 
               target="_blank" 
               rel="noopener noreferrer" 
               className="text-gray-400 hover:text-primary transition" 

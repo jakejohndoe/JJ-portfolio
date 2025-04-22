@@ -8,12 +8,12 @@ const HeroSection = () => {
         <div className="md:w-1/2 mb-10 md:mb-0 z-10">
           <div className="flex items-center">
             <h1 className="text-5xl md:text-6xl font-bold text-white">
-              Hello<span className="text-primary">.</span>
+              Hello<span className="text-primary">!</span>
             </h1>
           </div>
           <div className="my-4">
             <h2 className="text-3xl md:text-4xl font-semibold text-white">
-              I'm Jensen
+              I'm Jakob Johnson, a
             </h2>
             <h3 className="text-4xl md:text-5xl font-bold text-white mt-2">
               Software Developer
@@ -38,13 +38,13 @@ const HeroSection = () => {
         
         {/* Right side profile image */}
         <div className="md:w-1/2 flex justify-center md:justify-end relative z-10">
-          <div className="profile-circle rounded-full overflow-hidden h-64 w-64 md:h-80 md:w-80 border-2 border-primary relative">
+            <div className="profile-circle rounded-full overflow-hidden h-64 w-64 md:h-80 md:w-80 border-2 border-primary relative">
             <img 
-              src="https://images.unsplash.com/photo-1603575448878-868a20723f5d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80" 
-              alt="Jensen's profile" 
+              src="/jj-headshot.jpeg" 
+              alt="Jakob's profile" 
               className="object-cover w-full h-full"
             />
-          </div>
+            </div>
         </div>
         
         {/* Background decorative elements */}
