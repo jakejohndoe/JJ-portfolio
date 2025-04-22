@@ -88,8 +88,8 @@ const HeroSection = () => {
         <div className="md:w-1/2 flex justify-center md:justify-end relative z-10">
             <div className="profile-circle rounded-full overflow-hidden h-64 w-64 md:h-80 md:w-80 border-2 border-primary relative">
               <img 
-                src="/jj-headshot.jpeg
-                alt="Jakob's profile" 
+                src="/assets/jj-headshot.jpeg"
+                alt="Jakob Johnson"
                 className="object-cover w-full h-full"
               />
               <div className="absolute -bottom-2 -right-2 text-primary text-sm font-mono bg-background p-1 rounded">
