@@ -3,17 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 export default defineConfig({
-  plugins: [
-    react(),
-    ...(process.env.NODE_ENV !== 'production' 
-      ? [
-          // Only load these in development
-          (await import("@replit/vite-plugin-runtime-error-modal")).default(),
-          process.env.REPL_ID && 
-            (await import("@replit/vite-plugin-cartographer")).then(m => m.cartographer())
-        ].filter(Boolean)
-      : [])
-  ],
+  plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),
@@ -27,7 +17,7 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       external: [
-        /^@radix-ui\/react-.*/  // Externalize all Radix components
+        /^@radix-ui\/react-.*/
       ],
     }
   }
