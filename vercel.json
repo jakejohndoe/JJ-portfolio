@@ -6,7 +6,7 @@
         "use": "@vercel/static-build",
         "config": {
           "distDir": "dist",
-          "installCommand": "npm install",
+          "installCommand": "cd client && npm install && cd .. && npm install",
           "buildCommand": "npm run build:frontend",
           "outputDirectory": "client/dist"
         }
@@ -14,8 +14,11 @@
     ],
     "routes": [
       {
-        "src": "/(.*)",
-        "dest": "client/dist/$1"
+        "src": "/(.*)", 
+        "dest": "client/dist/$1",
+        "headers": {
+          "Cache-Control": "public, max-age=0, must-revalidate"
+        }
       }
     ]
   }
