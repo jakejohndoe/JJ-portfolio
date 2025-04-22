@@ -2,11 +2,10 @@
     "version": 2,
     "builds": [
       {
-        "src": "client/vite.config.ts",
+        "src": "vite.config.ts", 
         "use": "@vercel/static-build",
         "config": {
-          "distDir": "client/dist",
-          "buildCommand": "npm run build:frontend"
+          "distDir": "dist"
         }
       }
     ],
