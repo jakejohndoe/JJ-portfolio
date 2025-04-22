@@ -2,23 +2,18 @@
     "version": 2,
     "builds": [
       {
-        "src": "client/**",
+        "src": "client/vite.config.ts",
         "use": "@vercel/static-build",
         "config": {
-          "distDir": "dist",
-          "installCommand": "cd client && npm install && cd .. && npm install",
-          "buildCommand": "npm run build:frontend",
-          "outputDirectory": "client/dist"
+          "distDir": "client/dist",
+          "buildCommand": "npm run build:frontend"
         }
       }
     ],
     "routes": [
       {
-        "src": "/(.*)", 
-        "dest": "client/dist/$1",
-        "headers": {
-          "Cache-Control": "public, max-age=0, must-revalidate"
-        }
+        "src": "/(.*)",
+        "dest": "/index.html"
       }
     ]
   }
