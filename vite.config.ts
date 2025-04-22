@@ -19,6 +19,12 @@ export default defineConfig({
       external: [
         /^@radix-ui\/react-.*/
       ],
+      output: {
+        // Force proper module paths
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash][extname]'
+      }
     }
   }
 });

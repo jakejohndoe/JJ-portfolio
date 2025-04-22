@@ -2,15 +2,20 @@
     "version": 2,
     "builds": [
       {
-        "src": "client/dist/**",
-        "use": "@vercel/static"
+        "src": "client/**",
+        "use": "@vercel/static-build",
+        "config": {
+          "distDir": "dist",
+          "installCommand": "npm install",
+          "buildCommand": "npm run build:frontend",
+          "outputDirectory": "client/dist"
+        }
       }
     ],
     "routes": [
       {
         "src": "/(.*)",
-        "dest": "/client/dist/index.html"
+        "dest": "client/dist/$1"
       }
     ]
   }
-  
