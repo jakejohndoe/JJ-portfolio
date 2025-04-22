@@ -23,9 +23,21 @@ export default defineConfig({
       "@assets": path.resolve(import.meta.dirname, "attached_assets"),
     },
   },
-  root: path.resolve(import.meta.dirname, "client"), // Keep the root as 'client'
+  root: path.resolve(import.meta.dirname, "client"),
   build: {
-    outDir: path.resolve(import.meta.dirname, "client/dist"), // Ensure 'dist' folder as output
+    outDir: path.resolve(import.meta.dirname, "client/dist"),
     emptyOutDir: true,
-  },
+    rollupOptions: {
+      external: [
+        '@radix-ui/react-tooltip',
+        '@radix-ui/react-accordion',
+        '@radix-ui/react-alert-dialog',
+        '@radix-ui/react-toast',
+        '@radix-ui/react-label',
+        '@radix-ui/react-slot',
+        '@radix-ui/react-dropdown-menu',
+        '@radix-ui/react-dialog'
+      ],
+    }
+  }
 });
