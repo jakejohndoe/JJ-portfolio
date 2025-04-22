@@ -1,20 +1,18 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 export default defineConfig({
   plugins: [
     react(),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
+    ...(process.env.NODE_ENV !== 'production' 
       ? [
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer(),
-          ),
-        ]
-      : []),
+          // Only load these in development
+          (await import("@replit/vite-plugin-runtime-error-modal")).default(),
+          process.env.REPL_ID && 
+            (await import("@replit/vite-plugin-cartographer")).then(m => m.cartographer())
+        ].filter(Boolean)
+      : [])
   ],
   resolve: {
     alias: {
@@ -29,14 +27,7 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       external: [
-        '@radix-ui/react-tooltip',
-        '@radix-ui/react-accordion',
-        '@radix-ui/react-alert-dialog',
-        '@radix-ui/react-toast',
-        '@radix-ui/react-label',
-        '@radix-ui/react-slot',
-        '@radix-ui/react-dropdown-menu',
-        '@radix-ui/react-dialog'
+        /^@radix-ui\/react-.*/  // Externalize all Radix components
       ],
     }
   }
