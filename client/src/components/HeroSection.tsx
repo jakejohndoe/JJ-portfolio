@@ -1,22 +1,70 @@
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 
 const HeroSection = () => {
+  const [isVisible, setIsVisible] = useState(false);
+  
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
   return (
     <section id="home" className="min-h-screen pt-24 flex items-center bg-background relative overflow-hidden">
-      <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
+      {/* Code Line Numbers */}
+      <div className="absolute left-4 top-1/4 bottom-1/4 flex flex-col justify-between opacity-20 text-primary hidden md:flex">
+        {[...Array(10)].map((_, i) => (
+          <div key={i} className="font-mono text-sm">{i + 1}</div>
+        ))}
+      </div>
+      
+      {/* Code Comment Elements */}
+      <div className="absolute right-8 top-1/6 opacity-15 text-muted-foreground font-mono hidden lg:block">
+        /* Software Developer */
+      </div>
+      
+      <div className="absolute left-16 bottom-10 opacity-15 text-muted-foreground font-mono transform rotate-2 hidden lg:block">
+        // TODO: Write amazing code
+      </div>
+      
+      {/* Floating Code Symbols */}
+      <div className="code-symbols">
+        <div className="absolute left-1/4 top-20 text-primary opacity-10 text-xl font-mono">&#123;&#125;</div>
+        <div className="absolute right-1/3 top-40 text-primary opacity-10 text-xl font-mono">&#40;&#41; =&gt;</div>
+        <div className="absolute left-1/5 bottom-20 text-primary opacity-10 text-2xl font-mono">;</div>
+        <div className="absolute right-1/4 bottom-40 text-primary opacity-10 text-xl font-mono">&amp;&amp;</div>
+      </div>
+      
+      {/* Enhanced Bracket Elements */}
+      <div className="absolute -left-10 top-1/3 text-primary opacity-20 text-9xl transform -rotate-6">
+        &lt;
+      </div>
+      <div className="absolute -right-10 top-2/3 text-primary opacity-20 text-9xl transform rotate-6">
+        &gt;
+      </div>
+      <div className="absolute left-1/4 bottom-10 text-primary opacity-10 text-5xl transform rotate-12">
+        /&gt;
+      </div>
+      <div className="absolute right-1/4 top-20 text-primary opacity-10 text-4xl transform -rotate-3">
+        &lt;/
+      </div>
+      
+      <div className="container mx-auto px-4 flex flex-col md:flex-row items-center relative z-10">
         {/* Left side content */}
         <div className="md:w-1/2 mb-10 md:mb-0 z-10">
           <div className="flex items-center">
+            <div className="font-mono text-muted-foreground opacity-70 mr-2">01</div>
             <h1 className="text-5xl md:text-6xl font-bold text-white">
               Hello<span className="text-primary">!</span>
             </h1>
           </div>
-          <div className="my-4">
+          <div className="my-4 border-l-2 border-primary pl-4">
+            <div className="font-mono text-muted-foreground opacity-70 mb-1">02</div>
             <h2 className="text-3xl md:text-4xl font-semibold text-white">
               I'm Jakob Johnson, a
             </h2>
-            <h3 className="text-4xl md:text-5xl font-bold text-white mt-2">
-              Software Developer
+            <div className="font-mono text-muted-foreground opacity-70 mt-2 mb-1">03</div>
+            <h3 className="text-4xl md:text-5xl font-bold text-white">
+              <span className="text-primary">Software</span> Developer
             </h3>
           </div>
           <div className="mt-8 flex flex-wrap gap-4">
@@ -39,22 +87,23 @@ const HeroSection = () => {
         {/* Right side profile image */}
         <div className="md:w-1/2 flex justify-center md:justify-end relative z-10">
             <div className="profile-circle rounded-full overflow-hidden h-64 w-64 md:h-80 md:w-80 border-2 border-primary relative">
-            <img 
-              src="/jj-headshot.jpeg" 
-              alt="Jakob's profile" 
-              className="object-cover w-full h-full"
-            />
+              <img 
+                src="/jj-headshot.jpeg" 
+                alt="Jakob's profile" 
+                className="object-cover w-full h-full"
+              />
+              <div className="absolute -bottom-2 -right-2 text-primary text-sm font-mono bg-background p-1 rounded">
+                .developer
+              </div>
             </div>
         </div>
-        
-        {/* Background decorative elements */}
-        <div className="absolute -left-10 top-1/3 text-primary opacity-20 text-9xl">
-          &lt;
-        </div>
-        <div className="absolute -right-10 top-2/3 text-primary opacity-20 text-9xl">
-          &gt;
-        </div>
       </div>
+      
+      {/* Code Pattern Background */}
+      <div className="absolute inset-0 code-pattern opacity-5 z-0"></div>
+      
+      {/* Animated Code Flow */}
+      <div className={`code-flow absolute inset-0 z-0 transition-opacity duration-1000 ${isVisible ? 'opacity-30' : 'opacity-30'}`}></div>
     </section>
   );
 };

@@ -31,7 +31,7 @@ const Home = () => {
       <SkillsSection skills={skills || []} isLoading={skillsLoading} />
       <ServicesSection 
         services={services || []} 
-        stats={stats || { completedProjects: 120, satisfaction: 95, experience: 10 }}
+        stats={stats || { completedProjects: 3, satisfaction: 95, experience: 2 }}
         isLoading={{ services: servicesLoading, stats: statsLoading }}
       />
       <ProjectsSection projects={projects || []} isLoading={projectsLoading} />

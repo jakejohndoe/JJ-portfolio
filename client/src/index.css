@@ -104,3 +104,77 @@
 .counter {
     animation: countUp 1s ease-out forwards;
 }
+
+/* Add this to your index.css, preferably near your other pattern utilities */
+.hero-bracket-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='40' y='40' font-family='monospace' font-size='18' text-anchor='middle' fill='hsl(var(--muted))' opacity='0.5'%3E%26lt;%26gt;%3C/text%3E%3C/svg%3E");
+    opacity: 0.15;
+  }
+  
+  @media (prefers-color-scheme: light) {
+    .hero-bracket-pattern {
+      background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='40' y='40' font-family='monospace' font-size='18' text-anchor='middle' fill='hsl(var(--muted-foreground))' opacity='0.3'%3E%26lt;%26gt;%3C/text%3E%3C/svg%3E");
+    }
+  }
+
+/* Code pattern background */
+.code-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff5e3a' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  
+  /* Animated code flow effect */
+  .code-flow {
+    background: linear-gradient(to bottom, 
+      transparent 0%, 
+      rgba(255, 94, 58, 0.05) 50%, 
+      transparent 100%);
+    background-size: 100% 20px;
+    animation: codeFlow 15s infinite linear;
+  }
+  
+  @keyframes codeFlow {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 0 500px;
+    }
+  }
+  
+  /* Style the code line numbers */
+  .code-symbols div {
+    transition: all 0.8s ease;
+    animation: float 8s infinite ease-in-out;
+  }
+  
+  .code-symbols div:nth-child(odd) {
+    animation-delay: 1s;
+  }
+  
+  .code-symbols div:nth-child(even) {
+    animation-delay: 2s;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    50% { transform: translateY(-10px) rotate(5deg); }
+  }
+  
+  /* Enhance the profile circle */
+  .profile-circle::after {
+    content: "";
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border: 1px dashed hsl(var(--primary));
+    border-radius: 50%;
+    z-index: -1;
+    animation: spin 30s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }

@@ -15,41 +15,55 @@ const skills = [
 
 const services = [
   {
-    title: "Website Development",
-    description: "Creating responsive, modern websites with the latest technologies.",
-    icon: "fas fa-laptop-code"
+    title: "React/Next.js Development",
+    description: "High-performance React applications with SSR and optimized rendering.",
+    icon: "fab fa-react"
   },
   {
-    title: "App Development",
-    description: "Building cross-platform mobile applications with React Native.",
-    icon: "fas fa-mobile-alt"
+    title: "Node.js Backends",
+    description: "Scalable server-side applications with Express or NestJS.",
+    icon: "fab fa-node-js"
   },
   {
-    title: "Website Hosting",
-    description: "Secure and reliable hosting solutions for your web projects.",
-    icon: "fas fa-server"
+    title: "TypeScript Expertise",
+    description: "Type-safe JavaScript development for more robust applications.",
+    icon: "fas fa-shield-alt"
+  },
+  {
+    title: "Database Solutions",
+    description: "PostgreSQL, MongoDB, and ORMs like Prisma/Drizzle.",
+    icon: "fas fa-database"
+  },
+  {
+    title: "Cloud Architecture",
+    description: "AWS/Vercel deployments with Terraform and Docker.",
+    icon: "fas fa-cloud"
   }
 ];
 
 const projects = [
   {
-    title: "E-commerce Platform",
-    description: "A full-featured online store with payment integration.",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTR8fHdlYnNpdGV8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
+    title: "Promptly",
+    description: "Promptly makes talking to any AI smarter, faster, and way easier.",
+    image: "https://images.unsplash.com/photo-1603791440384-56cd371ee9a7?auto=format&fit=crop&w=1170&q=80",
     technologies: [
       { name: "React" },
+      { name: "Tailwind CSS" },
       { name: "Node.js" },
-      { name: "MongoDB" }
+      { name: "MongoDB" },
+      { name: "Express" }
     ]
   },
   {
-    title: "Health Tracker App",
-    description: "Mobile application for tracking fitness and nutrition goals.",
-    image: "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8bW9iaWxlJTIwYXBwfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
+    title: "Rework",
+    description: "Rework instantly refines your resume to match any job—optimized, personalized, and ready to send.",
+    image: "https://images.unsplash.com/photo-1603791440384-56cd371ee9a7?auto=format&fit=crop&w=1170&q=80",
     technologies: [
-      { name: "React Native" },
-      { name: "Firebase" },
-      { name: "Redux" }
+      { name: "React" },
+      { name: "Tailwind CSS" },
+      { name: "Node.js" },
+      { name: "Express" },
+      { name: "MongoDB" }
     ]
   },
   {
@@ -65,9 +79,9 @@ const projects = [
 ];
 
 const stats = {
-  completedProjects: 120,
+  completedProjects: 3,
   satisfaction: 95,
-  experience: 10
+  experience: 2
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {

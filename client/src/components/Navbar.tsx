@@ -48,7 +48,7 @@ const Navbar = () => {
           <a href="#home" onClick={handleNavClick} className="text-white hover:text-primary transition">
             Home
           </a>
-          <a href="#about" onClick={handleNavClick} className="text-white hover:text-primary transition">
+          <a href="#services" onClick={handleNavClick} className="text-white hover:text-primary transition">
             About
           </a>
           <a href="#projects" onClick={handleNavClick} className="text-white hover:text-primary transition">
@@ -73,7 +73,7 @@ const Navbar = () => {
           <a href="#home" onClick={handleNavClick} className="text-white hover:text-primary transition py-2">
             Home
           </a>
-          <a href="#about" onClick={handleNavClick} className="text-white hover:text-primary transition py-2">
+          <a href="#services" onClick={handleNavClick} className="text-white hover:text-primary transition py-2">
             About
           </a>
           <a href="#projects" onClick={handleNavClick} className="text-white hover:text-primary transition py-2">
