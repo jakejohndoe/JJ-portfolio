@@ -6,14 +6,10 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "scripts": {
-  "dev": "NODE_ENV=development tsx server/index.ts",
-  "build": "vite build && npm run build:backend",
-  "build:backend": "esbuild server/production.ts --platform=node --packages=external --bundle --format=esm --outdir=dist --external:vite --define:process.env.NODE_ENV=\"'production'\"",
-  "start": "NODE_ENV=production node dist/production.js",
-  "check": "tsc",
-  "db:push": "drizzle-kit push",
-  "preview": "vite preview"
+ "scripts": {
+  "build": "npm run build:frontend && npm run build:backend",
+  "build:frontend": "vite build",
+  "build:backend": "esbuild server/production.ts --platform=node --packages=external --bundle --format=esm --outdir=dist --external:vite --define:process.env.NODE_ENV=\"'production'\""
 },
 
   "dependencies": {
