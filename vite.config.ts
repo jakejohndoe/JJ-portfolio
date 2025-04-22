@@ -19,5 +19,17 @@ export default defineConfig({
     rollupOptions: {
       input: path.resolve(__dirname, "client/index.html")
     }
+  },
+  optimizeDeps: {
+    include: [
+      '@radix-ui/react-slot',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-toast',
+      '@radix-ui/react-tooltip',
+      '@radix-ui/react-accordion',
+      '@radix-ui/react-alert-dialog',
+      '@radix-ui/react-label',
+    ]
   }
 });
