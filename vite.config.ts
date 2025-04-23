@@ -7,17 +7,17 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react()],
-  root: path.resolve(__dirname, "client"),
+  // No longer specifying a custom root since index.html is now at project root
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "client/src")
+      "@": path.resolve(__dirname, "src") // Updated path to src folder
     }
   },
   build: {
     outDir: path.resolve(__dirname, "dist"),
     emptyOutDir: true,
     rollupOptions: {
-      input: path.resolve(__dirname, "client/index.html")
+      input: path.resolve(__dirname, "index.html") // Updated path to index.html
     }
   },
   optimizeDeps: {
