@@ -1,6 +1,5 @@
-// server/routes/contactRoutes.ts
 import express from 'express';
-import Contact from '../models/Contact';
+import Contact from '../models/Contact.js'; // Added .js extension
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 
@@ -29,6 +28,14 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ 
         success: false, 
         message: 'Name, email, and message are required' 
+      });
+    }
+
+    // Validate email format
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Invalid email format' 
       });
     }
 

@@ -1,10 +1,10 @@
 import express from "express";
 import path from "path";
 import { config } from "dotenv";
-import connectDB from './db/connection';
-import contactRoutes from './routes/contactRoutes';
-import blogRoutes from './routes/blogRoutes';
-import authRoutes from './routes/authRoutes';
+import connectDB from './db/connection.js';
+import contactRoutes from './routes/contactRoutes.js';
+import blogRoutes from './routes/blogRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 import cors from "cors";
 
 // Load environment variables

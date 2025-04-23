@@ -1,12 +1,21 @@
 import express from 'express';
-import User from '../models/User';
 import jwt from 'jsonwebtoken';
-import { protect, admin } from '../middleware/authMiddleware';
+import User from '../models/User.js'; // Added .js extension
+import { protect, admin } from '../middleware/authMiddleware.js'; // Added .js extension
 
 const router = express.Router();
 
+// Define JWT payload type
+interface JwtPayload {
+  id: string;
+}
+
 const generateToken = (id: string) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET as string, {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is not defined in environment variables');
+  }
+  
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '30d',
   });
 };
@@ -16,6 +25,11 @@ router.post('/register', async (req, res) => {
   try {
     const { username, email, password } = req.body;
     
+    // Input validation
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: 'Please provide all fields' });
+    }
+
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
@@ -51,6 +65,12 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    
+    // Input validation
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Please provide email and password' });
+    }
+
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
@@ -82,10 +102,19 @@ router.post('/logout', (req, res) => {
 });
 
 // @route   GET /api/auth/profile
-router.get('/profile', protect, async (req, res) => {
+router.get('/profile', protect, async (req: express.Request, res) => {
   try {
-    const user = await User.findById(req.user._id);
-    res.json(user || { message: 'User not found' });
+    // Added type assertion for req.user
+    const user = await User.findById((req as any).user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json({
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      isAdmin: user.isAdmin
+    });
   } catch (error) {
     console.error('Profile error:', error);
     res.status(500).json({ message: 'Server error' });

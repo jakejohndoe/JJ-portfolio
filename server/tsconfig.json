@@ -1,23 +1,20 @@
 {
     "compilerOptions": {
       "target": "ES2022",
-      "module": "ESNext", // Changed from commonjs to ESNext
+      "module": "NodeNext",
       "outDir": "./dist",
-      "rootDir": ".",
+      "rootDir": "./src",
       "strict": true,
       "esModuleInterop": true,
       "skipLibCheck": true,
       "forceConsistentCasingInFileNames": true,
-      "types": ["node"],
-      "moduleResolution": "NodeNext", // Changed from node to NodeNext
-      "baseUrl": ".",
+      "moduleResolution": "NodeNext",
+      "baseUrl": "./src",
       "paths": {
-        "@shared/*": ["../shared/*"]
-      }
+        "@shared/*": ["../../shared/*"]
+      },
+      "types": ["node"]
     },
-    "include": ["**/*.ts"],
-    "exclude": [
-      "node_modules",
-      "../client/**/*"
-    ]
+    "include": ["src/**/*"],
+    "exclude": ["node_modules"]
   }

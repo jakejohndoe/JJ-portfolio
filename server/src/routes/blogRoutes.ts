@@ -1,6 +1,6 @@
 import express from 'express';
-import Blog from '../models/Blog';
-import { protect, admin } from '../middleware/authMiddleware';
+import Blog from '../models/Blog.js'; // Added .js extension
+import { protect, admin } from '../middleware/authMiddleware.js'; // Added .js extension
 
 const router = express.Router();
 
@@ -41,6 +41,10 @@ router.get('/:id', async (req, res) => {
 router.post('/', protect, admin, async (req, res) => {
   try {
     const { title, excerpt, content, imageUrl } = req.body;
+    
+    if (!title || !content) {
+      return res.status(400).json({ message: 'Title and content are required' });
+    }
     
     const newBlog = new Blog({
       title,
