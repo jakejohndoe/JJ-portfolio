@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+      "target": "ES2022",
+      "module": "commonjs",
+      "outDir": "./dist",
+      "rootDir": ".",
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true,
+      "types": ["node"],
+      "moduleResolution": "node",
+      "baseUrl": ".",
+      "paths": {
+        "@shared/*": ["../shared/*"]
+      }
+    },
+    "include": ["**/*.ts"],
+    "exclude": [
+      "node_modules",
+      "../client/**/*"  // Explicitly exclude frontend files
+    ]
+  }
