@@ -1,9 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage.js";
-import cors from "cors"; // Add this import
+import cors from "cors";
+import express from 'express';
 
-// Enhanced mock data with proper typing
 interface Skill {
   id: number;
   name: string;
@@ -31,10 +31,9 @@ interface Stats {
   completedProjects: number;
   satisfaction: number;
   experience: number;
-  visitors?: number; // Added to match frontend expectations
+  visitors?: number;
 }
 
-// Enhanced mock data with IDs and additional fields
 const skills: Skill[] = [
   { id: 1, name: "HTML5", icon: "fab fa-html5", category: "Frontend", level: 90 },
   { id: 2, name: "CSS", icon: "fab fa-css3-alt", category: "Frontend", level: 85 },
@@ -84,11 +83,10 @@ const stats: Stats = {
   completedProjects: 3,
   satisfaction: 95,
   experience: 2,
-  visitors: 1000 // Added to match frontend Stats interface
+  visitors: 1000
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Enable CORS for your Vercel frontend
   app.use(cors({
     origin: [
       'https://hellojakejohn.vercel.app',
@@ -97,7 +95,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     credentials: true
   }));
 
-  // API endpoints with error handling
   app.get("/api/skills", (req, res) => {
     try {
       res.json(skills);
@@ -127,7 +124,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/stats", (req, res) => {
     try {
-      // Simulate some dynamic data
       const dynamicStats = {
         ...stats,
         visitors: stats.visitors ? stats.visitors + Math.floor(Math.random() * 100) : 1000
@@ -139,7 +135,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Serve resume with proper headers
   app.get("/api/resume", (req, res) => {
     try {
       res.sendFile("resume.html", { 
@@ -154,7 +149,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Enhanced contact form with validation
   app.post("/api/contact", express.json(), (req, res) => {
     try {
       const { name, email, subject, message } = req.body;
@@ -166,16 +160,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Validate email format
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         return res.status(400).json({ error: "Invalid email format" });
       }
 
-      // Here you would typically:
-      // 1. Save to database
-      // 2. Send email notification
       console.log("New contact submission:", { name, email, subject, message });
-
       res.json({ 
         success: true, 
         message: "Thank you for your message! I'll get back to you soon."
@@ -187,6 +176,5 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   const httpServer = createServer(app);
-
   return httpServer;
 }

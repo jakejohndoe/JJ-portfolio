@@ -1,5 +1,14 @@
 import mongoose from 'mongoose';
 
+interface BlogDocument extends mongoose.Document {
+  title: string;
+  excerpt: string;
+  content: string;
+  imageUrl?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 const BlogSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -26,4 +35,10 @@ const BlogSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model('Blog', BlogSchema);
+BlogSchema.pre('save', function(next) {
+  this.updatedAt = new Date();
+  next();
+});
+
+const Blog = mongoose.model<BlogDocument>('Blog', BlogSchema);
+export default Blog;

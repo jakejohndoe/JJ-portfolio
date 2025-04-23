@@ -1,12 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import User from '../models/User';
+import User from '../models/User.js';
 
 interface DecodedToken {
   id: string;
 }
 
-// Add user property to Express Request
 declare global {
   namespace Express {
     interface Request {
@@ -15,21 +14,14 @@ declare global {
   }
 }
 
-// Protect routes middleware
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
   let token;
   
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
-      // Get token from header
       token = req.headers.authorization.split(' ')[1];
-      
-      // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as DecodedToken;
-      
-      // Get user from token
       req.user = await User.findById(decoded.id).select('-password');
-      
       next();
     } catch (error) {
       console.error('Auth error:', error);
@@ -42,7 +34,6 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
   }
 };
 
-// Admin middleware
 export const admin = (req: Request, res: Response, next: NextFunction) => {
   if (req.user && req.user.isAdmin) {
     next();

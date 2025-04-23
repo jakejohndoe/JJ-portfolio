@@ -1,12 +1,12 @@
 import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "../routes";
-import { setupVite, serveStatic, log } from "./vite";
+import { registerRoutes } from "./routes.js";
+import { setupVite, serveStatic, log } from "./vite.js";
 import path from "path";
 import dotenv from 'dotenv';
-import connectDB from './db/connection';
-import contactRoutes from './routes/contactRoutes';
-import blogRoutes from './routes/blogRoutes';
-import authRoutes from './routes/authRoutes';
+import connectDB from './db/connection.js';
+import contactRoutes from './routes/contactRoutes.js';
+import blogRoutes from './routes/blogRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 
 dotenv.config();
 
@@ -14,7 +14,7 @@ dotenv.config();
 connectDB();
 
 const app = express();
-const PORT = process.env.PORT || 4747;
+const PORT = parseInt(process.env.PORT || '4747', 10);
 
 // Middleware
 app.use(express.json());
@@ -77,18 +77,12 @@ if (process.env.NODE_ENV === 'development') {
     throw err;
   });
 
-  // Importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 4747
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
   const port = 4747;
   server.listen({
     port,

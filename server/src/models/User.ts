@@ -26,7 +26,6 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-// Hash password before saving
 UserSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
   
@@ -39,9 +38,18 @@ UserSchema.pre('save', async function(next) {
   }
 });
 
-// Method to compare passwords
 UserSchema.methods.matchPassword = async function(enteredPassword: string) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-export default mongoose.model('User', UserSchema);
+interface UserDocument extends mongoose.Document {
+  username: string;
+  email: string;
+  password: string;
+  isAdmin: boolean;
+  createdAt: Date;
+  matchPassword: (password: string) => Promise<boolean>;
+}
+
+const User = mongoose.model<UserDocument>('User', UserSchema);
+export default User;

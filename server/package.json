@@ -4,8 +4,8 @@
   "type": "module",
   "main": "dist/production.js",
   "scripts": {
+    "build": "rm -rf dist && tsc --skipLibCheck",
     "start": "node dist/production.js",
-    "build": "rm -rf dist && tsc",
     "dev": "NODE_ENV=development tsx watch src/index.ts"
   },
   "dependencies": {
@@ -25,7 +25,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/mongoose": "^5.11.96",
     "@types/nanoid": "^2.1.0",
-    "@types/node": "^22.14.1",
+    "@types/node": "^20.11.0",
     "@types/nodemailer": "^6.4.17",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"
