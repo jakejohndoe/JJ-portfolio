@@ -19,7 +19,7 @@ export async function setupVite(app: Express, server: Server) {
   if (process.env.NODE_ENV === 'development') {
     // Only import Vite in development mode
     const { createServer: createViteServer, createLogger } = await import("vite");
-    const viteConfig = await import("../vite.config");
+    const viteConfig = await import("../client/vite.config");
     
     const viteLogger = createLogger();
     
