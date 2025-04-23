@@ -1,14 +1,13 @@
 import express from "express";
 import path from "path";
-import fs from "fs";
 import { config } from "dotenv";
-import { log } from "./vite";
 import connectDB from './db/connection';
 import contactRoutes from './routes/contactRoutes';
 import blogRoutes from './routes/blogRoutes';
 import authRoutes from './routes/authRoutes';
+import cors from "cors";
 
-// Load environment variables from .env.production if exists
+// Load environment variables
 config({ path: path.resolve(process.cwd(), '.env.production') });
 
 // Create Express app
@@ -19,6 +18,13 @@ const PORT = process.env.PORT || 4747;
 connectDB();
 
 // Middleware
+app.use(cors({
+  origin: [
+    'https://hellojakejohn.vercel.app',
+    'http://localhost:3000'
+  ],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -27,33 +33,12 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/auth', authRoutes);
 
-// Serve static files from both Vite build and public folder
-const distPath = path.resolve(process.cwd(), "client/dist");
-const publicPath = path.resolve(process.cwd(), "public");
-
-if (fs.existsSync(publicPath)) {
-  app.use(express.static(publicPath));
-}
-
-if (fs.existsSync(distPath)) {
-  app.use(express.static(distPath));
-  
-  // Handle client-side routing
-  app.get("*", (req, res, next) => {
-    if (req.path.startsWith("/api")) {
-      return next();
-    }
-    
-    const indexPath = path.join(distPath, "index.html");
-    if (fs.existsSync(indexPath)) {
-      res.sendFile(indexPath);
-    } else {
-      next();
-    }
-  });
-}
+// Simple health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'healthy' });
+});
 
 // Start server
 app.listen(PORT, "0.0.0.0", () => {
-  log(`Production server running on port ${PORT}`, "server");
+  console.log(`Production server running on port ${PORT}`);
 });

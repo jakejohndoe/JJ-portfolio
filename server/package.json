@@ -1,11 +1,12 @@
 {
   "name": "jj-portfolio-backend",
   "version": "1.0.0",
+  "type": "module",
   "main": "dist/production.js",
   "scripts": {
     "start": "node dist/production.js",
     "build": "tsc && cp -r src/views dist/views || true",
-    "dev": "tsx watch index.ts"
+    "dev": "NODE_ENV=development tsx watch index.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
