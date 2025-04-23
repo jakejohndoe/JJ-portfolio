@@ -28,6 +28,12 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'healthy' });
 });
 
+
+app.get('/', (req, res) => {
+  res.send('JJ Portfolio API is live!');
+});
+
+
 // Error handling
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);
