@@ -1,38 +1,34 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js'; // Added .js extension
-import { protect, admin } from '../middleware/authMiddleware.js'; // Added .js extension
+import mongoose from 'mongoose';
+import User, { IUserDocument } from '../models/User.js';
+import { protect, admin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Define JWT payload type
 interface JwtPayload {
   id: string;
 }
 
 const generateToken = (id: string) => {
   if (!process.env.JWT_SECRET) {
-    throw new Error('JWT_SECRET is not defined in environment variables');
+    throw new Error('JWT_SECRET is not defined');
   }
-  
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: '30d',
-  });
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 };
 
-// @route   POST /api/auth/register
+// @route POST /api/auth/register
 router.post('/register', async (req, res) => {
   try {
     const { username, email, password } = req.body;
     
-    // Input validation
     if (!username || !email || !password) {
-      return res.status(400).json({ message: 'Please provide all fields' });
+      return res.status(400).json({ message: 'All fields required' });
     }
 
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ message: 'User exists' });
     }
     
     const user = await User.create({
@@ -42,7 +38,9 @@ router.post('/register', async (req, res) => {
       isAdmin: (await User.countDocuments({})) === 0,
     });
 
-    const token = generateToken(user._id.toString());
+    // Use mongoose.Types.ObjectId explicitly
+    const userId = user._id as mongoose.Types.ObjectId;
+    const token = generateToken(userId.toString());
     
     res.cookie('token', token, {
       httpOnly: true,
@@ -61,20 +59,21 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// @route   POST /api/auth/login
+// @route POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     
-    // Input validation
     if (!email || !password) {
-      return res.status(400).json({ message: 'Please provide email and password' });
+      return res.status(400).json({ message: 'Email and password required' });
     }
 
-    const user = await User.findOne({ email });
-
+    const user = await User.findOne({ email }).select('+password');
+    
     if (user && (await user.matchPassword(password))) {
-      const token = generateToken(user._id.toString());
+      // Use mongoose.Types.ObjectId explicitly
+      const userId = user._id as mongoose.Types.ObjectId;
+      const token = generateToken(userId.toString());
       
       res.cookie('token', token, {
         httpOnly: true,
@@ -88,7 +87,7 @@ router.post('/login', async (req, res) => {
         isAdmin: user.isAdmin
       });
     } else {
-      res.status(401).json({ message: 'Invalid email or password' });
+      res.status(401).json({ message: 'Invalid credentials' });
     }
   } catch (error) {
     console.error('Login error:', error);
@@ -96,25 +95,16 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// @route   POST /api/auth/logout
+// @route POST /api/auth/logout
 router.post('/logout', (req, res) => {
-  res.clearCookie('token').json({ message: 'Logged out successfully' });
+  res.clearCookie('token').json({ message: 'Logged out' });
 });
 
-// @route   GET /api/auth/profile
+// @route GET /api/auth/profile
 router.get('/profile', protect, async (req: express.Request, res) => {
   try {
-    // Added type assertion for req.user
-    const user = await User.findById((req as any).user._id);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    res.json({
-      _id: user._id,
-      username: user.username,
-      email: user.email,
-      isAdmin: user.isAdmin
-    });
+    const user = (await User.findById((req as any).user._id)) as IUserDocument | null;
+    res.json(user || { message: 'User not found' });
   } catch (error) {
     console.error('Profile error:', error);
     res.status(500).json({ message: 'Server error' });

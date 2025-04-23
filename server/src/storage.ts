@@ -1,40 +1,24 @@
-import { type IUser } from "@shared/schema.js"; // Use your Drizzle types
-
-export interface IStorage {
-  getUser(id: number): Promise<IUser | undefined>;
-  getUserByUsername(username: string): Promise<IUser | undefined>;
-  createUser(user: InsertUser): Promise<IUser>;
+interface IUser {
+  id: string;
+  username: string;
+  email: string;
+  isAdmin: boolean;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, IUser>;
-  currentId: number;
-
-  constructor() {
-    this.users = new Map();
-    this.currentId = 1;
-  }
-
-  async getUser(id: number): Promise<IUser | undefined> {
+export const storage = {
+  users: new Map<string, IUser>(),
+  
+  async getUser(id: string): Promise<IUser | undefined> {
     return this.users.get(id);
-  }
+  },
 
   async getUserByUsername(username: string): Promise<IUser | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
+    return Array.from(this.users.values()).find(u => u.username === username);
+  },
 
-  async createUser(insertUser: InsertUser): Promise<IUser> {
-    const id = this.currentId++;
-    const user: IUser = { 
-      ...insertUser, 
-      id,
-      isAdmin: false // Default value
-    };
-    this.users.set(id, user);
-    return user;
+  async createUser(user: Omit<IUser, 'id'>): Promise<IUser> {
+    const newUser = { ...user, id: Math.random().toString(36).substring(2, 9) };
+    this.users.set(newUser.id, newUser);
+    return newUser;
   }
-}
-
-export const storage = new MemStorage();
+};

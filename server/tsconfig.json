@@ -5,6 +5,7 @@
       "outDir": "./dist",
       "rootDir": "./src",
       "strict": true,
+      "noImplicitAny": false,
       "esModuleInterop": true,
       "skipLibCheck": true,
       "forceConsistentCasingInFileNames": true,
@@ -13,8 +14,12 @@
       "paths": {
         "@shared/*": ["../../shared/*"]
       },
-      "types": ["node"]
+      "types": ["node"],
+      "typeRoots": [
+        "./node_modules/@types",
+        "./src/types"
+      ]
     },
     "include": ["src/**/*"],
-    "exclude": ["node_modules"]
+    "exclude": ["node_modules", "dist"]
   }

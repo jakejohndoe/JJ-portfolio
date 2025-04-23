@@ -1,20 +1,16 @@
 import express from "express";
-import path from "path";
 import { config } from "dotenv";
+import path from "path";
 import connectDB from './db/connection.js';
-import contactRoutes from './routes/contactRoutes.js';
-import blogRoutes from './routes/blogRoutes.js';
-import authRoutes from './routes/authRoutes.js';
 import cors from "cors";
 
-// Load environment variables
-config({ path: path.resolve(process.cwd(), '.env.production') });
+// Load env vars FIRST
+config({ path: path.resolve(process.cwd(), '.env') });
 
-// Create Express app
 const app = express();
-const PORT = process.env.PORT || 4747;
+const PORT = parseInt(process.env.PORT || '4747', 10);
 
-// Connect to MongoDB
+// Connect to DB
 connectDB();
 
 // Middleware
@@ -26,19 +22,18 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// API Routes
-app.use('/api/contact', contactRoutes);
-app.use('/api/blogs', blogRoutes);
-app.use('/api/auth', authRoutes);
-
-// Simple health check endpoint
+// Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'healthy' });
 });
 
-// Start server
+// Error handling
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Server error' });
+});
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Production server running on port ${PORT}`);
 });
