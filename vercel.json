@@ -6,7 +6,8 @@
       "use": "@vercel/static-build",
       "config": {
         "distDir": "client/dist",
-        "includeFiles": ["client/dist/**"]
+        "includeFiles": ["client/dist/**"],
+        "nodeVersion": "20.x"
       }
     }
   ],
