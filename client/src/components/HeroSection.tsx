@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 const HeroSection = () => {
   const [isVisible, setIsVisible] = useState(false);
-
+  
   useEffect(() => {
     setIsVisible(true);
   }, []);
@@ -11,7 +11,7 @@ const HeroSection = () => {
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     const targetId = e.currentTarget.getAttribute("href") || "";
-
+    
     if (targetId.startsWith("#")) {
       const targetElement = document.querySelector(targetId);
       if (targetElement) {
