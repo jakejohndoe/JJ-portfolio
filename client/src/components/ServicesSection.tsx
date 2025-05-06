@@ -137,9 +137,9 @@ const AboutSection = ({ isLoading, counters }: {
   <div className="space-y-6">
     <h2 className="text-3xl font-bold text-white">About Me</h2>
     <p className="text-gray-300">
-      I got my start in software through the Metana Bootcamp, and instantly fell in love with building things from scratch.
-      It combined two things I am passionate about—learning new skills and creating something real—and that is what keeps
-      me excited about development every day.
+      As a full-stack developer, I bridge my past in high-stakes problem-solving (from kitchens to film sets) 
+      with crafting scalable systems. Metana Bootcamp showed me how code turns discipline into tools people use — 
+      whether it's designing APIs or pixel-perfect UIs, that end-to-end impact is what drives me.
     </p>
     
     <StatsGrid isLoading={isLoading} counters={counters} />
@@ -208,11 +208,17 @@ const AboutSection = ({ isLoading, counters }: {
     
     {/* Mission Statement */}
     <div className="p-4 bg-card rounded-lg">
-      <h3 className="text-xl font-semibold text-white mb-3">My Approach</h3>
+      <h3 className="text-xl font-semibold text-white mb-3">From Kitchens to Keyboards</h3>
       <p className="text-gray-300">
-        I believe in building software that's not just functional but delightful to use. 
-        Every line of code should solve real problems while being maintainable and scalable. 
-        Let's create something meaningful together.
+      For 7+ years, I thrived in high-pressure environments as a Chef and Kitchen Manager — 
+      designing systems, leading teams, and turning chaos into seamless experiences. 
+      Later, I brought that same problem-solving mindset to the film industry, where I 
+      coordinated technical crews and negotiated equipment rentals, ensuring the right tools 
+      matched creative vision.
+      <br /><br />
+      These experiences taught me that great work — whether a dish, a film set, or an app — 
+      balances creativity with execution. Now, I build software with the same principles: 
+    <span className="italic"> scalable, human-centered, and crafted to last</span>.
       </p>
     </div>
   </div>
