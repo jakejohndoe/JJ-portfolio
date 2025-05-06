@@ -4,18 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "cd client && npm run dev",
-    "build": "cd client && npm run build",
+    "build": "cd client && npm run build", 
     "preview": "cd client && npm run preview",
     "start-server": "cd server && npm start",
     "dev-server": "cd server && npm run dev"
   },
   "workspaces": [
     "client",
-    "server"
+    "server"  
   ],
   "engines": {
     "node": ">=18.0.0"
-  },
-  "dependencies": {},
-  "devDependencies": {}
+  }
 }
