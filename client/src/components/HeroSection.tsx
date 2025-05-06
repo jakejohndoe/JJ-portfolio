@@ -9,23 +9,26 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section id="home" className="min-h-screen pt-24 flex items-center bg-background relative overflow-hidden">
+    <section
+      id="home"
+      className="min-h-screen pt-24 flex items-center bg-background relative overflow-hidden z-0"
+    >
       {/* Code Line Numbers */}
       <div className="absolute left-4 top-1/4 bottom-1/4 flex flex-col justify-between opacity-20 text-primary hidden md:flex">
         {[...Array(10)].map((_, i) => (
           <div key={i} className="font-mono text-sm">{i + 1}</div>
         ))}
       </div>
-      
+
       {/* Code Comment Elements */}
       <div className="absolute right-8 top-1/6 opacity-15 text-muted-foreground font-mono hidden lg:block">
         /* Software Developer */
       </div>
-      
+
       <div className="absolute left-16 bottom-10 opacity-15 text-muted-foreground font-mono transform rotate-2 hidden lg:block">
         // TODO: Write amazing code
       </div>
-      
+
       {/* Floating Code Symbols */}
       <div className="code-symbols">
         <div className="absolute left-1/4 top-20 text-primary opacity-10 text-xl font-mono">&#123;&#125;</div>
@@ -33,7 +36,7 @@ const HeroSection = () => {
         <div className="absolute left-1/5 bottom-20 text-primary opacity-10 text-2xl font-mono">;</div>
         <div className="absolute right-1/4 bottom-40 text-primary opacity-10 text-xl font-mono">&amp;&amp;</div>
       </div>
-      
+
       {/* Enhanced Bracket Elements */}
       <div className="absolute -left-10 top-1/3 text-primary opacity-20 text-9xl transform -rotate-6">
         &lt;
@@ -47,10 +50,10 @@ const HeroSection = () => {
       <div className="absolute right-1/4 top-20 text-primary opacity-10 text-4xl transform -rotate-3">
         &lt;/
       </div>
-      
-      <div className="container mx-auto px-4 flex flex-col md:flex-row items-center relative z-10">
+
+      <div className="container mx-auto px-4 flex flex-col md:flex-row items-center relative z-0">
         {/* Left side content */}
-        <div className="md:w-1/2 mb-10 md:mb-0 z-10">
+        <div className="md:w-1/2 mb-10 md:mb-0">
           <div className="flex items-center">
             <div className="font-mono text-muted-foreground opacity-70 mr-2">01</div>
             <h1 className="text-5xl md:text-6xl font-bold text-white">
@@ -83,25 +86,25 @@ const HeroSection = () => {
             </Button>
           </div>
         </div>
-        
+
         {/* Right side profile image */}
-        <div className="md:w-1/2 flex justify-center md:justify-end relative z-10">
-            <div className="profile-circle rounded-full overflow-hidden h-64 w-64 md:h-80 md:w-80 border-2 border-primary relative">
-              <img 
-                src="/assets/jj-headshot.jpeg"
-                alt="Jakob Johnson"
-                className="object-cover w-full h-full"
-              />
-              <div className="absolute -bottom-2 -right-2 text-primary text-sm font-mono bg-background p-1 rounded">
-                .developer
-              </div>
+        <div className="md:w-1/2 flex justify-center md:justify-end relative">
+          <div className="profile-circle rounded-full overflow-hidden h-64 w-64 md:h-80 md:w-80 border-2 border-primary relative">
+            <img 
+              src="/assets/jj-headshot.jpeg"
+              alt="Jakob Johnson"
+              className="object-cover w-full h-full"
+            />
+            <div className="absolute -bottom-2 -right-2 text-primary text-sm font-mono bg-background p-1 rounded">
+              .developer
             </div>
+          </div>
         </div>
       </div>
-      
+
       {/* Code Pattern Background */}
       <div className="absolute inset-0 code-pattern opacity-5 z-0"></div>
-      
+
       {/* Animated Code Flow */}
       <div className={`code-flow absolute inset-0 z-0 transition-opacity duration-1000 ${isVisible ? 'opacity-30' : 'opacity-30'}`}></div>
     </section>
