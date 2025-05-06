@@ -1,15 +1,28 @@
-# Jensen Omega Portfolio Website
+# hellojakejohn.com 🌐
 
-A responsive portfolio website built with React, TypeScript, and Tailwind CSS.
+My personal website and portfolio. Live at: [https://www.hellojakejohn.com](https://www.hellojakejohn.com)
 
-## Features
+## 🚀 Features
+- **Portfolio**: Showcase of my work
+- **Blog**: [Optional: if applicable]
+- **Contact**: Easy way to reach me
+- [Add other key features]
 
-- 🌙 Modern dark-themed design with orange accent colors
-- 🏆 Interactive sections with animated counters
-- 📱 Fully responsive for all device sizes
-- 📝 Contact form with validation
-- 📄 Downloadable resume
-- 🔄 API integration for dynamic content
+## 🛠️ Tech Stack
+- **Frontend**: HTML, CSS, JavaScript [+ React/Vue if used]
+- **Hosting**: [Netlify/Vercel/GitHub Pages/etc.]
+- **Domain**: [Namecheap/Google Domains/etc.]
+- **Tools**: [CMS, Analytics, etc.]
+
+## 📦 Installation (for local dev)
+```bash
+git clone https://github.com/[your-username]/hellojakejohn-website.git
+cd hellojakejohn-website
+npm install  # or yarn/pnpm
+npm run dev  # starts dev server
+
+📫 Contact: your-email@example.com
+🔗 Live Site: https://www.hellojakejohn.com
 
 ## Tech Stack
 
@@ -20,65 +33,3 @@ A responsive portfolio website built with React, TypeScript, and Tailwind CSS.
 - **Backend**: Express.js
 - **Routing**: Wouter
 - **Build Tool**: Vite
-
-## Project Structure
-
-```
-portfolio-website/
-├── client/               # Frontend React application
-│   ├── src/
-│   │   ├── components/   # UI components
-│   │   ├── hooks/        # Custom React hooks
-│   │   ├── lib/          # Utility functions
-│   │   ├── pages/        # Page components
-│   │   └── App.tsx       # Main application component
-├── server/               # Express.js backend
-├── shared/               # Shared types and schemas
-└── public/               # Public assets
-```
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 20 or later
-- npm or yarn
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/portfolio-website.git
-cd portfolio-website
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Start the development server:
-```bash
-npm run dev
-```
-
-4. Open your browser and navigate to `http://localhost:5000`
-
-## API Endpoints
-
-- `/api/skills` - Get user skills
-- `/api/services` - Get services offered
-- `/api/projects` - Get portfolio projects
-- `/api/stats` - Get statistics (completed projects, satisfaction rate, etc.)
-- `/api/resume` - Serve resume HTML
-- `/api/contact` - Submit contact form
-
-## Customization
-
-- Edit theme colors in `client/src/index.css`
-- Update content in `server/routes.ts`
-- Modify resume in `public/resume.html`
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
