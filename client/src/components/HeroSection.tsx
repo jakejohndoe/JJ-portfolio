@@ -3,10 +3,25 @@ import { useEffect, useState } from "react";
 
 const HeroSection = () => {
   const [isVisible, setIsVisible] = useState(false);
-  
+
   useEffect(() => {
     setIsVisible(true);
   }, []);
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const targetId = e.currentTarget.getAttribute("href") || "";
+
+    if (targetId.startsWith("#")) {
+      const targetElement = document.querySelector(targetId);
+      if (targetElement) {
+        window.scrollTo({
+          top: targetElement.getBoundingClientRect().top + window.scrollY - 80,
+          behavior: "smooth",
+        });
+      }
+    }
+  };
 
   return (
     <section
@@ -75,7 +90,7 @@ const HeroSection = () => {
               asChild
               className="px-6 py-6 h-auto bg-primary text-white font-medium rounded hover:bg-opacity-90 transition"
             >
-              <a href="#contact">Got a project?</a>
+              <a href="#contact" onClick={handleNavClick}>Got a project?</a>
             </Button>
             <Button 
               variant="outline"
