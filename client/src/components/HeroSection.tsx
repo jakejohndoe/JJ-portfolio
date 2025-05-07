@@ -87,17 +87,15 @@ const HeroSection = () => {
             </h3>
           </div>
           <div className="mt-8 flex flex-wrap gap-4">
-            <Button 
-              asChild
-              className="px-6 py-6 h-auto bg-primary text-white font-medium rounded hover:bg-opacity-90 transition"
+          <button
+            onClick={() => {
+            console.log("Got a project button clicked!");
+            document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" });
+          }}
+            className="px-6 py-6 bg-primary text-white font-medium rounded hover:bg-opacity-90 transition"
             >
-              <a 
-                href="#contact"
-                onClick={(e) => handleNavClick(e)} // keep it clean by handling the click directly
-                className="cursor-pointer">
-              Got a project?
-              </a>
-            </Button>
+            Got a project?
+          </button>
             <Button 
               variant="outline"
               className="px-6 py-6 h-auto border border-primary text-white font-medium rounded hover:bg-primary hover:bg-opacity-10 transition"
