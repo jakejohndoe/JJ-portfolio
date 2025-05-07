@@ -6,6 +6,7 @@ import connectDB from './db/connection.js';
 import contactRoutes from './routes/contactRoutes.js';
 import blogRoutes from './routes/blogRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import portfolioRoutes from './routes/portfolioRoutes.js';
 import { registerRoutes } from './routes.js';
 
 // Load env vars
@@ -77,9 +78,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use('/api/contact', contactRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/auth', authRoutes);
-
-// Register portfolio routes
-registerRoutes(app);
+app.use('/api', portfolioRoutes); // This handles all /api/projects, /api/skills etc.
 
 // Static files - MUST COME AFTER API ROUTES
 app.use(express.static(path.join(".", "public")));
@@ -112,6 +111,20 @@ connectDB()
       console.log(`Server running on port ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`CORS enabled for: ${corsOptions.origin.join(', ')}`);
+      
+      // Debug: Log all registered routes
+      console.log('\nRegistered Routes:');
+      app._router.stack.forEach((layer) => {
+        if (layer.route) {
+          console.log(`${layer.route.stack[0].method.toUpperCase()} ${layer.route.path}`);
+        } else if (layer.name === 'router') {
+          layer.handle.stack.forEach((nestedLayer) => {
+            if (nestedLayer.route) {
+              console.log(`${nestedLayer.route.stack[0].method.toUpperCase()} /api${nestedLayer.route.path}`);
+            }
+          });
+        }
+      });
     });
   })
   .catch((error) => {
