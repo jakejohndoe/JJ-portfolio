@@ -165,3 +165,32 @@ console.log('[API] Configuration:', {
   timeout: `${API_TIMEOUT}ms`,
   fallbacksEnabled: true
 });
+
+// Debug API connection
+export const debugApi = async () => {
+  try {
+    console.log('[API] Testing connection to:', `${API_BASE_URL}${API_PREFIX}/debug`);
+    
+    const response = await fetch(`${API_BASE_URL}${API_PREFIX}/debug`, {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await response.json();
+    console.log('[API] Debug response:', data);
+    return data;
+  } catch (error) {
+    console.error('[API] Debug error:', error);
+    return { error: String(error) };
+  }
+};
+
+// Call this on application startup
+window.addEventListener('load', () => {
+  console.log('[API] Attempting to debug API connection on load');
+  debugApi().then(result => {
+    console.log('[API] Initial connection test:', result.success ? 'SUCCESS' : 'FAILED');
+  });
+});

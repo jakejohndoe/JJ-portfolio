@@ -1,11 +1,7 @@
 import type { Express } from "express";
-import cors from "cors";
 import express from "express";
 
-// Import route handlers
-import authRouter from "./routes/authRoutes.js"; // Adjust path as necessary
-import blogRouter from "./routes/blogRoutes.js"; // Adjust path as necessary
-import contactRouter from "./routes/contactRoutes.js"; // Adjust path as necessary
+// Import route handlers not needed here since they're imported in index.ts
 
 interface Skill {
   id: number;
@@ -90,13 +86,8 @@ const stats: Stats = {
 };
 
 export function registerRoutes(app: Express): void {
-  app.use(cors({
-    origin: [
-      "https://hellojakejohn.vercel.app",
-      "http://localhost:3000"
-    ],
-    credentials: true
-  }));
+  // REMOVE THE CORS SETUP HERE - It's overriding your main CORS config!
+  // app.use(cors({...})); - DELETE THIS LINE
 
   // Register the Routes
   app.get("/api/skills", (req, res) => {
@@ -153,6 +144,23 @@ export function registerRoutes(app: Express): void {
     res.json({
       success: true,
       message: "Thank you for your message! I'll get back to you soon."
+    });
+  });
+  
+  // Debugging endpoint
+  app.get("/api/debug", (req, res) => {
+    console.log("Debug endpoint hit");
+    console.log("Request headers:", req.headers);
+    console.log("Origin:", req.headers.origin);
+    
+    res.json({
+      success: true,
+      message: "API is working",
+      environment: process.env.NODE_ENV || 'development',
+      timestamp: new Date().toISOString(),
+      cors: {
+        origin: req.headers.origin || 'unknown'
+      }
     });
   });
 }
