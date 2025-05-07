@@ -3,13 +3,16 @@ import { config } from 'dotenv';
 import path from 'path';
 import cors from 'cors';
 import connectDB from './db/connection.js';
+import contactRoutes from './routes/contactRoutes.js';
+import blogRoutes from './routes/blogRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 import { registerRoutes } from './routes.js';
 
-// Load env vars - do this first
+// Load env vars
 config({ path: path.resolve(process.cwd(), '.env') });
 
 // Validate essential environment variables
-const requiredEnvVars = ['PORT', 'MONGO_URI'];
+const requiredEnvVars = ['PORT', 'MONGODB_URI'];
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
     console.error(`Missing required environment variable: ${envVar}`);
@@ -24,25 +27,35 @@ const PORT = parseInt(process.env.PORT || '4747', 10);
 // Enhanced CORS setup
 const corsOptions = {
   origin: [
-    'https://www.hellojakejohn.com', 
-    'https://hellojakejohn.com', 
-    'https://hellojakejohn.vercel.app', 
+    'https://www.hellojakejohn.com',
+    'https://hellojakejohn.com',
+    'https://hellojakejohn.vercel.app',
     'http://localhost:3000'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-  optionsSuccessStatus: 200 // For legacy browser support
+  optionsSuccessStatus: 200
 };
 
 // Middleware setup
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(".", "public")));
 
-// Enhanced request logging middleware
+// API Health Check - MUST COME FIRST
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
+// Request logging middleware (skips API routes)
 app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.path.startsWith('/api')) return next();
+  
   const start = Date.now();
   const originalJson = res.json;
   let responseBody: any;
@@ -54,38 +67,28 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
   res.on('finish', () => {
     const duration = Date.now() - start;
-    console.log(`${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`);
-    if (responseBody) {
-      console.debug('Response:', JSON.stringify(responseBody, null, 2));
-    }
+    console.log(`${req.method} ${req.path} ${res.statusCode} - ${duration}ms`);
   });
 
   next();
 });
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime()
-  });
-});
-
 // API Routes
-app.use('/api/contact', require('./routes/contactRoutes.js'));
-app.use('/api/blogs', require('./routes/blogRoutes.js'));
-app.use('/api/auth', require('./routes/authRoutes.js'));
+app.use('/api/contact', contactRoutes);
+app.use('/api/blogs', blogRoutes);
+app.use('/api/auth', authRoutes);
 
 // Register portfolio routes
 registerRoutes(app);
 
-// 404 Handler for API routes
+// Static files - MUST COME AFTER API ROUTES
+app.use(express.static(path.join(".", "public")));
+
+// API 404 handler
 app.use('/api/*', (req: Request, res: Response) => {
-  res.status(404).json({ 
-    error: 'Endpoint not found',
-    path: req.originalUrl,
-    method: req.method
+  res.status(404).json({
+    error: 'API endpoint not found',
+    path: req.originalUrl
   });
 });
 
@@ -108,7 +111,7 @@ connectDB()
     app.listen(PORT, "0.0.0.0", () => {
       console.log(`Server running on port ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`CORS allowed origins: ${corsOptions.origin.join(', ')}`);
+      console.log(`CORS enabled for: ${corsOptions.origin.join(', ')}`);
     });
   })
   .catch((error) => {
@@ -116,12 +119,11 @@ connectDB()
     process.exit(1);
   });
 
-// Handle unhandled promise rejections
+// Handle process events
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
-// Handle uncaught exceptions
 process.on('uncaughtException', (error) => {
   console.error('Uncaught Exception:', error);
   process.exit(1);
