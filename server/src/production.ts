@@ -3,7 +3,9 @@ import { config } from "dotenv";
 import path from "path";
 import connectDB from './db/connection.js';
 import cors from "cors";
-import authRoutes from './routes/authRoutes.js'; // ✅ Import auth routes
+import authRoutes from './routes/authRoutes.js';
+import contactRoutes from './routes/contactRoutes.js'; // Add this import
+import blogRoutes from './routes/blogRoutes.js'; // Add this import
 
 // Load env vars FIRST
 config({ path: path.resolve(process.cwd(), '.env') });
@@ -14,18 +16,38 @@ const PORT = parseInt(process.env.PORT || '4747', 10);
 // Connect to DB
 connectDB();
 
-// Middleware
+// CORS Middleware - Updated with correct origins
 app.use(cors({
   origin: [
+    'https://www.hellojakejohn.com',
+    'https://hellojakejohn.com',
     'https://hellojakejohn.vercel.app',
     'http://localhost:3000'
   ],
-  credentials: true
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Additional headers for CORS issues
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://www.hellojakejohn.com');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
+  next();
+});
+
 app.use(express.json());
 
 // Routes
-app.use('/api/auth', authRoutes); // ✅ Mount auth routes here
+app.use('/api/auth', authRoutes);
+app.use('/api/contact', contactRoutes); // Add this route
+app.use('/api/blogs', blogRoutes); // Add this route
 
 // Health check
 app.get('/api/health', (req, res) => {
