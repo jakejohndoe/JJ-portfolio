@@ -6,7 +6,7 @@ import connectDB from './db/connection.js';
 import contactRoutes from './routes/contactRoutes.js';
 import blogRoutes from './routes/blogRoutes.js';
 import authRoutes from './routes/authRoutes.js';
-import { registerRoutes } from './routes.ts'; // 👈 Import your custom portfolio routes
+import { registerRoutes } from './routes.js'; // 👈 Import your custom portfolio routes
 
 // Load env vars
 config({ path: path.resolve(process.cwd(), '.env') });
