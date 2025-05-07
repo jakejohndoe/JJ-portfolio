@@ -1,6 +1,11 @@
 import type { Express } from "express";
 import cors from "cors";
-import express from 'express';
+import express from "express";
+
+// Import route handlers
+import authRouter from "./routes/authRoutes.js"; // Adjust path as necessary
+import blogRouter from "./routes/blogRoutes.js"; // Adjust path as necessary
+import contactRouter from "./routes/contactRoutes.js"; // Adjust path as necessary
 
 interface Skill {
   id: number;
@@ -87,12 +92,18 @@ const stats: Stats = {
 export function registerRoutes(app: Express): void {
   app.use(cors({
     origin: [
-      'https://hellojakejohn.vercel.app',
-      'http://localhost:3000'
+      "https://hellojakejohn.vercel.app",
+      "http://localhost:3000"
     ],
     credentials: true
   }));
 
+  // Registering routes for specific functionalities
+  app.use("/api/auth", authRouter);  // Authentication routes
+  app.use("/api/blog", blogRouter);  // Blog routes
+  app.use("/api/contact", contactRouter);  // Contact routes
+
+  // Predefined routes for skills, services, projects, etc.
   app.get("/api/skills", (req, res) => {
     res.json(skills);
   });
@@ -113,15 +124,17 @@ export function registerRoutes(app: Express): void {
     res.json(dynamicStats);
   });
 
+  // Endpoint for sending resume (HTML)
   app.get("/api/resume", (req, res) => {
     res.sendFile("resume.html", {
       root: "./public",
       headers: {
-        'Content-Type': 'text/html'
+        "Content-Type": "text/html"
       }
     });
   });
 
+  // Endpoint for handling contact form submission
   app.post("/api/contact", express.json(), (req, res) => {
     const { name, email, subject, message } = req.body;
 
