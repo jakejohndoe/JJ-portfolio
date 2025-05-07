@@ -1,6 +1,4 @@
 import type { Express } from "express";
-import { createServer, type Server } from "http";
-import { storage } from "./storage.js";
 import cors from "cors";
 import express from 'express';
 
@@ -86,7 +84,7 @@ const stats: Stats = {
   visitors: 1000
 };
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export function registerRoutes(app: Express): void {
   app.use(cors({
     origin: [
       'https://hellojakejohn.vercel.app',
@@ -96,85 +94,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }));
 
   app.get("/api/skills", (req, res) => {
-    try {
-      res.json(skills);
-    } catch (error) {
-      console.error("Skills endpoint error:", error);
-      res.status(500).json({ error: "Failed to fetch skills" });
-    }
+    res.json(skills);
   });
 
   app.get("/api/services", (req, res) => {
-    try {
-      res.json(services);
-    } catch (error) {
-      console.error("Services endpoint error:", error);
-      res.status(500).json({ error: "Failed to fetch services" });
-    }
+    res.json(services);
   });
 
   app.get("/api/projects", (req, res) => {
-    try {
-      res.json(projects);
-    } catch (error) {
-      console.error("Projects endpoint error:", error);
-      res.status(500).json({ error: "Failed to fetch projects" });
-    }
+    res.json(projects);
   });
 
   app.get("/api/stats", (req, res) => {
-    try {
-      const dynamicStats = {
-        ...stats,
-        visitors: stats.visitors ? stats.visitors + Math.floor(Math.random() * 100) : 1000
-      };
-      res.json(dynamicStats);
-    } catch (error) {
-      console.error("Stats endpoint error:", error);
-      res.status(500).json({ error: "Failed to fetch stats" });
-    }
+    const dynamicStats = {
+      ...stats,
+      visitors: stats.visitors ? stats.visitors + Math.floor(Math.random() * 100) : 1000
+    };
+    res.json(dynamicStats);
   });
-  
+
   app.get("/api/resume", (req, res) => {
-    try {
-      res.sendFile("resume.html", { 
-        root: "./public",
-        headers: {
-          'Content-Type': 'text/html'
-        }
-      });
-    } catch (error) {
-      console.error("Resume endpoint error:", error);
-      res.status(500).json({ error: "Failed to load resume" });
-    }
+    res.sendFile("resume.html", {
+      root: "./public",
+      headers: {
+        'Content-Type': 'text/html'
+      }
+    });
   });
 
   app.post("/api/contact", express.json(), (req, res) => {
-    try {
-      const { name, email, subject, message } = req.body;
-      
-      if (!name || !email || !message) {
-        return res.status(400).json({ 
-          error: "Missing required fields",
-          required: ["name", "email", "message"]
-        });
-      }
+    const { name, email, subject, message } = req.body;
 
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        return res.status(400).json({ error: "Invalid email format" });
-      }
-
-      console.log("New contact submission:", { name, email, subject, message });
-      res.json({ 
-        success: true, 
-        message: "Thank you for your message! I'll get back to you soon."
+    if (!name || !email || !message) {
+      return res.status(400).json({
+        error: "Missing required fields",
+        required: ["name", "email", "message"]
       });
-    } catch (error) {
-      console.error("Contact endpoint error:", error);
-      res.status(500).json({ error: "Failed to process contact form" });
     }
-  });
 
-  const httpServer = createServer(app);
-  return httpServer;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    console.log("New contact submission:", { name, email, subject, message });
+    res.json({
+      success: true,
+      message: "Thank you for your message! I'll get back to you soon."
+    });
+  });
 }

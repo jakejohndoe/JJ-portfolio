@@ -1,11 +1,12 @@
 import express, { Request, Response, NextFunction } from "express";
 import { config } from 'dotenv';
 import path from 'path';
-import cors from 'cors'; // Add this import
+import cors from 'cors';
 import connectDB from './db/connection.js';
 import contactRoutes from './routes/contactRoutes.js';
 import blogRoutes from './routes/blogRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import { registerRoutes } from './routes.js'; // 👈 Import your custom routes
 
 // Load env vars FIRST
 config({ path: path.resolve(process.cwd(), '.env') });
@@ -16,7 +17,7 @@ connectDB();
 const app = express();
 const PORT = parseInt(process.env.PORT || '4747', 10);
 
-// CORS configuration - Add this BEFORE other middleware
+// General CORS
 const corsOptions = {
   origin: ['https://www.hellojakejohn.com', 'https://hellojakejohn.com'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -29,10 +30,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(".", "public")));
 
-// API Routes
+// Mongo-backed API Routes
 app.use('/api/contact', contactRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/auth', authRoutes);
+
+// Register JSON-based demo/test routes
+registerRoutes(app); // 👈 This adds /api/skills, /api/services, etc.
 
 // Request logging
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -40,7 +44,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   const originalJson = res.json;
   let responseBody: any;
 
-  res.json = function(body) {
+  res.json = function (body) {
     responseBody = body;
     return originalJson.call(this, body);
   };
