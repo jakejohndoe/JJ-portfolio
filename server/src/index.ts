@@ -6,9 +6,9 @@ import connectDB from './db/connection.js';
 import contactRoutes from './routes/contactRoutes.js';
 import blogRoutes from './routes/blogRoutes.js';
 import authRoutes from './routes/authRoutes.js';
-import { registerRoutes } from './routes.js'; // 👈 Import your custom routes
+import { registerRoutes } from './routes.js'; // 👈 Import your custom portfolio routes
 
-// Load env vars FIRST
+// Load env vars
 config({ path: path.resolve(process.cwd(), '.env') });
 
 // Connect to MongoDB
@@ -17,11 +17,12 @@ connectDB();
 const app = express();
 const PORT = parseInt(process.env.PORT || '4747', 10);
 
-// General CORS
+// CORS setup
 const corsOptions = {
-  origin: ['https://www.hellojakejohn.com', 'https://hellojakejohn.com'],
+  origin: ['https://www.hellojakejohn.com', 'https://hellojakejohn.com', 'https://hellojakejohn.vercel.app', 'http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 };
 app.use(cors(corsOptions));
 
@@ -30,13 +31,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(".", "public")));
 
-// Mongo-backed API Routes
+// Main API Routes
 app.use('/api/contact', contactRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/auth', authRoutes);
 
-// Register JSON-based demo/test routes
-registerRoutes(app); // 👈 This adds /api/skills, /api/services, etc.
+// 👇 Add this line to register your custom portfolio routes (skills, services, etc.)
+registerRoutes(app);
 
 // Request logging
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -44,7 +45,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   const originalJson = res.json;
   let responseBody: any;
 
-  res.json = function (body) {
+  res.json = function(body) {
     responseBody = body;
     return originalJson.call(this, body);
   };
@@ -57,7 +58,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// Error handling
+// Error handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Server error' });
