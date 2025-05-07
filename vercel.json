@@ -7,24 +7,19 @@
       "config": {
         "distDir": "client/dist"
       }
+    },
+    {
+      "src": "client/src/apiProxy.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["client/src/apiProxy.js"]
+      }
     }
   ],
   "routes": [
     {
-      "src": "/api/health",
-      "dest": "https://hellojakejohn.onrender.com/api/health"
-    },
-    {
-      "src": "/api/stats",
-      "dest": "https://hellojakejohn.onrender.com/api/stats"
-    },
-    {
-      "src": "/api/projects",
-      "dest": "https://hellojakejohn.onrender.com/api/projects"
-    },
-    {
-      "src": "/api/skills",
-      "dest": "https://hellojakejohn.onrender.com/api/skills"
+      "src": "/api/(.*)",
+      "dest": "apiProxy.js"
     },
     {
       "src": "/assets/(.*)",
