@@ -91,7 +91,12 @@ const HeroSection = () => {
               asChild
               className="px-6 py-6 h-auto bg-primary text-white font-medium rounded hover:bg-opacity-90 transition"
             >
-              <a href="#contact" onClick={handleNavClick}>Got a project?</a>
+              <a 
+                href="#contact"
+                onClick={(e) => handleNavClick(e)} // keep it clean by handling the click directly
+                className="cursor-pointer">
+              Got a project?
+              </a>
             </Button>
             <Button 
               variant="outline"
