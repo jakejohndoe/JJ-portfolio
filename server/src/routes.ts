@@ -100,18 +100,22 @@ export function registerRoutes(app: Express): void {
 
   // Predefined routes for skills, services, projects, etc.
   app.get("/api/skills", (req, res) => {
+    console.log("Fetching skills data...");
     res.json(skills);
   });
 
   app.get("/api/services", (req, res) => {
+    console.log("Fetching services data...");
     res.json(services);
   });
 
   app.get("/api/projects", (req, res) => {
+    console.log("Fetching projects data...");
     res.json(projects);
   });
 
   app.get("/api/stats", (req, res) => {
+    console.log("Fetching stats data...");
     const dynamicStats = {
       ...stats,
       visitors: stats.visitors ? stats.visitors + Math.floor(Math.random() * 100) : 1000
@@ -121,6 +125,7 @@ export function registerRoutes(app: Express): void {
 
   // Endpoint for sending resume (HTML)
   app.get("/api/resume", (req, res) => {
+    console.log("Sending resume...");
     res.sendFile("resume.html", {
       root: "./public",
       headers: {
