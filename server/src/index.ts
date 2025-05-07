@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import { config } from 'dotenv';
 import path from 'path';
+import cors from 'cors'; // Add this import
 import connectDB from './db/connection.js';
 import contactRoutes from './routes/contactRoutes.js';
 import blogRoutes from './routes/blogRoutes.js';
@@ -14,6 +15,14 @@ connectDB();
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '4747', 10);
+
+// CORS configuration - Add this BEFORE other middleware
+const corsOptions = {
+  origin: ['https://www.hellojakejohn.com', 'https://hellojakejohn.com'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+app.use(cors(corsOptions));
 
 // Middleware
 app.use(express.json());
