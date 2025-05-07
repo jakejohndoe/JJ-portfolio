@@ -92,7 +92,7 @@ const HeroSection = () => {
             console.log("Got a project button clicked!");
             document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" });
           }}
-            className="px-6 py-6 bg-primary text-white font-medium rounded hover:bg-opacity-90 transition"
+            className="relative z-20 px-6 py-6 bg-primary text-white font-medium rounded hover:bg-opacity-90 transition"
             >
             Got a project?
           </button>
