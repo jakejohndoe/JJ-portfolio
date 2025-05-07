@@ -3,16 +3,17 @@ import { useEffect, useState } from "react";
 
 const HeroSection = () => {
   const [isVisible, setIsVisible] = useState(false);
-  
+
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default anchor behavior
+
     const targetId = e.currentTarget.getAttribute("href") || "";
     
-    if (targetId.startsWith("#")) {
+    if (targetId && targetId.startsWith("#")) {
       const targetElement = document.querySelector(targetId);
       if (targetElement) {
         window.scrollTo({
