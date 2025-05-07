@@ -5,38 +5,34 @@
       "src": "client/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "client/dist",
-        "includeFiles": ["client/dist/**"]
+        "distDir": "client/dist"
       }
     }
   ],
   "routes": [
     {
       "src": "/api/health",
-      "dest": "https://hellojakejohn.onrender.com/api/health",
-      "headers": {
-        "Access-Control-Allow-Origin": "https://www.hellojakejohn.com",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization"
-      }
+      "dest": "https://hellojakejohn.onrender.com/api/health"
     },
     {
-      "src": "/api/(.*)",
-      "dest": "https://hellojakejohn.onrender.com/api/$1"
+      "src": "/api/stats",
+      "dest": "https://hellojakejohn.onrender.com/api/stats"
+    },
+    {
+      "src": "/api/projects",
+      "dest": "https://hellojakejohn.onrender.com/api/projects"
+    },
+    {
+      "src": "/api/skills",
+      "dest": "https://hellojakejohn.onrender.com/api/skills"
     },
     {
       "src": "/assets/(.*)",
-      "dest": "client/dist/assets/$1",
-      "headers": {
-        "Cache-Control": "public, max-age=31536000, immutable"
-      }
+      "dest": "client/dist/assets/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "client/dist/index.html",
-      "headers": {
-        "Cache-Control": "no-cache"
-      }
+      "dest": "client/dist/index.html"
     }
   ]
 }
