@@ -98,7 +98,7 @@ export function registerRoutes(app: Express): void {
     credentials: true
   }));
 
-  // Predefined routes for skills, services, projects, etc.
+  // Register the Routes
   app.get("/api/skills", (req, res) => {
     console.log("Fetching skills data...");
     res.json(skills);
