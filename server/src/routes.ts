@@ -98,11 +98,6 @@ export function registerRoutes(app: Express): void {
     credentials: true
   }));
 
-  // Registering routes for specific functionalities
-  app.use("/api/auth", authRouter);  // Authentication routes
-  app.use("/api/blog", blogRouter);  // Blog routes
-  app.use("/api/contact", contactRouter);  // Contact routes
-
   // Predefined routes for skills, services, projects, etc.
   app.get("/api/skills", (req, res) => {
     res.json(skills);
