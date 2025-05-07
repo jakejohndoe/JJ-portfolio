@@ -9,17 +9,18 @@
       }
     },
     {
-      "src": "client/src/apiProxy.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["client/src/apiProxy.js"]
-      }
+      "src": "api/health/route.js",
+      "use": "@vercel/edge"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "apiProxy.js"
+      "src": "/api/health",
+      "dest": "api/health/route.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "https://www.hellojakejohn.com",
+        "Access-Control-Allow-Methods": "GET, OPTIONS"
+      }
     },
     {
       "src": "/assets/(.*)",
