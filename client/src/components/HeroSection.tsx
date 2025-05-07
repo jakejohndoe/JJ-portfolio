@@ -27,26 +27,26 @@ const HeroSection = () => {
   return (
     <section
       id="home"
-      className="min-h-screen pt-24 flex items-center bg-background relative overflow-hidden z-0"
+      className="min-h-screen pt-24 flex items-center bg-background relative overflow-hidden"
     >
       {/* Code Line Numbers */}
-      <div className="absolute left-4 top-1/4 bottom-1/4 flex flex-col justify-between opacity-20 text-primary hidden md:flex">
+      <div className="absolute left-4 top-1/4 bottom-1/4 flex flex-col justify-between opacity-20 text-primary hidden md:flex z-0">
         {[...Array(10)].map((_, i) => (
           <div key={i} className="font-mono text-sm">{i + 1}</div>
         ))}
       </div>
 
       {/* Code Comment Elements */}
-      <div className="absolute right-8 top-1/6 opacity-15 text-muted-foreground font-mono hidden lg:block">
+      <div className="absolute right-8 top-1/6 opacity-15 text-muted-foreground font-mono hidden lg:block z-0">
         /* Software Developer */
       </div>
 
-      <div className="absolute left-16 bottom-10 opacity-15 text-muted-foreground font-mono transform rotate-2 hidden lg:block">
+      <div className="absolute left-16 bottom-10 opacity-15 text-muted-foreground font-mono transform rotate-2 hidden lg:block z-0">
         // TODO: Write amazing code
       </div>
 
       {/* Floating Code Symbols */}
-      <div className="code-symbols">
+      <div className="code-symbols z-0">
         <div className="absolute left-1/4 top-20 text-primary opacity-10 text-xl font-mono">&#123;&#125;</div>
         <div className="absolute right-1/3 top-40 text-primary opacity-10 text-xl font-mono">&#40;&#41; =&gt;</div>
         <div className="absolute left-1/5 bottom-20 text-primary opacity-10 text-2xl font-mono">;</div>
@@ -54,20 +54,26 @@ const HeroSection = () => {
       </div>
 
       {/* Enhanced Bracket Elements */}
-      <div className="absolute -left-10 top-1/3 text-primary opacity-20 text-9xl transform -rotate-6">
+      <div className="absolute -left-10 top-1/3 text-primary opacity-20 text-9xl transform -rotate-6 z-0">
         &lt;
       </div>
-      <div className="absolute -right-10 top-2/3 text-primary opacity-20 text-9xl transform rotate-6">
+      <div className="absolute -right-10 top-2/3 text-primary opacity-20 text-9xl transform rotate-6 z-0">
         &gt;
       </div>
-      <div className="absolute left-1/4 bottom-10 text-primary opacity-10 text-5xl transform rotate-12">
+      <div className="absolute left-1/4 bottom-10 text-primary opacity-10 text-5xl transform rotate-12 z-0">
         /&gt;
       </div>
-      <div className="absolute right-1/4 top-20 text-primary opacity-10 text-4xl transform -rotate-3">
+      <div className="absolute right-1/4 top-20 text-primary opacity-10 text-4xl transform -rotate-3 z-0">
         &lt;/
       </div>
 
-      <div className="container mx-auto px-4 flex flex-col md:flex-row items-center relative z-0">
+      {/* Code Pattern Background */}
+      <div className="absolute inset-0 code-pattern opacity-5 z-0"></div>
+
+      {/* Animated Code Flow */}
+      <div className={`code-flow absolute inset-0 z-0 transition-opacity duration-1000 ${isVisible ? 'opacity-30' : 'opacity-30'}`}></div>
+
+      <div className="container mx-auto px-4 flex flex-col md:flex-row items-center relative z-10">
         {/* Left side content */}
         <div className="md:w-1/2 mb-10 md:mb-0">
           <div className="flex items-center">
@@ -87,18 +93,21 @@ const HeroSection = () => {
             </h3>
           </div>
           <div className="mt-8 flex flex-wrap gap-4">
-          <button
-            onClick={() => {
-            console.log("Got a project button clicked!");
-            document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" });
-          }}
-            className="relative z-20 px-6 py-6 bg-primary text-white font-medium rounded hover:bg-opacity-90 transition"
+            <Button
+              className="relative z-20 px-6 py-3 h-auto bg-primary text-white font-medium rounded hover:bg-opacity-90 transition"
+              onClick={() => {
+                console.log("Got a project button clicked!");
+                const contactSection = document.querySelector("#contact");
+                if (contactSection) {
+                  contactSection.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
             >
-            Got a project?
-          </button>
+              Got a project?
+            </Button>
             <Button 
               variant="outline"
-              className="px-6 py-6 h-auto border border-primary text-white font-medium rounded hover:bg-primary hover:bg-opacity-10 transition"
+              className="px-6 py-3 h-auto border border-primary text-white font-medium rounded hover:bg-primary hover:bg-opacity-10 transition"
               asChild
             >
               <a href="/api/resume" target="_blank" rel="noopener noreferrer">My resume</a>
@@ -120,12 +129,6 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
-
-      {/* Code Pattern Background */}
-      <div className="absolute inset-0 code-pattern opacity-5 z-0"></div>
-
-      {/* Animated Code Flow */}
-      <div className={`code-flow absolute inset-0 z-0 transition-opacity duration-1000 ${isVisible ? 'opacity-30' : 'opacity-30'}`}></div>
     </section>
   );
 };
