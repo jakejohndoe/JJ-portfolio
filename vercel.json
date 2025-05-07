@@ -2,11 +2,11 @@
   "version": 2,
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "https://hellojakejohn.onrender.com/api/$1"
+      "src": "/debug-api-route",
+      "dest": "https://hellojakejohn.onrender.com/api/health"
     },
     {
-      "src": "/(.*)", 
+      "src": "/(.*)",
       "dest": "client/dist/index.html"
     }
   ]

@@ -37,13 +37,21 @@ interface Stats {
   happyClients: number;
 }
 
-// Configuration - now using relative paths
-const API_BASE_URL = '';
+// FIXED CONFIGURATION - Force Render backend always
+const API_BASE_URL = 'https://hellojakejohn.onrender.com';
 const API_PREFIX = '/api';
 const API_TIMEOUT = 5000;
 
+// Debug the API config on load
+console.log('[API Config]', {
+  currentHostname: window.location.hostname,
+  apiBaseUrl: API_BASE_URL,
+  apiPrefix: API_PREFIX,
+  fullExampleUrl: `${API_BASE_URL}${API_PREFIX}/projects`
+});
+
 async function apiFetch<T>(endpoint: string, options?: RequestInit, retries = 1): Promise<T> {
-  const url = `${API_PREFIX}${endpoint}`;
+  const url = `${API_BASE_URL}${API_PREFIX}${endpoint}`;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
 
@@ -100,12 +108,17 @@ function getFallbackData<T>(endpoint: string): T {
       visitors: 1000,
       projectsCompleted: 15,
       happyClients: 10
-    }
+    },
+    '/services': [
+      { id: 1, title: 'Web Development', description: 'Full-stack web development services' },
+      { id: 2, title: 'UI/UX Design', description: 'User interface and experience design' }
+    ]
   };
 
   return fallbacks[endpoint] || null;
 }
 
+// Services remain exactly the same
 export const blogService = {
   getAllBlogs: async (): Promise<Blog[]> => apiFetch('/blogs'),
   getBlogById: async (id: string | number): Promise<Blog> => apiFetch(`/blogs/${id}`),
@@ -129,7 +142,9 @@ export const authService = {
     apiFetch('/auth/logout', { method: 'POST' }),
   isAuthenticated: async (): Promise<boolean> => {
     try {
-      const response = await fetch(`${API_PREFIX}/auth/check`, { credentials: 'include' });
+      const response = await fetch(`${API_BASE_URL}${API_PREFIX}/auth/check`, { 
+        credentials: 'include' 
+      });
       return response.ok;
     } catch {
       return false;
@@ -140,19 +155,32 @@ export const authService = {
 export const portfolioService = {
   getSkills: async (): Promise<Skill[]> => apiFetch('/skills'),
   getProjects: async (): Promise<Project[]> => apiFetch('/projects'),
-  getStats: async (): Promise<Stats> => apiFetch('/stats')
+  getStats: async (): Promise<Stats> => apiFetch('/stats'),
+  getServices: async (): Promise<any[]> => apiFetch('/services')
 };
 
+// Add this debug function to test the API connection
 export const debugApi = async () => {
   try {
-    const response = await fetch(`${API_PREFIX}/debug`, {
+    const url = `${API_BASE_URL}${API_PREFIX}/debug`;
+    console.log('Debugging API connection to:', url);
+    
+    const response = await fetch(url, {
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
       }
     });
+    
+    console.log('Debug response status:', response.status);
+    
+    if (!response.ok) {
+      return { error: `API request failed with status ${response.status}` };
+    }
+    
     return await response.json();
   } catch (error) {
+    console.error('Debug API error:', error);
     return { error: String(error) };
   }
 };
