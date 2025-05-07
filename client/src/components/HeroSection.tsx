@@ -110,7 +110,7 @@ const HeroSection = () => {
               className="px-6 py-3 h-auto border border-primary text-white font-medium rounded hover:bg-primary hover:bg-opacity-10 transition"
               asChild
             >
-              <a href="/resume.html" target="_blank" rel="noopener noreferrer">My resume</a>
+              <a href="/assets/resume.html" target="_blank" rel="noopener noreferrer">My resume</a>
             </Button>
           </div>
         </div>
