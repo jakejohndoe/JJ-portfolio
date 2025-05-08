@@ -49,30 +49,39 @@ const API_STRATEGIES = {
     },
     enabled: true
   },
-  // Strategy 2: Direct call to render backend (may have CORS issues)
+  // Strategy 2: Vercel Proxy Function - should avoid CORS issues
+  VERCEL_PROXY: {
+    name: 'Vercel Proxy',
+    getUrl: (endpoint: string) => `/api/proxy?endpoint=${encodeURIComponent(endpoint.startsWith('/') ? endpoint.substring(1) : endpoint)}`,
+    fetchOptions: {
+      credentials: 'same-origin'
+    },
+    enabled: true
+  },
+  // Strategy 3: Direct call to render backend (may have CORS issues)
   DIRECT_BACKEND: {
     name: 'Direct Backend',
     getUrl: (endpoint: string) => `https://hellojakejohn.onrender.com/api${endpoint}`,
     fetchOptions: {
       credentials: 'include'
     },
-    enabled: true
+    enabled: false  // Disabled as it has CORS issues
   },
-  // Strategy 3: CORS Proxy - FIXED URL FORMAT
+  // Strategy 4: CORS Proxy - has issues with preflight requests
   CORS_PROXY: {
     name: 'CORS Proxy',
     getUrl: (endpoint: string) => `https://corsproxy.io/?url=${encodeURIComponent(`https://hellojakejohn.onrender.com/api${endpoint}`)}`,
     fetchOptions: {
       credentials: 'omit'
     },
-    enabled: true
+    enabled: false  // Disabled as it has issues with preflight
   }
 };
 
 const API_TIMEOUT = 5000;
 
 // Keep track of which strategy worked last
-let lastSuccessfulStrategy = null;
+let lastSuccessfulStrategy = API_STRATEGIES.VERCEL_PROXY;  // Start with Vercel Proxy by default
 
 // Debug info
 console.log('API Service loaded with multiple fallback strategies');
@@ -132,12 +141,25 @@ async function tryStrategy<T>(
   const url = strategy.getUrl(endpoint);
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
+
+  // Special handling for the Vercel Proxy strategy
+  const isVercelProxy = strategy === API_STRATEGIES.VERCEL_PROXY;
+  
+  // For the Vercel proxy, we need to adjust the request to work with the proxy
+  const adjustedOptions = { ...options };
+  
+  if (isVercelProxy && options && options.body) {
+    // For Vercel proxy, we need to ensure the body is properly included
+    adjustedOptions.body = typeof options.body === 'string' 
+      ? options.body 
+      : JSON.stringify(options.body);
+  }
   
   console.debug(`[API] ${strategy.name} calling: ${url}`);
   
   try {
     const response = await fetch(url, {
-      ...options,
+      ...adjustedOptions,
       ...strategy.fetchOptions,
       signal: controller.signal,
       headers: {
