@@ -1,14 +1,7 @@
 {
   "version": 2,
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "https://hellojakejohn.onrender.com/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://hellojakejohn.onrender.com/api/:path*" }
   ],
   "headers": [
     {
