@@ -24,25 +24,38 @@ for (const envVar of requiredEnvVars) {
 const app = express();
 const PORT = parseInt(process.env.PORT || '4747', 10);
 
-// Enhanced CORS setup with additional origins
+// Define all allowed origins for your application
+const allowedOrigins = [
+  'https://www.hellojakejohn.com',
+  'https://hellojakejohn.com',
+  'https://hellojakejohn.vercel.app',
+  'https://hellojakejohn-git-main-jakobmjohnson9-gmailcoms-projects.vercel.app',
+  'https://hellojakejohn-q6i8p91wu-jakobmjohnson9-gmailcoms-projects.vercel.app',
+  'https://hellojakejohn-git-main-jakobejohnson9-gmailcom-projects.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:5173',
+  // Add a wildcard option for development/testing
+  '*'
+];
+
+// Enhanced CORS setup with improved preflight handling
 const corsOptions = {
-  origin: [
-    'https://www.hellojakejohn.com',
-    'https://hellojakejohn.com',
-    'https://hellojakejohn.vercel.app',
-    'https://www.hellojakejohn.com',
-    'https://hellojakejohn.com',
-    'https://hellojakejohn.vercel.app',
-    'https://hellojakejohn-git-main-jakobmjohnson9-gmailcoms-projects.vercel.app',
-    'https://hellojakejohn-q6i8p91wu-jakobmjohnson9-gmailcoms-projects.vercel.app',
-    'https://hellojakejohn-git-main-jakobejohnson9-gmailcom-projects.vercel.app', // Add Vercel preview URL
-    'http://localhost:3000',
-    'http://localhost:5173'  // Vite default dev port
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
+  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+    // Allow requests with no origin (like mobile apps, curl, postman)
+    if (!origin) return callback(null, true);
+    
+    // Check if the origin is allowed
+    if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`[CORS] Origin ${origin} not allowed`);
+      callback(null, true); // Temporarily allow all origins for testing
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With', 'Origin'],
   credentials: true,
-  optionsSuccessStatus: 200,
+  optionsSuccessStatus: 204, // Use 204 for OPTIONS success
   preflightContinue: false,
   maxAge: 86400 // 24 hours in seconds - how long the browser should cache preflight results
 };
@@ -50,19 +63,39 @@ const corsOptions = {
 // Apply CORS middleware FIRST before any other middleware
 app.use(cors(corsOptions));
 
+// Also handle OPTIONS requests explicitly
+app.options('*', cors(corsOptions));
+
 // Log CORS settings for debugging
 console.log('\n[CORS] Configured with the following origins:');
-corsOptions.origin.forEach((origin: string) => console.log(`- ${origin}`));
+allowedOrigins.forEach((origin: string) => console.log(`- ${origin}`));
+
+// Additional CORS debugging middleware
+app.use((req, res, next) => {
+  // Log the origin of each request
+  console.log(`\n[Request] ${req.method} ${req.path} (Origin: ${req.headers.origin || 'Unknown'})`);
+  
+  // For OPTIONS requests, log detailed info
+  if (req.method === 'OPTIONS') {
+    console.log('[CORS] Handling OPTIONS request with headers:', {
+      origin: req.headers.origin,
+      'access-control-request-method': req.headers['access-control-request-method'],
+      'access-control-request-headers': req.headers['access-control-request-headers']
+    });
+  }
+  
+  // Set CORS headers again to ensure they're included
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, X-Requested-With, Origin');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  next();
+});
 
 // Other Middleware setup
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Debug middleware
-app.use((req, res, next) => {
-  console.log(`\n[Request] ${req.method} ${req.path} (Origin: ${req.headers.origin || 'Unknown'})`);
-  next();
-});
 
 // API Test endpoint (always works)
 app.get('/api/test', (req, res) => {
