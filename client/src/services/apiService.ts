@@ -37,22 +37,32 @@ interface Stats {
   happyClients: number;
 }
 
-// Modified to use relative URLs - this will use the Vercel rewrites
+// Configuration
+const API_BASE_URL = 'https://hellojakejohn.onrender.com';
 const API_PREFIX = '/api';
 const API_TIMEOUT = 5000;
+const USE_CORS_PROXY = true;
+const CORS_PROXY_URL = 'https://corsproxy.io/?';
 
 // Debugging the API connection
-console.log('API Service loaded with relative URLs using Vercel rewrites');
-
-// Debug the API config on load
+console.log('API Service loaded with the following configuration:');
 console.log('[API Config]', {
   currentHostname: window.location.hostname,
+  apiBaseUrl: API_BASE_URL,
   apiPrefix: API_PREFIX,
-  fullExampleUrl: `${API_PREFIX}/projects`
+  useCorsProxy: USE_CORS_PROXY,
+  corsProxyUrl: CORS_PROXY_URL,
+  fullExampleUrl: getFullUrl('/projects')
 });
 
+// Function to get the full URL for an endpoint
+function getFullUrl(endpoint: string): string {
+  const url = `${API_BASE_URL}${API_PREFIX}${endpoint}`;
+  return USE_CORS_PROXY ? `${CORS_PROXY_URL}${url}` : url;
+}
+
 async function apiFetch<T>(endpoint: string, options?: RequestInit, retries = 1): Promise<T> {
-  const url = `${API_PREFIX}${endpoint}`;
+  const url = getFullUrl(endpoint);
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
 
@@ -62,9 +72,11 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit, retries = 1)
     const response = await fetch(url, {
       ...options,
       signal: controller.signal,
-      credentials: 'include',
+      // Don't include credentials when using CORS proxy
+      credentials: USE_CORS_PROXY ? 'omit' : 'include',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         ...(options?.headers || {})
       }
     });
@@ -86,7 +98,6 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit, retries = 1)
     clearTimeout(timeoutId);
     console.error('[API] Error:', error);
     
-    // Type guard for better TypeScript compatibility
     if (error instanceof Error && 
         (error.name === 'AbortError' || error.message.includes('Failed to fetch'))) {
       return getFallbackData<T>(endpoint);
@@ -121,7 +132,7 @@ function getFallbackData<T>(endpoint: string): T {
   return fallbacks[endpoint] || null;
 }
 
-// Services remain exactly the same
+// Services remain the same
 export const blogService = {
   getAllBlogs: async (): Promise<Blog[]> => apiFetch('/blogs'),
   getBlogById: async (id: string | number): Promise<Blog> => apiFetch(`/blogs/${id}`),
@@ -145,8 +156,8 @@ export const authService = {
     apiFetch('/auth/logout', { method: 'POST' }),
   isAuthenticated: async (): Promise<boolean> => {
     try {
-      const response = await fetch(`${API_PREFIX}/auth/check`, { 
-        credentials: 'include' 
+      const response = await fetch(getFullUrl('/auth/check'), { 
+        credentials: USE_CORS_PROXY ? 'omit' : 'include'
       });
       return response.ok;
     } catch {
@@ -165,13 +176,14 @@ export const portfolioService = {
 // Add this debug function to test the API connection
 export const debugApi = async () => {
   try {
-    const url = `${API_PREFIX}/debug`;
+    const url = getFullUrl('/test');
     console.log('Debugging API connection to:', url);
     
     const response = await fetch(url, {
-      credentials: 'include',
+      credentials: USE_CORS_PROXY ? 'omit' : 'include',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       }
     });
     
