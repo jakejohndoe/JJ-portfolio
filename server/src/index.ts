@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response, NextFunction, Router } from "express";
 import { config } from 'dotenv';
 import path from 'path';
 import cors from 'cors';
@@ -6,8 +6,7 @@ import connectDB from './db/connection.js';
 import contactRoutes from './routes/contactRoutes.js';
 import blogRoutes from './routes/blogRoutes.js';
 import authRoutes from './routes/authRoutes.js';
-import portfolioRoutes from './routes/portfolioRoutes.js';
-import { registerRoutes } from './routes.js';
+import portfolioRouter from './routes/portfolioRoutes.js';
 
 // Load env vars
 config({ path: path.resolve(process.cwd(), '.env') });
@@ -44,7 +43,13 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// API Health Check - MUST COME FIRST
+// Debug middleware
+app.use((req, res, next) => {
+  console.log(`\n[Request] ${req.method} ${req.path}`);
+  next();
+});
+
+// API Health Check
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'healthy',
@@ -53,53 +58,52 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Request logging middleware (skips API routes)
-app.use((req: Request, res: Response, next: NextFunction) => {
-  if (req.path.startsWith('/api')) return next();
-  
-  const start = Date.now();
-  const originalJson = res.json;
-  let responseBody: any;
-
-  res.json = function(body) {
-    responseBody = body;
-    return originalJson.call(this, body);
-  };
-
-  res.on('finish', () => {
-    const duration = Date.now() - start;
-    console.log(`${req.method} ${req.path} ${res.statusCode} - ${duration}ms`);
-  });
-
-  next();
-});
-
 // API Routes
 app.use('/api/contact', contactRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api', portfolioRoutes); // This handles all /api/projects, /api/skills etc.
 
-// Static files - MUST COME AFTER API ROUTES
+// Portfolio Routes with debug
+console.log('\n[Route Debug] Registering portfolio routes...');
+app.use('/api/portfolio', portfolioRouter);
+
+// Debug route registration
+console.log('\n[Route Debug] Registered Portfolio Paths:');
+(portfolioRouter as any).stack.forEach((layer: any) => {
+  if (layer.route) {
+    const path = layer.route.path;
+    const methods = layer.route.methods ? Object.keys(layer.route.methods).map(m => m.toUpperCase()).join(', ') : 'ALL';
+    console.log(`- ${methods} ${path}`);
+  }
+});
+
+// Static files
 app.use(express.static(path.join(".", "public")));
 
 // API 404 handler
 app.use('/api/*', (req: Request, res: Response) => {
+  console.error(`[404] No route for ${req.originalUrl}`);
   res.status(404).json({
     error: 'API endpoint not found',
-    path: req.originalUrl
+    path: req.originalUrl,
+    availableRoutes: [
+      '/api/health',
+      '/api/contact',
+      '/api/blogs',
+      '/api/auth',
+      '/api/portfolio/skills',
+      '/api/portfolio/projects',
+      '/api/portfolio/stats',
+      '/api/portfolio/debugtest'
+    ]
   });
 });
 
 // Global error handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error(`[${new Date().toISOString()}] Error:`, err.stack);
-  
-  const statusCode = err.statusCode || 500;
-  const message = statusCode === 500 ? 'Internal Server Error' : err.message;
-  
-  res.status(statusCode).json({
-    error: message,
+  console.error(`[Error]`, err.stack);
+  res.status(500).json({ 
+    error: 'Internal Server Error',
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 });
@@ -108,21 +112,19 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 connectDB()
   .then(() => {
     app.listen(PORT, "0.0.0.0", () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(`\n====== Server Started ======`);
+      console.log(`Port: ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`CORS enabled for: ${corsOptions.origin.join(', ')}`);
       
-      // Debug: Log all registered routes
-      console.log('\nRegistered Routes:');
-      app._router.stack.forEach((layer) => {
+      // Route verification
+      console.log('\n=== Verified Routes ===');
+      console.log('GET /api/health');
+      
+      // Log all portfolio routes
+      (portfolioRouter as any).stack.forEach((layer: any) => {
         if (layer.route) {
-          console.log(`${layer.route.stack[0].method.toUpperCase()} ${layer.route.path}`);
-        } else if (layer.name === 'router') {
-          layer.handle.stack.forEach((nestedLayer) => {
-            if (nestedLayer.route) {
-              console.log(`${nestedLayer.route.stack[0].method.toUpperCase()} /api${nestedLayer.route.path}`);
-            }
-          });
+          const methods = layer.route.methods ? Object.keys(layer.route.methods).map(m => m.toUpperCase()).join(', ') : 'ALL';
+          console.log(`${methods} /api/portfolio${layer.route.path}`);
         }
       });
     });
@@ -132,7 +134,6 @@ connectDB()
     process.exit(1);
   });
 
-// Handle process events
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });

@@ -4,8 +4,12 @@ import path from "path";
 import connectDB from './db/connection.js';
 import cors from "cors";
 import authRoutes from './routes/authRoutes.js';
-import contactRoutes from './routes/contactRoutes.js'; // Add this import
-import blogRoutes from './routes/blogRoutes.js'; // Add this import
+import contactRoutes from './routes/contactRoutes.js';
+import blogRoutes from './routes/blogRoutes.js';
+import skillsRoutes from './routes/skillsRoutes.js'; // Add skills routes
+import projectsRoutes from './routes/projectsRoutes.js'; // Add projects routes
+import servicesRoutes from './routes/servicesRoutes.js'; // Add services routes
+import statsRoutes from './routes/statsRoutes.js'; // Add stats routes
 
 // Load env vars FIRST
 config({ path: path.resolve(process.cwd(), '.env') });
@@ -46,8 +50,12 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/contact', contactRoutes); // Add this route
-app.use('/api/blogs', blogRoutes); // Add this route
+app.use('/api/contact', contactRoutes);
+app.use('/api/blogs', blogRoutes);
+app.use('/api/portfolio/skills', skillsRoutes); // Add skills routes with the correct path
+app.use('/api/portfolio/projects', projectsRoutes); // Add projects routes
+app.use('/api/portfolio/services', servicesRoutes); // Add services routes
+app.use('/api/portfolio/stats', statsRoutes); // Add stats routes
 
 // Health check
 app.get('/api/health', (req, res) => {
