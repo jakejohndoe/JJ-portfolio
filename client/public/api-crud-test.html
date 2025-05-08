@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API CRUD Operations Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow: auto;
+            white-space: pre-wrap;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .test-group {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-result {
+            margin-top: 15px;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .failure {
+            color: red;
+            font-weight: bold;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-top: 10px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>API CRUD Operations Test</h1>
+    <p>This page tests if your API can perform all necessary HTTP methods through the CORS proxy.</p>
+
+    <div class="test-group">
+        <h2>Environment Information</h2>
+        <pre id="env-info"></pre>
+    </div>
+
+    <div class="test-group">
+        <h2>1. GET Request Test</h2>
+        <p>Testing GET method to retrieve data.</p>
+        <button onclick="testGetRequest('/health')">Test GET /api/health</button>
+        <button onclick="testGetRequest('/skills')">Test GET /api/skills</button>
+        <div class="test-result" id="get-result"></div>
+    </div>
+
+    <div class="test-group">
+        <h2>2. POST Request Test</h2>
+        <p>Testing POST method to create data.</p>
+        <textarea id="post-data">{
+  "title": "Test Blog Post",
+  "excerpt": "This is a test post created by the API test tool.",
+  "content": "This is the body content of a test blog post.",
+  "author": "API Tester"
+}</textarea>
+        <br>
+        <button onclick="testPostRequest('/blogs')">Test POST /api/blogs</button>
+        <div class="test-result" id="post-result"></div>
+    </div>
+
+    <div class="test-group">
+        <h2>3. PUT Request Test</h2>
+        <p>Testing PUT method to update data. First create a post with POST, then update it with PUT.</p>
+        <textarea id="put-data">{
+  "title": "Updated Test Blog Post",
+  "excerpt": "This post has been updated by the API test tool."
+}</textarea>
+        <br>
+        <button onclick="testPutRequest('/blogs')">Test PUT /api/blogs/{id}</button>
+        <div class="test-result" id="put-result"></div>
+    </div>
+
+    <div class="test-group">
+        <h2>4. DELETE Request Test</h2>
+        <p>Testing DELETE method to remove data. Will try to delete the post created above.</p>
+        <button onclick="testDeleteRequest('/blogs')">Test DELETE /api/blogs/{id}</button>
+        <div class="test-result" id="delete-result"></div>
+    </div>
+
+    <script>
+        // Store last created blog ID
+        let lastCreatedBlogId = null;
+
+        // Display environment info
+        function showEnvironmentInfo() {
+            const envInfo = document.getElementById('env-info');
+            envInfo.textContent = `
+URL: ${window.location.href}
+Hostname: ${window.location.hostname}
+Protocol: ${window.location.protocol}
+User Agent: ${navigator.userAgent}
+Date: ${new Date().toISOString()}
+`;
+        }
+        showEnvironmentInfo();
+
+        // Helper to display results
+        function showResult(elementId, success, message, details = '') {
+            const resultElement = document.getElementById(elementId);
+            resultElement.innerHTML = `
+<div class="${success ? 'success' : 'failure'}">${message}</div>
+${details ? `<pre>${details}</pre>` : ''}
+`;
+        }
+
+        // Function to make API request using CORS proxy
+        async function makeProxyRequest(endpoint, method, body = null) {
+            const proxyUrl = 'https://corsproxy.io/?url=';
+            const targetUrl = `https://hellojakejohn.onrender.com/api${endpoint}`;
+            const fullUrl = proxyUrl + encodeURIComponent(targetUrl);
+            
+            console.log(`Making ${method} request to ${targetUrl} via CORS proxy`);
+            
+            const options = {
+                method: method,
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            };
+            
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+            
+            const response = await fetch(fullUrl, options);
+            const responseText = await response.text();
+            
+            // Try to parse as JSON
+            let responseData;
+            try {
+                responseData = JSON.parse(responseText);
+            } catch (e) {
+                responseData = responseText;
+            }
+            
+            return {
+                status: response.status,
+                ok: response.ok,
+                data: responseData,
+                text: responseText
+            };
+        }
+
+        // Test GET request
+        async function testGetRequest(endpoint) {
+            const resultElement = document.getElementById('get-result');
+            resultElement.innerHTML = '<div>Testing GET request...</div>';
+            
+            try {
+                const startTime = Date.now();
+                const response = await makeProxyRequest(endpoint, 'GET');
+                const endTime = Date.now();
+                
+                console.log(`GET response status: ${response.status}`);
+                console.log('GET response data:', response.data);
+                
+                if (response.ok) {
+                    showResult(
+                        'get-result',
+                        true,
+                        `GET ${endpoint} Success! (${endTime - startTime}ms)`,
+                        typeof response.data === 'object' ? JSON.stringify(response.data, null, 2) : response.text
+                    );
+                } else {
+                    showResult(
+                        'get-result',
+                        false,
+                        `GET ${endpoint} Failed with status ${response.status}`,
+                        response.text
+                    );
+                }
+            } catch (error) {
+                console.error('Error testing GET request:', error);
+                showResult(
+                    'get-result',
+                    false,
+                    'Error',
+                    error.toString()
+                );
+            }
+        }
+
+        // Test POST request
+        async function testPostRequest(endpoint) {
+            const resultElement = document.getElementById('post-result');
+            resultElement.innerHTML = '<div>Testing POST request...</div>';
+            
+            try {
+                const postDataElement = document.getElementById('post-data');
+                let postData;
+                
+                try {
+                    postData = JSON.parse(postDataElement.value);
+                } catch (e) {
+                    showResult(
+                        'post-result',
+                        false,
+                        'Invalid JSON in the POST data field',
+                        e.toString()
+                    );
+                    return;
+                }
+                
+                const startTime = Date.now();
+                const response = await makeProxyRequest(endpoint, 'POST', postData);
+                const endTime = Date.now();
+                
+                console.log(`POST response status: ${response.status}`);
+                console.log('POST response data:', response.data);
+                
+                if (response.ok) {
+                    // Save the ID for later tests
+                    if (response.data && response.data.id) {
+                        lastCreatedBlogId = response.data.id;
+                    }
+                    
+                    showResult(
+                        'post-result',
+                        true,
+                        `POST ${endpoint} Success! (${endTime - startTime}ms)`,
+                        typeof response.data === 'object' ? JSON.stringify(response.data, null, 2) : response.text
+                    );
+                } else {
+                    showResult(
+                        'post-result',
+                        false,
+                        `POST ${endpoint} Failed with status ${response.status}`,
+                        response.text
+                    );
+                }
+            } catch (error) {
+                console.error('Error testing POST request:', error);
+                showResult(
+                    'post-result',
+                    false,
+                    'Error',
+                    error.toString()
+                );
+            }
+        }
+
+        // Test PUT request
+        async function testPutRequest(endpoint) {
+            const resultElement = document.getElementById('put-result');
+            resultElement.innerHTML = '<div>Testing PUT request...</div>';
+            
+            if (!lastCreatedBlogId) {
+                showResult(
+                    'put-result',
+                    false,
+                    'No blog post ID available. Create a post first using the POST test.',
+                    ''
+                );
+                return;
+            }
+            
+            try {
+                const putDataElement = document.getElementById('put-data');
+                let putData;
+                
+                try {
+                    putData = JSON.parse(putDataElement.value);
+                } catch (e) {
+                    showResult(
+                        'put-result',
+                        false,
+                        'Invalid JSON in the PUT data field',
+                        e.toString()
+                    );
+                    return;
+                }
+                
+                const fullEndpoint = `${endpoint}/${lastCreatedBlogId}`;
+                
+                const startTime = Date.now();
+                const response = await makeProxyRequest(fullEndpoint, 'PUT', putData);
+                const endTime = Date.now();
+                
+                console.log(`PUT response status: ${response.status}`);
+                console.log('PUT response data:', response.data);
+                
+                if (response.ok) {
+                    showResult(
+                        'put-result',
+                        true,
+                        `PUT ${fullEndpoint} Success! (${endTime - startTime}ms)`,
+                        typeof response.data === 'object' ? JSON.stringify(response.data, null, 2) : response.text
+                    );
+                } else {
+                    showResult(
+                        'put-result',
+                        false,
+                        `PUT ${fullEndpoint} Failed with status ${response.status}`,
+                        response.text
+                    );
+                }
+            } catch (error) {
+                console.error('Error testing PUT request:', error);
+                showResult(
+                    'put-result',
+                    false,
+                    'Error',
+                    error.toString()
+                );
+            }
+        }
+
+        // Test DELETE request
+        async function testDeleteRequest(endpoint) {
+            const resultElement = document.getElementById('delete-result');
+            resultElement.innerHTML = '<div>Testing DELETE request...</div>';
+            
+            if (!lastCreatedBlogId) {
+                showResult(
+                    'delete-result',
+                    false,
+                    'No blog post ID available. Create a post first using the POST test.',
+                    ''
+                );
+                return;
+            }
+            
+            try {
+                const fullEndpoint = `${endpoint}/${lastCreatedBlogId}`;
+                
+                const startTime = Date.now();
+                const response = await makeProxyRequest(fullEndpoint, 'DELETE');
+                const endTime = Date.now();
+                
+                console.log(`DELETE response status: ${response.status}`);
+                console.log('DELETE response data:', response.data);
+                
+                if (response.ok) {
+                    // Clear the ID since we've deleted it
+                    lastCreatedBlogId = null;
+                    
+                    showResult(
+                        'delete-result',
+                        true,
+                        `DELETE ${fullEndpoint} Success! (${endTime - startTime}ms)`,
+                        typeof response.data === 'object' ? JSON.stringify(response.data, null, 2) : response.text
+                    );
+                } else {
+                    showResult(
+                        'delete-result',
+                        false,
+                        `DELETE ${fullEndpoint} Failed with status ${response.status}`,
+                        response.text
+                    );
+                }
+            } catch (error) {
+                console.error('Error testing DELETE request:', error);
+                showResult(
+                    'delete-result',
+                    false,
+                    'Error',
+                    error.toString()
+                );
+            }
+        }
+    </script>
+</body>
+</html>
