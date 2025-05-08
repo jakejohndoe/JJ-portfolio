@@ -86,7 +86,9 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit, retries = 1)
     clearTimeout(timeoutId);
     console.error('[API] Error:', error);
     
-    if (error.name === 'AbortError' || error.message.includes('Failed to fetch')) {
+    // Type guard for better TypeScript compatibility
+    if (error instanceof Error && 
+        (error.name === 'AbortError' || error.message.includes('Failed to fetch'))) {
       return getFallbackData<T>(endpoint);
     }
     
