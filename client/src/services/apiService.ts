@@ -37,72 +37,125 @@ interface Stats {
   happyClients: number;
 }
 
-// Configuration
-const API_BASE_URL = 'https://hellojakejohn.onrender.com';
-const API_PREFIX = '/api';
+// CONFIG: This will try different methods to connect to the API
+// and use whatever works
+const API_STRATEGIES = {
+  // Strategy 1: Direct local API call (relies on Vercel rewrites)
+  DIRECT_LOCAL: {
+    name: 'Direct Local API',
+    getUrl: (endpoint: string) => `/api${endpoint}`,
+    fetchOptions: {
+      credentials: 'include'
+    },
+    enabled: true
+  },
+  // Strategy 2: Direct call to render backend (may have CORS issues)
+  DIRECT_BACKEND: {
+    name: 'Direct Backend',
+    getUrl: (endpoint: string) => `https://hellojakejohn.onrender.com/api${endpoint}`,
+    fetchOptions: {
+      credentials: 'include'
+    },
+    enabled: true
+  },
+  // Strategy 3: CORS Proxy
+  CORS_PROXY: {
+    name: 'CORS Proxy',
+    getUrl: (endpoint: string) => `https://corsproxy.io/?https://hellojakejohn.onrender.com/api${endpoint}`,
+    fetchOptions: {
+      credentials: 'omit'
+    },
+    enabled: true
+  }
+};
+
 const API_TIMEOUT = 5000;
-const USE_CORS_PROXY = true;
-const CORS_PROXY_URL = 'https://corsproxy.io/?';
 
-// Debugging the API connection
-console.log('API Service loaded with the following configuration:');
-console.log('[API Config]', {
-  currentHostname: window.location.hostname,
-  apiBaseUrl: API_BASE_URL,
-  apiPrefix: API_PREFIX,
-  useCorsProxy: USE_CORS_PROXY,
-  corsProxyUrl: CORS_PROXY_URL,
-  fullExampleUrl: getFullUrl('/projects')
-});
+// Keep track of which strategy worked last
+let lastSuccessfulStrategy = null;
 
-// Function to get the full URL for an endpoint
-function getFullUrl(endpoint: string): string {
-  const url = `${API_BASE_URL}${API_PREFIX}${endpoint}`;
-  return USE_CORS_PROXY ? `${CORS_PROXY_URL}${url}` : url;
+// Debug info
+console.log('API Service loaded with multiple fallback strategies');
+
+// Function to get data using multiple strategies
+async function apiFetch<T>(endpoint: string, options?: RequestInit, retries = 1): Promise<T> {
+  const allErrors = [];
+  
+  // If we have a last successful strategy, try it first
+  if (lastSuccessfulStrategy) {
+    try {
+      console.debug(`[API] Trying last successful strategy: ${lastSuccessfulStrategy.name}`);
+      const data = await tryStrategy<T>(lastSuccessfulStrategy, endpoint, options);
+      return data;
+    } catch (error) {
+      console.debug(`[API] Last successful strategy failed, trying others`);
+      allErrors.push(`${lastSuccessfulStrategy.name}: ${(error as Error).message}`);
+      lastSuccessfulStrategy = null;
+    }
+  }
+  
+  // Try all enabled strategies
+  for (const key of Object.keys(API_STRATEGIES)) {
+    const strategy = API_STRATEGIES[key as keyof typeof API_STRATEGIES];
+    
+    if (!strategy.enabled) continue;
+    if (strategy === lastSuccessfulStrategy) continue; // Skip if we already tried it
+    
+    try {
+      console.debug(`[API] Trying strategy: ${strategy.name}`);
+      const data = await tryStrategy<T>(strategy, endpoint, options);
+      lastSuccessfulStrategy = strategy;
+      return data;
+    } catch (error) {
+      console.debug(`[API] Strategy ${strategy.name} failed: ${(error as Error).message}`);
+      allErrors.push(`${strategy.name}: ${(error as Error).message}`);
+    }
+  }
+  
+  // If all strategies failed and we have retries left, try again
+  if (retries > 0) {
+    console.warn(`[API] All strategies failed, retrying (${retries} left)`);
+    return apiFetch<T>(endpoint, options, retries - 1);
+  }
+  
+  // All strategies failed, use fallback data
+  console.error(`[API] All strategies failed: ${allErrors.join(', ')}`);
+  return getFallbackData<T>(endpoint);
 }
 
-async function apiFetch<T>(endpoint: string, options?: RequestInit, retries = 1): Promise<T> {
-  const url = getFullUrl(endpoint);
+// Try a specific strategy
+async function tryStrategy<T>(
+  strategy: typeof API_STRATEGIES[keyof typeof API_STRATEGIES],
+  endpoint: string,
+  options?: RequestInit
+): Promise<T> {
+  const url = strategy.getUrl(endpoint);
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
-
-  console.debug(`[API] Calling: ${url}`);
-
+  
+  console.debug(`[API] ${strategy.name} calling: ${url}`);
+  
   try {
     const response = await fetch(url, {
       ...options,
+      ...strategy.fetchOptions,
       signal: controller.signal,
-      // Don't include credentials when using CORS proxy
-      credentials: USE_CORS_PROXY ? 'omit' : 'include',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         ...(options?.headers || {})
       }
     });
-
+    
     clearTimeout(timeoutId);
-
+    
     if (!response.ok) {
-      if (response.status === 502 && retries > 0) {
-        console.warn(`[API] 502 encountered, retrying... (${retries} left)`);
-        return apiFetch<T>(endpoint, options, retries - 1);
-      }
-      
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `API request failed with status ${response.status}`);
+      throw new Error(`API request failed with status ${response.status}`);
     }
-
+    
     return response.json();
   } catch (error) {
     clearTimeout(timeoutId);
-    console.error('[API] Error:', error);
-    
-    if (error instanceof Error && 
-        (error.name === 'AbortError' || error.message.includes('Failed to fetch'))) {
-      return getFallbackData<T>(endpoint);
-    }
-    
     throw error;
   }
 }
@@ -156,10 +209,10 @@ export const authService = {
     apiFetch('/auth/logout', { method: 'POST' }),
   isAuthenticated: async (): Promise<boolean> => {
     try {
-      const response = await fetch(getFullUrl('/auth/check'), { 
-        credentials: USE_CORS_PROXY ? 'omit' : 'include'
-      });
-      return response.ok;
+      // Use all strategies
+      return await apiFetch('/auth/check')
+        .then(() => true)
+        .catch(() => false);
     } catch {
       return false;
     }
@@ -176,24 +229,7 @@ export const portfolioService = {
 // Add this debug function to test the API connection
 export const debugApi = async () => {
   try {
-    const url = getFullUrl('/test');
-    console.log('Debugging API connection to:', url);
-    
-    const response = await fetch(url, {
-      credentials: USE_CORS_PROXY ? 'omit' : 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
-    });
-    
-    console.log('Debug response status:', response.status);
-    
-    if (!response.ok) {
-      return { error: `API request failed with status ${response.status}` };
-    }
-    
-    return await response.json();
+    return await apiFetch('/test');
   } catch (error) {
     console.error('Debug API error:', error);
     return { error: String(error) };

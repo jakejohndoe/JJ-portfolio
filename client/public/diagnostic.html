@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Diagnostic Page</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow: auto;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .test-group {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-result {
+            margin-top: 10px;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .failure {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>API Diagnostic Page</h1>
+    <p>This page tests various API connection methods to diagnose issues.</p>
+
+    <div class="test-group">
+        <h2>Environment Information</h2>
+        <pre id="env-info"></pre>
+    </div>
+
+    <div class="test-group">
+        <h2>1. Direct Vercel Rewrite Test</h2>
+        <p>Testing if Vercel rewrites are working to forward requests to Render.</p>
+        <button onclick="testDirectVercelRewrite()">Test /api/skills via Vercel Rewrite</button>
+        <div class="test-result" id="direct-rewrite-result"></div>
+    </div>
+
+    <div class="test-group">
+        <h2>2. Direct Render API Test</h2>
+        <p>Testing direct connection to Render backend (may have CORS issues).</p>
+        <button onclick="testDirectRenderAPI()">Test Direct Render API</button>
+        <div class="test-result" id="direct-render-result"></div>
+    </div>
+
+    <div class="test-group">
+        <h2>3. CORS Proxy Test</h2>
+        <p>Testing connection through a CORS proxy.</p>
+        <button onclick="testCORSProxy()">Test via CORS Proxy</button>
+        <div class="test-result" id="cors-proxy-result"></div>
+    </div>
+
+    <div class="test-group">
+        <h2>4. Fetch with No-CORS Mode</h2>
+        <p>Testing with no-cors mode (limited functionality).</p>
+        <button onclick="testNoCorsFetch()">Test with No-CORS Mode</button>
+        <div class="test-result" id="no-cors-result"></div>
+    </div>
+
+    <div class="test-group">
+        <h2>5. XMLHttpRequest Test</h2>
+        <p>Testing with XMLHttpRequest.</p>
+        <button onclick="testXHR()">Test with XMLHttpRequest</button>
+        <div class="test-result" id="xhr-result"></div>
+    </div>
+
+    <script>
+        // Display environment info
+        function showEnvironmentInfo() {
+            const envInfo = document.getElementById('env-info');
+            envInfo.textContent = `
+URL: ${window.location.href}
+Hostname: ${window.location.hostname}
+Protocol: ${window.location.protocol}
+User Agent: ${navigator.userAgent}
+Date: ${new Date().toISOString()}
+`;
+        }
+        showEnvironmentInfo();
+
+        // Helper to display results
+        function showResult(elementId, success, message, details = '') {
+            const resultElement = document.getElementById(elementId);
+            resultElement.innerHTML = `
+<div class="${success ? 'success' : 'failure'}">${message}</div>
+${details ? `<pre>${details}</pre>` : ''}
+`;
+        }
+
+        // Test 1: Direct Vercel Rewrite
+        async function testDirectVercelRewrite() {
+            const resultElement = document.getElementById('direct-rewrite-result');
+            resultElement.innerHTML = '<div>Testing...</div>';
+            
+            try {
+                console.log('Testing Vercel rewrite to /api/skills');
+                
+                const startTime = Date.now();
+                const response = await fetch('/api/skills', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                const endTime = Date.now();
+                
+                console.log('Response status:', response.status);
+                const responseText = await response.text();
+                console.log('Response text:', responseText);
+                
+                if (response.ok) {
+                    try {
+                        const data = JSON.parse(responseText);
+                        showResult(
+                            'direct-rewrite-result',
+                            true,
+                            `Success! (${endTime - startTime}ms)`,
+                            JSON.stringify(data, null, 2)
+                        );
+                    } catch (e) {
+                        showResult(
+                            'direct-rewrite-result',
+                            false,
+                            'Got response but failed to parse JSON',
+                            `Status: ${response.status}\nResponse: ${responseText}`
+                        );
+                    }
+                } else {
+                    showResult(
+                        'direct-rewrite-result',
+                        false,
+                        `Failed with status ${response.status}`,
+                        responseText
+                    );
+                }
+            } catch (error) {
+                console.error('Error testing Vercel rewrite:', error);
+                showResult(
+                    'direct-rewrite-result',
+                    false,
+                    'Error',
+                    error.toString()
+                );
+            }
+        }
+
+        // Test 2: Direct Render API
+        async function testDirectRenderAPI() {
+            const resultElement = document.getElementById('direct-render-result');
+            resultElement.innerHTML = '<div>Testing...</div>';
+            
+            try {
+                console.log('Testing direct connection to Render API');
+                
+                const startTime = Date.now();
+                const response = await fetch('https://hellojakejohn.onrender.com/api/skills', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                const endTime = Date.now();
+                
+                console.log('Direct API response status:', response.status);
+                const responseText = await response.text();
+                console.log('Direct API response text:', responseText);
+                
+                if (response.ok) {
+                    try {
+                        const data = JSON.parse(responseText);
+                        showResult(
+                            'direct-render-result',
+                            true,
+                            `Success! (${endTime - startTime}ms)`,
+                            JSON.stringify(data, null, 2)
+                        );
+                    } catch (e) {
+                        showResult(
+                            'direct-render-result',
+                            false,
+                            'Got response but failed to parse JSON',
+                            `Status: ${response.status}\nResponse: ${responseText}`
+                        );
+                    }
+                } else {
+                    showResult(
+                        'direct-render-result',
+                        false,
+                        `Failed with status ${response.status}`,
+                        responseText
+                    );
+                }
+            } catch (error) {
+                console.error('Error testing direct Render API:', error);
+                showResult(
+                    'direct-render-result',
+                    false,
+                    'Error (likely CORS issue)',
+                    error.toString()
+                );
+            }
+        }
+
+        // Test 3: CORS Proxy
+        async function testCORSProxy() {
+            const resultElement = document.getElementById('cors-proxy-result');
+            resultElement.innerHTML = '<div>Testing...</div>';
+            
+            try {
+                const proxyUrl = 'https://corsproxy.io/?';
+                const targetUrl = 'https://hellojakejohn.onrender.com/api/skills';
+                console.log('Testing CORS proxy to', targetUrl);
+                
+                const startTime = Date.now();
+                const response = await fetch(proxyUrl + targetUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                const endTime = Date.now();
+                
+                console.log('CORS proxy response status:', response.status);
+                const responseText = await response.text();
+                console.log('CORS proxy response text:', responseText);
+                
+                if (response.ok) {
+                    try {
+                        const data = JSON.parse(responseText);
+                        showResult(
+                            'cors-proxy-result',
+                            true,
+                            `Success! (${endTime - startTime}ms)`,
+                            JSON.stringify(data, null, 2)
+                        );
+                    } catch (e) {
+                        showResult(
+                            'cors-proxy-result',
+                            false,
+                            'Got response but failed to parse JSON',
+                            `Status: ${response.status}\nResponse: ${responseText}`
+                        );
+                    }
+                } else {
+                    showResult(
+                        'cors-proxy-result',
+                        false,
+                        `Failed with status ${response.status}`,
+                        responseText
+                    );
+                }
+            } catch (error) {
+                console.error('Error testing CORS proxy:', error);
+                showResult(
+                    'cors-proxy-result',
+                    false,
+                    'Error',
+                    error.toString()
+                );
+            }
+        }
+
+        // Test 4: No-CORS mode
+        async function testNoCorsFetch() {
+            const resultElement = document.getElementById('no-cors-result');
+            resultElement.innerHTML = '<div>Testing...</div>';
+            
+            try {
+                console.log('Testing no-cors mode');
+                
+                const startTime = Date.now();
+                const response = await fetch('https://hellojakejohn.onrender.com/api/skills', {
+                    method: 'GET',
+                    mode: 'no-cors'
+                });
+                const endTime = Date.now();
+                
+                console.log('No-CORS response status:', response.status);
+                console.log('No-CORS response type:', response.type);
+                
+                // In no-cors mode, we can't read the response body
+                showResult(
+                    'no-cors-result',
+                    response.type === 'opaque',
+                    `Response received with type: ${response.type} (${endTime - startTime}ms)`,
+                    'Note: In no-cors mode, we cannot read the response content, but a response was received.'
+                );
+            } catch (error) {
+                console.error('Error testing no-cors mode:', error);
+                showResult(
+                    'no-cors-result',
+                    false,
+                    'Error',
+                    error.toString()
+                );
+            }
+        }
+
+        // Test 5: XMLHttpRequest
+        function testXHR() {
+            const resultElement = document.getElementById('xhr-result');
+            resultElement.innerHTML = '<div>Testing...</div>';
+            
+            console.log('Testing with XMLHttpRequest');
+            
+            const startTime = Date.now();
+            const xhr = new XMLHttpRequest();
+            
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    const endTime = Date.now();
+                    console.log('XHR status:', xhr.status);
+                    console.log('XHR response:', xhr.responseText);
+                    
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        try {
+                            const data = JSON.parse(xhr.responseText);
+                            showResult(
+                                'xhr-result',
+                                true,
+                                `Success! (${endTime - startTime}ms)`,
+                                JSON.stringify(data, null, 2)
+                            );
+                        } catch (e) {
+                            showResult(
+                                'xhr-result',
+                                false,
+                                'Got response but failed to parse JSON',
+                                `Status: ${xhr.status}\nResponse: ${xhr.responseText}`
+                            );
+                        }
+                    } else {
+                        showResult(
+                            'xhr-result',
+                            false,
+                            `Failed with status ${xhr.status}`,
+                            xhr.responseText || 'No response text'
+                        );
+                    }
+                }
+            };
+            
+            xhr.onerror = function(error) {
+                console.error('XHR error:', error);
+                showResult(
+                    'xhr-result',
+                    false,
+                    'Error (likely CORS issue)',
+                    'The request was not completed due to a CORS error or network failure.'
+                );
+            };
+            
+            try {
+                xhr.open('GET', 'https://hellojakejohn.onrender.com/api/skills', true);
+                xhr.setRequestHeader('Accept', 'application/json');
+                xhr.send();
+            } catch (error) {
+                console.error('Error setting up XHR:', error);
+                showResult(
+                    'xhr-result',
+                    false,
+                    'Error setting up request',
+                    error.toString()
+                );
+            }
+        }
+    </script>
+</body>
+</html>
