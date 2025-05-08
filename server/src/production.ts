@@ -6,10 +6,10 @@ import cors from "cors";
 import authRoutes from './routes/authRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import blogRoutes from './routes/blogRoutes.js';
-import skillsRoutes from './routes/skillsRoutes.js'; // Add skills routes
-import projectsRoutes from './routes/projectsRoutes.js'; // Add projects routes
-import servicesRoutes from './routes/servicesRoutes.js'; // Add services routes
-import statsRoutes from './routes/statsRoutes.js'; // Add stats routes
+import skillsRoutes from './routes/skillsRoutes.js';
+import projectsRoutes from './routes/projectsRoutes.js';
+import servicesRoutes from './routes/servicesRoutes.js';
+import statsRoutes from './routes/statsRoutes.js';
 
 // Load env vars FIRST
 config({ path: path.resolve(process.cwd(), '.env') });
@@ -52,10 +52,19 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/blogs', blogRoutes);
-app.use('/api/portfolio/skills', skillsRoutes); // Add skills routes with the correct path
-app.use('/api/portfolio/projects', projectsRoutes); // Add projects routes
-app.use('/api/portfolio/services', servicesRoutes); // Add services routes
-app.use('/api/portfolio/stats', statsRoutes); // Add stats routes
+
+// Portfolio routes with both path formats
+// Original paths (for backward compatibility)
+app.use('/api/skills', skillsRoutes);
+app.use('/api/projects', projectsRoutes);
+app.use('/api/services', servicesRoutes);
+app.use('/api/stats', statsRoutes);
+
+// New organized paths
+app.use('/api/portfolio/skills', skillsRoutes);
+app.use('/api/portfolio/projects', projectsRoutes);
+app.use('/api/portfolio/services', servicesRoutes);
+app.use('/api/portfolio/stats', statsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
