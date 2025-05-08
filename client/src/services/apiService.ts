@@ -40,7 +40,7 @@ interface Stats {
 // CONFIG: This will try different methods to connect to the API
 // and use whatever works
 const API_STRATEGIES = {
-  // Strategy 1: Direct local API call (relies on Vercel rewrites)
+  // Strategy 1: Direct local API call (relies on Vercel rewrites/redirects)
   DIRECT_LOCAL: {
     name: 'Direct Local API',
     getUrl: (endpoint: string) => `/api${endpoint}`,
@@ -58,10 +58,10 @@ const API_STRATEGIES = {
     },
     enabled: true
   },
-  // Strategy 3: CORS Proxy
+  // Strategy 3: CORS Proxy - FIXED URL FORMAT
   CORS_PROXY: {
     name: 'CORS Proxy',
-    getUrl: (endpoint: string) => `https://corsproxy.io/?https://hellojakejohn.onrender.com/api${endpoint}`,
+    getUrl: (endpoint: string) => `https://corsproxy.io/?url=${encodeURIComponent(`https://hellojakejohn.onrender.com/api${endpoint}`)}`,
     fetchOptions: {
       credentials: 'omit'
     },

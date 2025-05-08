@@ -30,6 +30,11 @@ const corsOptions = {
     'https://www.hellojakejohn.com',
     'https://hellojakejohn.com',
     'https://hellojakejohn.vercel.app',
+    'https://www.hellojakejohn.com',
+    'https://hellojakejohn.com',
+    'https://hellojakejohn.vercel.app',
+    'https://hellojakejohn-git-main-jakobmjohnson9-gmailcoms-projects.vercel.app',
+    'https://hellojakejohn-q6i8p91wu-jakobmjohnson9-gmailcoms-projects.vercel.app',
     'https://hellojakejohn-git-main-jakobejohnson9-gmailcom-projects.vercel.app', // Add Vercel preview URL
     'http://localhost:3000',
     'http://localhost:5173'  // Vite default dev port
