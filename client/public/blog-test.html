@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog CRUD Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow: auto;
+            white-space: pre-wrap;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .test-group {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-result {
+            margin-top: 15px;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .failure {
+            color: red;
+            font-weight: bold;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-top: 10px;
+            font-family: monospace;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .blog-list {
+            margin-top: 20px;
+        }
+        .blog-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .blog-item h3 {
+            margin-top: 0;
+        }
+        .blog-actions {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Blog CRUD Test</h1>
+    <p>This page tests all blog operations directly with your Render backend.</p>
+
+    <div class="test-group">
+        <h2>1. Get All Blogs</h2>
+        <p>Fetch all blogs from the backend.</p>
+        <button onclick="getAllBlogs()">Get All Blogs</button>
+        <div class="test-result" id="get-blogs-result"></div>
+        <div class="blog-list" id="blog-list"></div>
+    </div>
+
+    <div class="test-group">
+        <h2>2. Create New Blog</h2>
+        <p>Create a new blog post.</p>
+        <div>
+            <label for="blog-title">Title:</label>
+            <input type="text" id="blog-title" placeholder="Enter blog title">
+        </div>
+        <div>
+            <label for="blog-excerpt">Excerpt:</label>
+            <input type="text" id="blog-excerpt" placeholder="Enter blog excerpt">
+        </div>
+        <div>
+            <label for="blog-content">Content:</label>
+            <textarea id="blog-content" placeholder="Enter blog content"></textarea>
+        </div>
+        <div>
+            <label for="blog-author">Author:</label>
+            <input type="text" id="blog-author" placeholder="Enter author name">
+        </div>
+        <button onclick="createBlog()">Create Blog</button>
+        <div class="test-result" id="create-blog-result"></div>
+    </div>
+
+    <div class="test-group">
+        <h2>3. Update Blog</h2>
+        <p>Update an existing blog post. First select a blog from the list above.</p>
+        <div>
+            <label for="update-blog-id">Blog ID:</label>
+            <input type="text" id="update-blog-id" placeholder="Enter blog ID" readonly>
+        </div>
+        <div>
+            <label for="update-blog-title">New Title:</label>
+            <input type="text" id="update-blog-title" placeholder="Enter new title">
+        </div>
+        <div>
+            <label for="update-blog-excerpt">New Excerpt:</label>
+            <input type="text" id="update-blog-excerpt" placeholder="Enter new excerpt">
+        </div>
+        <button onclick="updateBlog()">Update Blog</button>
+        <div class="test-result" id="update-blog-result"></div>
+    </div>
+
+    <div class="test-group">
+        <h2>4. Delete Blog</h2>
+        <p>Delete a blog post. First select a blog from the list above.</p>
+        <div>
+            <label for="delete-blog-id">Blog ID:</label>
+            <input type="text" id="delete-blog-id" placeholder="Enter blog ID" readonly>
+        </div>
+        <button onclick="deleteBlog()">Delete Blog</button>
+        <div class="test-result" id="delete-blog-result"></div>
+    </div>
+
+    <script>
+        // Base URL for the API
+        const API_BASE_URL = 'https://hellojakejohn.onrender.com/api';
+
+        // Helper to display results
+        function showResult(elementId, success, message, details = '') {
+            const resultElement = document.getElementById(elementId);
+            resultElement.innerHTML = `
+                <div class="${success ? 'success' : 'failure'}">${message}</div>
+                ${details ? `<pre>${details}</pre>` : ''}
+            `;
+        }
+
+        // Helper to render blog list
+        function renderBlogs(blogs) {
+            const blogListElement = document.getElementById('blog-list');
+            
+            if (!blogs || blogs.length === 0) {
+                blogListElement.innerHTML = '<p>No blogs found.</p>';
+                return;
+            }
+            
+            let html = '';
+            blogs.forEach(blog => {
+                html += `
+                    <div class="blog-item">
+                        <h3>${blog.title}</h3>
+                        <p><strong>Author:</strong> ${blog.author}</p>
+                        <p><strong>Excerpt:</strong> ${blog.excerpt}</p>
+                        <p><small>ID: ${blog.id}</small></p>
+                        <div class="blog-actions">
+                            <button onclick="selectForUpdate('${blog.id}', '${blog.title}', '${blog.excerpt}')">Edit</button>
+                            <button onclick="selectForDelete('${blog.id}')">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            blogListElement.innerHTML = html;
+        }
+
+        // Select blog for update
+        function selectForUpdate(id, title, excerpt) {
+            document.getElementById('update-blog-id').value = id;
+            document.getElementById('update-blog-title').value = title;
+            document.getElementById('update-blog-excerpt').value = excerpt;
+        }
+
+        // Select blog for delete
+        function selectForDelete(id) {
+            document.getElementById('delete-blog-id').value = id;
+        }
+
+        // Get all blogs
+        async function getAllBlogs() {
+            const resultElement = document.getElementById('get-blogs-result');
+            resultElement.innerHTML = '<div>Loading blogs...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/blogs`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+                
+                const blogs = await response.json();
+                
+                showResult(
+                    'get-blogs-result',
+                    true,
+                    `Found ${blogs.length} blogs!`,
+                    JSON.stringify(blogs, null, 2)
+                );
+                
+                renderBlogs(blogs);
+            } catch (error) {
+                console.error('Error getting blogs:', error);
+                showResult(
+                    'get-blogs-result',
+                    false,
+                    'Failed to get blogs',
+                    error.toString()
+                );
+            }
+        }
+
+        // Create a new blog
+        async function createBlog() {
+            const resultElement = document.getElementById('create-blog-result');
+            resultElement.innerHTML = '<div>Creating blog...</div>';
+            
+            try {
+                const title = document.getElementById('blog-title').value;
+                const excerpt = document.getElementById('blog-excerpt').value;
+                const content = document.getElementById('blog-content').value;
+                const author = document.getElementById('blog-author').value;
+                
+                if (!title || !content || !author) {
+                    showResult(
+                        'create-blog-result',
+                        false,
+                        'Please fill in title, content, and author',
+                        ''
+                    );
+                    return;
+                }
+                
+                const blog = {
+                    title,
+                    excerpt,
+                    content,
+                    author
+                };
+                
+                const response = await fetch(`${API_BASE_URL}/blogs`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(blog)
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API request failed with status ${response.status}: ${errorText}`);
+                }
+                
+                const createdBlog = await response.json();
+                
+                showResult(
+                    'create-blog-result',
+                    true,
+                    'Blog created successfully!',
+                    JSON.stringify(createdBlog, null, 2)
+                );
+                
+                // Refresh the blog list
+                getAllBlogs();
+                
+                // Clear the form
+                document.getElementById('blog-title').value = '';
+                document.getElementById('blog-excerpt').value = '';
+                document.getElementById('blog-content').value = '';
+                document.getElementById('blog-author').value = '';
+            } catch (error) {
+                console.error('Error creating blog:', error);
+                showResult(
+                    'create-blog-result',
+                    false,
+                    'Failed to create blog',
+                    error.toString()
+                );
+            }
+        }
+
+        // Update a blog
+        async function updateBlog() {
+            const resultElement = document.getElementById('update-blog-result');
+            resultElement.innerHTML = '<div>Updating blog...</div>';
+            
+            try {
+                const id = document.getElementById('update-blog-id').value;
+                const title = document.getElementById('update-blog-title').value;
+                const excerpt = document.getElementById('update-blog-excerpt').value;
+                
+                if (!id) {
+                    showResult(
+                        'update-blog-result',
+                        false,
+                        'Please select a blog to update',
+                        ''
+                    );
+                    return;
+                }
+                
+                if (!title && !excerpt) {
+                    showResult(
+                        'update-blog-result',
+                        false,
+                        'Please provide new title or excerpt',
+                        ''
+                    );
+                    return;
+                }
+                
+                const blog = {};
+                if (title) blog.title = title;
+                if (excerpt) blog.excerpt = excerpt;
+                
+                const response = await fetch(`${API_BASE_URL}/blogs/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(blog)
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API request failed with status ${response.status}: ${errorText}`);
+                }
+                
+                const updatedBlog = await response.json();
+                
+                showResult(
+                    'update-blog-result',
+                    true,
+                    'Blog updated successfully!',
+                    JSON.stringify(updatedBlog, null, 2)
+                );
+                
+                // Refresh the blog list
+                getAllBlogs();
+                
+                // Clear the form
+                document.getElementById('update-blog-id').value = '';
+                document.getElementById('update-blog-title').value = '';
+                document.getElementById('update-blog-excerpt').value = '';
+            } catch (error) {
+                console.error('Error updating blog:', error);
+                showResult(
+                    'update-blog-result',
+                    false,
+                    'Failed to update blog',
+                    error.toString()
+                );
+            }
+        }
+
+        // Delete a blog
+        async function deleteBlog() {
+            const resultElement = document.getElementById('delete-blog-result');
+            resultElement.innerHTML = '<div>Deleting blog...</div>';
+            
+            try {
+                const id = document.getElementById('delete-blog-id').value;
+                
+                if (!id) {
+                    showResult(
+                        'delete-blog-result',
+                        false,
+                        'Please select a blog to delete',
+                        ''
+                    );
+                    return;
+                }
+                
+                const response = await fetch(`${API_BASE_URL}/blogs/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API request failed with status ${response.status}: ${errorText}`);
+                }
+                
+                showResult(
+                    'delete-blog-result',
+                    true,
+                    'Blog deleted successfully!',
+                    ''
+                );
+                
+                // Refresh the blog list
+                getAllBlogs();
+                
+                // Clear the form
+                document.getElementById('delete-blog-id').value = '';
+            } catch (error) {
+                console.error('Error deleting blog:', error);
+                showResult(
+                    'delete-blog-result',
+                    false,
+                    'Failed to delete blog',
+                    error.toString()
+                );
+            }
+        }
+        
+        // Initialize by loading blogs
+        window.onload = function() {
+            getAllBlogs();
+        };
+    </script>
+</body>
+</html>
