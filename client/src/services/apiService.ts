@@ -158,10 +158,10 @@ export const authService = {
 };
 
 export const portfolioService = {
-  getSkills: async (): Promise<Skill[]> => apiFetch('/api/skills'),
-  getProjects: async (): Promise<Project[]> => apiFetch('/api/projects'),
-  getStats: async (): Promise<Stats> => apiFetch('/api/stats'),
-  getServices: async (): Promise<any[]> => apiFetch('/api/services')
+  getSkills: async (): Promise<Skill[]> => apiFetch('/skills'),
+  getProjects: async (): Promise<Project[]> => apiFetch('/projects'),
+  getStats: async (): Promise<Stats> => apiFetch('/stats'),
+  getServices: async (): Promise<any[]> => apiFetch('/services')
 };
 
 // Add this debug function to test the API connection

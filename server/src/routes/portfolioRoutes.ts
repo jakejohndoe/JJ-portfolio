@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { Project, Skill, Stats, Service } from '../types/portfolioTypes';
+import { Project, Skill, Stats, Service } from '../types/portfolioTypes.js';
 
 const router = Router();
 
