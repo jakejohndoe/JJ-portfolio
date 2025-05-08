@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test All Proxies</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow: auto;
+            white-space: pre-wrap;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .test-group {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-result {
+            margin-top: 15px;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .failure {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test All Proxy Implementations</h1>
+    <p>This page tests different proxy implementations to see which one works.</p>
+
+    <div class="test-group">
+        <h2>Environment Information</h2>
+        <pre id="env-info"></pre>
+    </div>
+
+    <div class="test-group">
+        <h2>1. Direct API Test (No Proxy)</h2>
+        <p>Test direct connection to API (likely to fail due to CORS).</p>
+        <button onclick="testDirectAPI('/skills')">Test Direct API</button>
+        <div class="test-result" id="direct-api-result"></div>
+    </div>
+
+    <div class="test-group">
+        <h2>2. Original Proxy Test</h2>
+        <p>Test using the original proxy implementation.</p>
+        <button onclick="testProxy('/api/proxy?endpoint=skills')">Test Original Proxy</button>
+        <div class="test-result" id="original-proxy-result"></div>
+    </div>
+
+    <div class="test-group">
+        <h2>3. Simple Proxy Test</h2>
+        <p>Test using the simple proxy implementation.</p>
+        <button onclick="testProxy('/api/simple-proxy?endpoint=skills')">Test Simple Proxy</button>
+        <div class="test-result" id="simple-proxy-result"></div>
+    </div>
+
+    <div class="test-group">
+        <h2>4. Direct Proxy Test</h2>
+        <p>Test using the direct proxy implementation.</p>
+        <button onclick="testProxy('/api/direct-proxy?endpoint=skills')">Test Direct Proxy</button>
+        <div class="test-result" id="direct-proxy-result"></div>
+    </div>
+
+    <div class="test-group">
+        <h2>5. Test POST Request</h2>
+        <p>Test creating a blog post through the proxy.</p>
+        <button onclick="testPostRequest('/api/direct-proxy?endpoint=blogs')">Test POST with Direct Proxy</button>
+        <div class="test-result" id="post-result"></div>
+    </div>
+
+    <script>
+        // Display environment info
+        function showEnvironmentInfo() {
+            const envInfo = document.getElementById('env-info');
+            envInfo.textContent = `
+URL: ${window.location.href}
+Hostname: ${window.location.hostname}
+Protocol: ${window.location.protocol}
+User Agent: ${navigator.userAgent}
+Date: ${new Date().toISOString()}
+`;
+        }
+        showEnvironmentInfo();
+
+        // Helper to display results
+        function showResult(elementId, success, message, details = '') {
+            const resultElement = document.getElementById(elementId);
+            resultElement.innerHTML = `
+<div class="${success ? 'success' : 'failure'}">${message}</div>
+${details ? `<pre>${details}</pre>` : ''}
+`;
+        }
+
+        // Test direct API connection
+        async function testDirectAPI(endpoint) {
+            const resultElement = document.getElementById('direct-api-result');
+            resultElement.innerHTML = '<div>Testing direct API connection...</div>';
+            
+            try {
+                const startTime = Date.now();
+                const response = await fetch(`https://hellojakejohn.onrender.com/api${endpoint}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                const endTime = Date.now();
+                
+                console.log(`Direct API response status: ${response.status}`);
+                const responseText = await response.text();
+                console.log('Direct API response text:', responseText);
+                
+                try {
+                    const data = JSON.parse(responseText);
+                    showResult(
+                        'direct-api-result',
+                        true,
+                        `Direct API Success! (${endTime - startTime}ms)`,
+                        JSON.stringify(data, null, 2)
+                    );
+                } catch (e) {
+                    showResult(
+                        'direct-api-result',
+                        false,
+                        'Got response but failed to parse JSON',
+                        `Status: ${response.status}\nResponse: ${responseText}`
+                    );
+                }
+            } catch (error) {
+                console.error('Error testing direct API:', error);
+                showResult(
+                    'direct-api-result',
+                    false,
+                    'Error (likely CORS issue)',
+                    error.toString()
+                );
+            }
+        }
+
+        // Test proxy endpoint
+        async function testProxy(proxyUrl) {
+            const resultElementId = proxyUrl.includes('simple-proxy') 
+                ? 'simple-proxy-result' 
+                : (proxyUrl.includes('direct-proxy') 
+                    ? 'direct-proxy-result' 
+                    : 'original-proxy-result');
+            
+            const resultElement = document.getElementById(resultElementId);
+            resultElement.innerHTML = `<div>Testing ${proxyUrl}...</div>`;
+            
+            try {
+                const startTime = Date.now();
+                const response = await fetch(proxyUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                const endTime = Date.now();
+                
+                console.log(`Proxy response status: ${response.status}`);
+                const responseText = await response.text();
+                console.log('Proxy response text:', responseText);
+                
+                try {
+                    const data = JSON.parse(responseText);
+                    showResult(
+                        resultElementId,
+                        true,
+                        `Proxy Success! (${endTime - startTime}ms)`,
+                        JSON.stringify(data, null, 2)
+                    );
+                } catch (e) {
+                    showResult(
+                        resultElementId,
+                        false,
+                        'Got response but failed to parse JSON',
+                        `Status: ${response.status}\nResponse: ${responseText}`
+                    );
+                }
+            } catch (error) {
+                console.error(`Error testing ${proxyUrl}:`, error);
+                showResult(
+                    resultElementId,
+                    false,
+                    'Error',
+                    error.toString()
+                );
+            }
+        }
+
+        // Test POST request
+        async function testPostRequest(proxyUrl) {
+            const resultElement = document.getElementById('post-result');
+            resultElement.innerHTML = '<div>Testing POST request...</div>';
+            
+            try {
+                const postData = {
+                    title: "Test Blog Post",
+                    excerpt: "This is a test post created through the proxy.",
+                    content: "This is the body content of a test blog post.",
+                    author: "Proxy Tester"
+                };
+                
+                const startTime = Date.now();
+                const response = await fetch(proxyUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(postData)
+                });
+                const endTime = Date.now();
+                
+                console.log(`POST response status: ${response.status}`);
+                const responseText = await response.text();
+                console.log('POST response text:', responseText);
+                
+                try {
+                    const data = JSON.parse(responseText);
+                    showResult(
+                        'post-result',
+                        true,
+                        `POST Success! (${endTime - startTime}ms)`,
+                        JSON.stringify(data, null, 2)
+                    );
+                } catch (e) {
+                    showResult(
+                        'post-result',
+                        false,
+                        'Got response but failed to parse JSON',
+                        `Status: ${response.status}\nResponse: ${responseText}`
+                    );
+                }
+            } catch (error) {
+                console.error('Error testing POST request:', error);
+                showResult(
+                    'post-result',
+                    false,
+                    'Error',
+                    error.toString()
+                );
+            }
+        }
+    </script>
+</body>
+</html>
