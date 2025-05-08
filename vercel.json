@@ -1,8 +1,13 @@
 {
-  "rewrites": [
+  "version": 2,
+  "routes": [
     {
-      "source": "/api/:path*",
-      "destination": "https://hellojakejohn.onrender.com/api/:path*"
+      "src": "/api/(.*)",
+      "dest": "https://hellojakejohn.onrender.com/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
     }
   ],
   "headers": [
