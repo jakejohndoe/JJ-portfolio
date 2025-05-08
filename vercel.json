@@ -1,12 +1,4 @@
 {
-  "rewrites": [
-    { "source": "/api/skills", "destination": "https://hellojakejohn.onrender.com/api/skills" },
-    { "source": "/api/projects", "destination": "https://hellojakejohn.onrender.com/api/projects" },
-    { "source": "/api/stats", "destination": "https://hellojakejohn.onrender.com/api/stats" },
-    { "source": "/api/services", "destination": "https://hellojakejohn.onrender.com/api/services" },
-    { "source": "/api/test", "destination": "https://hellojakejohn.onrender.com/api/test" },
-    { "source": "/api/portfolio/:path*", "destination": "https://hellojakejohn.onrender.com/api/portfolio/:path*" }
-  ],
   "headers": [
     {
       "source": "/(.*)",

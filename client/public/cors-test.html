@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORS Test Page</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow: auto;
+            white-space: pre-wrap;
+            font-size: 14px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>CORS Test Page</h1>
+    <p>This page tests various methods to access the API to diagnose CORS issues.</p>
+
+    <h2>Test Local API Endpoints</h2>
+    <div>
+        <button onclick="testLocalEndpoint('/api/echo')">Test /api/echo</button>
+        <button onclick="testLocalEndpoint('/api/skills')">Test /api/skills</button>
+    </div>
+    <pre id="local-result">Click a button to test</pre>
+
+    <h2>Test Proxied Fetch via Vercel</h2>
+    <div>
+        <button onclick="testProxiedFetch('/api/skills.js')">Skills via Proxy</button>
+    </div>
+    <pre id="proxy-result">Click a button to test</pre>
+
+    <h2>Test Backend Directly with jQuery AJAX</h2>
+    <div>
+        <button onclick="testJQueryAjax('https://hellojakejohn.onrender.com/api/skills')">Test skills with jQuery</button>
+    </div>
+    <pre id="jquery-result">Click a button to test</pre>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Test local API endpoint
+        async function testLocalEndpoint(endpoint) {
+            const resultEl = document.getElementById('local-result');
+            resultEl.textContent = `Testing ${endpoint}...`;
+            
+            try {
+                console.log(`Testing local endpoint: ${endpoint}`);
+                
+                const response = await fetch(endpoint, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log(`Response status: ${response.status}`);
+                const text = await response.text();
+                console.log(`Response text: ${text}`);
+                
+                try {
+                    const data = JSON.parse(text);
+                    resultEl.textContent = `Success!\nStatus: ${response.status}\n${JSON.stringify(data, null, 2)}`;
+                } catch (e) {
+                    resultEl.textContent = `Received non-JSON response:\nStatus: ${response.status}\n${text}`;
+                }
+            } catch (error) {
+                console.error(`Test failed:`, error);
+                resultEl.textContent = `Error: ${error.message}`;
+            }
+        }
+        
+        // Test proxied fetch
+        async function testProxiedFetch(endpoint) {
+            const resultEl = document.getElementById('proxy-result');
+            resultEl.textContent = `Testing ${endpoint}...`;
+            
+            try {
+                console.log(`Testing proxied endpoint: ${endpoint}`);
+                
+                const response = await fetch(endpoint, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                console.log(`Response status: ${response.status}`);
+                const text = await response.text();
+                console.log(`Response text: ${text}`);
+                
+                try {
+                    const data = JSON.parse(text);
+                    resultEl.textContent = `Success!\nStatus: ${response.status}\n${JSON.stringify(data, null, 2)}`;
+                } catch (e) {
+                    resultEl.textContent = `Received non-JSON response:\nStatus: ${response.status}\n${text}`;
+                }
+            } catch (error) {
+                console.error(`Test failed:`, error);
+                resultEl.textContent = `Error: ${error.message}`;
+            }
+        }
+        
+        // Test with jQuery AJAX
+        function testJQueryAjax(url) {
+            const resultEl = document.getElementById('jquery-result');
+            resultEl.textContent = `Testing ${url} with jQuery...`;
+            
+            console.log(`Testing with jQuery AJAX: ${url}`);
+            
+            $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    console.log('jQuery success:', data);
+                    resultEl.textContent = `Success with jQuery!\n${JSON.stringify(data, null, 2)}`;
+                },
+                error: function(xhr, status, error) {
+                    console.error('jQuery error:', status, error);
+                    resultEl.textContent = `Error with jQuery: ${status} - ${error}\nResponse: ${xhr.responseText}`;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
