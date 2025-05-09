@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, Redirect } from "wouter";
 import Home from "@/pages/Home";
 import BlogList from "@/pages/BlogList";
 import BlogPost from "@/pages/BlogPost";
@@ -16,8 +16,20 @@ function App() {
       <SpotlightCursor />
       <Switch>
         <Route path="/" component={Home} />
+        
+        {/* Blog routes */}
         <Route path="/blogs" component={BlogList} />
         <Route path="/blogs/:id" component={BlogPost} />
+        
+        {/* Redirect /blog to /blogs */}
+        <Route path="/blog">
+          {() => {
+            window.location.href = "/blogs";
+            return null;
+          }}
+        </Route>
+        
+        {/* Admin routes */}
         <Route path="/admin/login" component={AdminLogin} />
         
         {/* Protected admin routes */}

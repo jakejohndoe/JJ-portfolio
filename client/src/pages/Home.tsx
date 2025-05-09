@@ -7,9 +7,38 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
+import { portfolioService } from "@/services/apiService";
 
-// Define interfaces that match what your components expect
-interface Skill {
+// Match the interfaces to what the API returns
+interface ApiSkill {
+  id: number;
+  name: string;
+  level: number;
+  category: string;
+}
+
+interface ApiService {
+  id: number;
+  title: string;
+  description: string;
+}
+
+interface ApiProject {
+  id: number;
+  title: string;
+  description: string;
+  technologies: string[];
+  imageUrl?: string;
+}
+
+interface ApiStats {
+  visitors: number;
+  projectsCompleted: number;
+  happyClients: number;
+}
+
+// Define what the components expect
+interface ComponentSkill {
   id: number;
   name: string;
   level: number;
@@ -17,80 +46,92 @@ interface Skill {
   icon: string;
 }
 
-interface Service {
+interface ComponentService {
   id: number;
   title: string;
   description: string;
   icon: string;
 }
 
-// Define a Technology type that matches what ProjectsSection expects
 interface Technology {
   name: string;
-  // Add any other properties that might be needed
 }
 
-interface Project {
+interface ComponentProject {
   id: number;
   title: string;
   description: string;
-  technologies: Technology[]; // Changed to Technology[] type
-  imageUrl: string; // Changed back to imageUrl
+  technologies: Technology[];
+  image: string;
 }
 
-interface Stats {
+interface ComponentStats {
   visitors?: number;
   projectsCompleted?: number;
   happyClients?: number;
 }
 
 const Home = () => {
-  // Add proper type annotations to useQuery
-  const { data: skills, isLoading: skillsLoading } = useQuery<Skill[]>({
-    queryKey: ['/api/skills'],
+  // Fix the React Query implementation
+  const { data: apiSkills = [], isLoading: skillsLoading } = useQuery({
+    queryKey: ['skills'],
+    queryFn: async () => {
+      const result = await portfolioService.getSkills();
+      return result;
+    }
   });
 
-  const { data: services, isLoading: servicesLoading } = useQuery<Service[]>({
-    queryKey: ['/api/services'],
+  const { data: apiServices = [], isLoading: servicesLoading } = useQuery({
+    queryKey: ['services'],
+    queryFn: async () => {
+      const result = await portfolioService.getServices();
+      return result;
+    }
   });
 
-  const { data: projects, isLoading: projectsLoading } = useQuery<any[]>({
-    queryKey: ['/api/projects'],
+  const { data: apiProjects = [], isLoading: projectsLoading } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      const result = await portfolioService.getProjects();
+      return result;
+    }
   });
 
-  const { data: stats, isLoading: statsLoading } = useQuery<Stats>({
-    queryKey: ['/api/stats'],
+  const { data: apiStats = {}, isLoading: statsLoading } = useQuery({
+    queryKey: ['stats'],
+    queryFn: async () => {
+      const result = await portfolioService.getStats();
+      return result;
+    }
   });
 
-  // Create a properly structured stats object with safe property access
-  const statsData = {
-    completedProjects: stats?.projectsCompleted || 3,
-    satisfaction: 95,
-    experience: 2
-  };
-
-  // Transform the data to include required properties if they're missing
-  const processedSkills = skills?.map(skill => ({
+  // Transform API data to match what components expect
+  const processedSkills: ComponentSkill[] = apiSkills.map((skill: ApiSkill) => ({
     ...skill,
-    icon: skill.icon || 'default-icon'
-  })) || [];
+    icon: `icon-${skill.name.toLowerCase().replace(/\s+/g, '-')}` // Generate icon based on name
+  }));
 
-  const processedServices = services?.map(service => ({
+  const processedServices: ComponentService[] = apiServices.map((service: ApiService) => ({
     ...service,
-    icon: service.icon || 'default-icon'
-  })) || [];
+    icon: `icon-${service.title.toLowerCase().replace(/\s+/g, '-')}` // Generate icon based on title
+  }));
 
-  // Transform projects to ensure they have the correct structure
-  const processedProjects = projects?.map(project => ({
+  const processedProjects: ComponentProject[] = apiProjects.map((project: ApiProject) => ({
     id: project.id,
     title: project.title,
     description: project.description,
-    image: project.imageUrl || project.image || 'default-image.jpg', // Use image instead of imageUrl
+    image: project.imageUrl || 'default-image.jpg', // Map imageUrl to image
     technologies: Array.isArray(project.technologies) 
-      ? project.technologies.map((tech: string | Technology) => 
-          typeof tech === 'string' ? { name: tech } : tech)
+      ? project.technologies.map((tech: string) => ({ name: tech }))
       : []
-  })) || [];
+  }));
+
+  // Create a properly structured stats object
+  const statsData = {
+    completedProjects: (apiStats as ApiStats)?.projectsCompleted || 3,
+    satisfaction: 95,
+    experience: 2
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground overflow-hidden">
@@ -106,7 +147,7 @@ const Home = () => {
       <ContactSection />
       <Footer />
       
-      {/* Admin login link - Just for testing, you can remove later */}
+      {/* Admin login link */}
       <div className="fixed bottom-4 right-4 opacity-30 hover:opacity-100 transition-opacity">
         <Link href="/admin/login" className="text-gray-500 hover:text-gray-700 text-xs">
           Admin
