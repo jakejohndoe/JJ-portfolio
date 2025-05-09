@@ -39,36 +39,14 @@ interface Stats {
   happyClients: number;
 }
 
-// CONFIG: This will try different methods to connect to the API
-// and use whatever works
-const API_STRATEGIES = {
-  // Strategy 1: Direct call to render backend
-  DIRECT_BACKEND: {
-    name: 'Direct Backend',
-    getUrl: (endpoint: string) => `https://hellojakejohn.onrender.com/api${endpoint}`,
-    fetchOptions: {
-      credentials: 'include' as RequestCredentials
-    },
-    enabled: true
-  },
-  // Strategy 2: Direct local API call (relies on Vercel rewrites/redirects)
-  DIRECT_LOCAL: {
-    name: 'Direct Local API',
-    getUrl: (endpoint: string) => `/api${endpoint}`,
-    fetchOptions: {
-      credentials: 'include' as RequestCredentials
-    },
-    enabled: false  // Disabled as it returns 404s
-  }
-};
+// Set base URL for backend
+const API_BASE_URL = 'https://hellojakejohn.onrender.com/api';
 
-const API_TIMEOUT = 8000; // Increased timeout
-
-// Keep track of which strategy worked last
-let lastSuccessfulStrategy: typeof API_STRATEGIES[keyof typeof API_STRATEGIES] | null = API_STRATEGIES.DIRECT_BACKEND;
+// API timeout value (8 seconds)
+const API_TIMEOUT = 8000;
 
 // Debug info
-console.log('API Service loaded with direct backend connection and user authentication');
+console.log('[API Service] Configured with API URL:', API_BASE_URL);
 
 // Helper to get auth token from user info
 function getAuthToken() {
@@ -77,9 +55,9 @@ function getAuthToken() {
     
     if (!userInfo) return null;
     
-    // For our backend, we're actually sending the token in a cookie
-    // automatically with credentials: 'include', so we just need to 
-    // return a signal that the user is authenticated
+    if (userInfo.token) {
+      return userInfo.token;
+    }
     
     return 'USER_AUTHENTICATED';
   } catch (e) {
@@ -88,92 +66,62 @@ function getAuthToken() {
   }
 }
 
-// Function to get data using multiple strategies
-async function apiFetch<T>(endpoint: string, options?: RequestInit, retries = 1): Promise<T> {
-  const allErrors = [];
-  
-  // If we have a last successful strategy, try it first
-  if (lastSuccessfulStrategy) {
-    try {
-      console.debug(`[API] Trying last successful strategy: ${lastSuccessfulStrategy.name}`);
-      const data = await tryStrategy<T>(lastSuccessfulStrategy, endpoint, options);
-      return data;
-    } catch (error) {
-      console.debug(`[API] Last successful strategy failed, trying others`);
-      allErrors.push(`${lastSuccessfulStrategy.name}: ${(error as Error).message}`);
-      lastSuccessfulStrategy = null;
-    }
-  }
-  
-  // Try all enabled strategies
-  for (const key of Object.keys(API_STRATEGIES)) {
-    const strategy = API_STRATEGIES[key as keyof typeof API_STRATEGIES];
-    
-    if (!strategy.enabled) continue;
-    if (strategy === lastSuccessfulStrategy) continue; // Skip if we already tried it
-    
-    try {
-      console.debug(`[API] Trying strategy: ${strategy.name}`);
-      const data = await tryStrategy<T>(strategy, endpoint, options);
-      lastSuccessfulStrategy = strategy;
-      return data;
-    } catch (error) {
-      console.debug(`[API] Strategy ${strategy.name} failed: ${(error as Error).message}`);
-      allErrors.push(`${strategy.name}: ${(error as Error).message}`);
-    }
-  }
-  
-  // If all strategies failed and we have retries left, try again
-  if (retries > 0) {
-    console.warn(`[API] All strategies failed, retrying (${retries} left)`);
-    return apiFetch<T>(endpoint, options, retries - 1);
-  }
-  
-  // All strategies failed, use fallback data
-  console.error(`[API] All strategies failed: ${allErrors.join(', ')}`);
-  return getFallbackData<T>(endpoint);
-}
-
-// Try a specific strategy
-async function tryStrategy<T>(
-  strategy: typeof API_STRATEGIES[keyof typeof API_STRATEGIES],
-  endpoint: string,
-  options?: RequestInit
-): Promise<T> {
-  const url = strategy.getUrl(endpoint);
+// Direct API fetch function with better error handling
+async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const url = `${API_BASE_URL}${endpoint}`;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
   
-  console.debug(`[API] ${strategy.name} calling: ${url}`);
+  console.debug(`[API] Fetching from: ${url}`);
   
   try {
-    // Include auth token if available
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       ...(options?.headers as Record<string, string> || {})
     };
     
-    // We're using cookie-based authentication so we don't need to add token to headers
+    // Add Authorization token if available
+    const token = getAuthToken();
+    if (token && token !== 'USER_AUTHENTICATED') {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
     
     const response = await fetch(url, {
       ...options,
-      ...strategy.fetchOptions,
+      credentials: 'include',
       signal: controller.signal,
       headers
     });
     
     clearTimeout(timeoutId);
     
+    // Log the response for debugging
+    console.debug(`[API] Response for ${endpoint}:`, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries())
+    });
+    
     if (!response.ok) {
+      let errorMessage = `API request failed with status ${response.status}`;
+      
       try {
         // Try to parse error response
-        const errorData = await response.json();
-        throw new Error(errorData.message || `API request failed with status ${response.status}`);
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } else {
+          // If not JSON, try to get text
+          const textResponse = await response.text();
+          console.debug('[API] Non-JSON error response:', textResponse);
+        }
       } catch (jsonError) {
-        // If parsing fails, throw generic error
-        throw new Error(`API request failed with status ${response.status}`);
+        console.debug('[API] Error parsing error response:', jsonError);
       }
+      
+      throw new Error(errorMessage);
     }
     
     // For empty responses (like DELETE operations)
@@ -181,10 +129,19 @@ async function tryStrategy<T>(
       return {} as T;
     }
     
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      console.warn('[API] Response not JSON:', await response.text());
+      return {} as T;
+    }
+    
     return response.json();
   } catch (error) {
     clearTimeout(timeoutId);
-    throw error;
+    console.error(`[API] Error fetching ${endpoint}:`, error);
+    
+    // Fall back to mock data
+    return getFallbackData<T>(endpoint);
   }
 }
 
@@ -242,7 +199,7 @@ function getFallbackData<T>(endpoint: string): T {
   return (fallbacks[endpoint] || null) as T;
 }
 
-// Services remain the same but updated return types
+// Service definitions with simplified logic
 export const blogService = {
   getAllBlogs: async (): Promise<Blog[]> => apiFetch('/blogs'),
   getBlogById: async (id: string | number): Promise<Blog> => apiFetch(`/blogs/${id}`),
