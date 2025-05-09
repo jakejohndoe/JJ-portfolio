@@ -40,51 +40,72 @@ interface Stats {
 // CONFIG: This will try different methods to connect to the API
 // and use whatever works
 const API_STRATEGIES = {
-  // Strategy 1: Direct local API call (relies on Vercel rewrites/redirects)
-  DIRECT_LOCAL: {
-    name: 'Direct Local API',
-    getUrl: (endpoint: string) => `/api${endpoint}`,
-    fetchOptions: {
-      credentials: 'include'
-    },
-    enabled: true
-  },
-  // Strategy 2: Vercel Proxy Function - should avoid CORS issues
-  VERCEL_PROXY: {
-    name: 'Vercel Proxy',
-    getUrl: (endpoint: string) => `/api/proxy?endpoint=${encodeURIComponent(endpoint.startsWith('/') ? endpoint.substring(1) : endpoint)}`,
-    fetchOptions: {
-      credentials: 'same-origin'
-    },
-    enabled: true
-  },
-  // Strategy 3: Direct call to render backend (may have CORS issues)
+  // Strategy 1: Direct call to render backend - Now working!
   DIRECT_BACKEND: {
     name: 'Direct Backend',
     getUrl: (endpoint: string) => `https://hellojakejohn.onrender.com/api${endpoint}`,
     fetchOptions: {
       credentials: 'include'
     },
-    enabled: false  // Disabled as it has CORS issues
+    enabled: true
   },
-  // Strategy 4: CORS Proxy - has issues with preflight requests
-  CORS_PROXY: {
-    name: 'CORS Proxy',
-    getUrl: (endpoint: string) => `https://corsproxy.io/?url=${encodeURIComponent(`https://hellojakejohn.onrender.com/api${endpoint}`)}`,
+  // Strategy 2: Direct local API call (relies on Vercel rewrites/redirects)
+  DIRECT_LOCAL: {
+    name: 'Direct Local API',
+    getUrl: (endpoint: string) => `/api${endpoint}`,
     fetchOptions: {
-      credentials: 'omit'
+      credentials: 'include'
     },
-    enabled: false  // Disabled as it has issues with preflight
+    enabled: false  // Disabled as it returns 404s
   }
 };
 
 const API_TIMEOUT = 5000;
 
 // Keep track of which strategy worked last
-let lastSuccessfulStrategy = API_STRATEGIES.VERCEL_PROXY;  // Start with Vercel Proxy by default
+let lastSuccessfulStrategy = API_STRATEGIES.DIRECT_BACKEND;  // Start with Direct Backend by default
 
 // Debug info
-console.log('API Service loaded with multiple fallback strategies');
+console.log('API Service loaded with direct backend connection and user authentication');
+
+// Helper to get auth token from user info
+function getAuthToken() {
+  try {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || 'null');
+    
+    if (!userInfo) return null;
+    
+    // Check if the user info contains a token directly
+    if (userInfo.token) {
+      return userInfo.token;
+    }
+    
+    // Check for other common token fields
+    if (userInfo.accessToken) {
+      return userInfo.accessToken;
+    }
+    
+    if (userInfo.jwt) {
+      return userInfo.jwt;
+    }
+    
+    // If the user is logged in but there's no explicit token,
+    // we'll use the user ID as authentication. This assumes your
+    // backend is using cookies or sessions for authentication.
+    // In this case, we'll include the user ID in the request headers
+    // but rely on the credentials: 'include' option to send cookies.
+    if (userInfo._id || userInfo.id) {
+      return userInfo._id || userInfo.id;
+    }
+    
+    // If no token is found but user info exists, return the user info
+    // itself as a signal that the user is authenticated
+    return 'USER_AUTHENTICATED';
+  } catch (e) {
+    console.error('Error parsing userInfo from localStorage:', e);
+    return null;
+  }
+}
 
 // Function to get data using multiple strategies
 async function apiFetch<T>(endpoint: string, options?: RequestInit, retries = 1): Promise<T> {
@@ -141,32 +162,41 @@ async function tryStrategy<T>(
   const url = strategy.getUrl(endpoint);
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
-
-  // Special handling for the Vercel Proxy strategy
-  const isVercelProxy = strategy === API_STRATEGIES.VERCEL_PROXY;
-  
-  // For the Vercel proxy, we need to adjust the request to work with the proxy
-  const adjustedOptions = { ...options };
-  
-  if (isVercelProxy && options && options.body) {
-    // For Vercel proxy, we need to ensure the body is properly included
-    adjustedOptions.body = typeof options.body === 'string' 
-      ? options.body 
-      : JSON.stringify(options.body);
-  }
   
   console.debug(`[API] ${strategy.name} calling: ${url}`);
   
   try {
+    // Include auth token if available
+    const authToken = getAuthToken();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      ...(options?.headers as Record<string, string> || {})
+    };
+    
+    // Add Authorization header if we have a token
+    if (authToken && typeof authToken === 'string' && authToken !== 'USER_AUTHENTICATED') {
+      headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    
+    // Add User-Id header if we have a user ID
+    const userInfo = localStorage.getItem('userInfo');
+    if (userInfo) {
+      try {
+        const parsedUserInfo = JSON.parse(userInfo);
+        if (parsedUserInfo && (parsedUserInfo._id || parsedUserInfo.id)) {
+          headers['User-Id'] = parsedUserInfo._id || parsedUserInfo.id;
+        }
+      } catch (e) {
+        // Ignore parsing errors
+      }
+    }
+    
     const response = await fetch(url, {
-      ...adjustedOptions,
+      ...options,
       ...strategy.fetchOptions,
       signal: controller.signal,
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        ...(options?.headers || {})
-      }
+      headers
     });
     
     clearTimeout(timeoutId);
@@ -225,16 +255,14 @@ export const userService = {
 };
 
 export const authService = {
-  login: async (username: string, password: string): Promise<{ user: User }> => 
-    apiFetch('/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) }),
+  login: async (email: string, password: string): Promise<any> => 
+    apiFetch('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
   logout: async (): Promise<void> => 
     apiFetch('/auth/logout', { method: 'POST' }),
   isAuthenticated: async (): Promise<boolean> => {
     try {
-      // Use all strategies
-      return await apiFetch('/auth/check')
-        .then(() => true)
-        .catch(() => false);
+      const authToken = getAuthToken();
+      return authToken !== null;
     } catch {
       return false;
     }
