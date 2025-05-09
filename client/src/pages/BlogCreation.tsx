@@ -1,8 +1,10 @@
+// src/pages/BlogCreation.tsx
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { blogService } from "@/services/apiService";
 
 interface BlogFormData {
   title: string;
@@ -14,38 +16,29 @@ interface BlogFormData {
 const BlogCreation = () => {
   const [, setLocation] = useLocation();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   const { register, handleSubmit, formState: { errors } } = useForm<BlogFormData>();
   
   const onSubmit = async (data: BlogFormData) => {
     setIsSubmitting(true);
+    setError(null);
     
     try {
-      // Get token from localStorage
-      const userInfo = JSON.parse(localStorage.getItem('userInfo') || 'null');
-      
-      if (!userInfo || !userInfo.token) {
-        throw new Error('Not authenticated');
-      }
-      
-      const response = await fetch('/api/blogs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${userInfo.token}`
-        },
-        body: JSON.stringify(data),
+      // Use the blogService to create a new blog post
+      await blogService.createBlog({
+        title: data.title,
+        excerpt: data.excerpt,
+        content: data.content,
+        author: 'Jakob Johnson', // You might want to get this from user info
+        imageUrl: data.imageUrl
       });
-      
-      if (!response.ok) {
-        throw new Error('Failed to create blog post');
-      }
       
       // Redirect to admin blogs page on success
       setLocation('/admin/blogs');
     } catch (error) {
       console.error('Error creating blog post:', error);
-      alert('Failed to create blog post. Please try again.');
+      setError('Failed to create blog post. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -59,6 +52,12 @@ const BlogCreation = () => {
         <h1 className="text-3xl font-bold mb-8">Create Blog Post</h1>
         
         <div className="bg-card rounded-lg shadow-md p-6">
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-800 rounded-md">
+              {error}
+            </div>
+          )}
+          
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
               <label htmlFor="title" className="block text-sm font-medium mb-1">

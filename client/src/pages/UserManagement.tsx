@@ -1,9 +1,9 @@
 // src/pages/UserManagement.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { userService } from "@/services/apiService";
 
 interface User {
   id: number;
@@ -14,11 +14,24 @@ interface User {
 }
 
 const UserManagement = () => {
-  const { data: users, isLoading, error } = useQuery<User[]>({
-    queryKey: ["/api/users"],
-  });
-
+  const [users, setUsers] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
+  
+  useEffect(() => {
+    setIsLoading(true);
+    userService.getAllUsers()
+      .then(data => {
+        setUsers(data);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error('Error fetching users:', err);
+        setError('Error loading users. Try again later.');
+        setIsLoading(false);
+      });
+  }, []);
   
   const toggleUserSelection = (userId: number) => {
     setSelectedUsers(prev => 
@@ -63,7 +76,7 @@ const UserManagement = () => {
               
               {isLoading && <div className="text-center">Loading...</div>}
               
-              {error && <div className="text-red-500 text-center">Error loading users. Try again later.</div>}
+              {error && <div className="text-red-500 text-center">{error}</div>}
               
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse">
@@ -86,7 +99,7 @@ const UserManagement = () => {
                           </span>
                         </td>
                         <td className="px-3 py-4">
-                          <button className="text-blue-500">Edit</button>
+                          <button className="text-blue-500 mr-2">Edit</button>
                           <button className="text-red-500">Delete</button>
                         </td>
                       </tr>

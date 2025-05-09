@@ -1,8 +1,10 @@
+// src/pages/BlogDetail.tsx
 import { useRoute, Link } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { format } from "date-fns";
+import { blogService } from "@/services/apiService";
 
 interface Blog {
   id: number;
@@ -18,11 +20,29 @@ const BlogDetail = () => {
   const [match, params] = useRoute("/blogs/:id");
   const blogId = params?.id;
   
-  // Fetch blog details
-  const { data: blog, isLoading, error } = useQuery<Blog>({
-    queryKey: [`/api/blogs/${blogId}`],
-    enabled: !!blogId, // Only run query if blogId exists
-  });
+  const [blog, setBlog] = useState<Blog | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (!blogId) {
+      setError("Blog ID not found");
+      setIsLoading(false);
+      return;
+    }
+    
+    setIsLoading(true);
+    blogService.getBlogById(blogId)
+      .then(data => {
+        setBlog(data);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error("Error fetching blog:", err);
+        setError("Error loading blog post. Please try again later.");
+        setIsLoading(false);
+      });
+  }, [blogId]);
 
   if (isLoading) {
     return (
@@ -42,7 +62,7 @@ const BlogDetail = () => {
         <Navbar />
         <div className="flex-grow container mx-auto px-4 py-8">
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-            Error loading blog post. Please try again later.
+            {error || "Error loading blog post. Please try again later."}
           </div>
           <div className="mt-4">
             <Link href="/blogs">
