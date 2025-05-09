@@ -8,8 +8,9 @@ import Footer from "@/components/Footer";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { portfolioService } from "@/services/apiService";
+import { useState, useEffect } from "react";
 
-// Match the interfaces to what the API returns
+// API interfaces
 interface ApiSkill {
   id: number;
   name: string;
@@ -37,7 +38,7 @@ interface ApiStats {
   happyClients: number;
 }
 
-// Define what the components expect
+// Component interfaces
 interface ComponentSkill {
   id: number;
   name: string;
@@ -65,73 +66,136 @@ interface ComponentProject {
   image: string;
 }
 
-interface ComponentStats {
-  visitors?: number;
-  projectsCompleted?: number;
-  happyClients?: number;
-}
+// Fallback data - ensure we always have something to display
+const fallbackSkills: ComponentSkill[] = [
+  { id: 1, name: 'React', level: 90, category: 'Frontend', icon: 'icon-react' },
+  { id: 2, name: 'TypeScript', level: 85, category: 'Language', icon: 'icon-typescript' },
+  { id: 3, name: 'Node.js', level: 80, category: 'Backend', icon: 'icon-nodejs' }
+];
+
+const fallbackServices: ComponentService[] = [
+  { id: 1, title: 'Web Development', description: 'Building modern web applications', icon: 'icon-web' },
+  { id: 2, title: 'API Development', description: 'Creating robust backend services', icon: 'icon-api' }
+];
+
+const fallbackProjects: ComponentProject[] = [
+  { 
+    id: 1, 
+    title: 'Portfolio Website', 
+    description: 'A modern portfolio built with React', 
+    technologies: [{ name: 'React' }, { name: 'TypeScript' }],
+    image: 'default-image.jpg'
+  }
+];
 
 const Home = () => {
-  // Fix the React Query implementation
-  const { data: apiSkills = [], isLoading: skillsLoading } = useQuery({
-    queryKey: ['skills'],
-    queryFn: async () => {
-      const result = await portfolioService.getSkills();
-      return result;
-    }
-  });
-
-  const { data: apiServices = [], isLoading: servicesLoading } = useQuery({
-    queryKey: ['services'],
-    queryFn: async () => {
-      const result = await portfolioService.getServices();
-      return result;
-    }
-  });
-
-  const { data: apiProjects = [], isLoading: projectsLoading } = useQuery({
-    queryKey: ['projects'],
-    queryFn: async () => {
-      const result = await portfolioService.getProjects();
-      return result;
-    }
-  });
-
-  const { data: apiStats = {}, isLoading: statsLoading } = useQuery({
-    queryKey: ['stats'],
-    queryFn: async () => {
-      const result = await portfolioService.getStats();
-      return result;
-    }
-  });
-
-  // Transform API data to match what components expect
-  const processedSkills: ComponentSkill[] = apiSkills.map((skill: ApiSkill) => ({
-    ...skill,
-    icon: `icon-${skill.name.toLowerCase().replace(/\s+/g, '-')}` // Generate icon based on name
-  }));
-
-  const processedServices: ComponentService[] = apiServices.map((service: ApiService) => ({
-    ...service,
-    icon: `icon-${service.title.toLowerCase().replace(/\s+/g, '-')}` // Generate icon based on title
-  }));
-
-  const processedProjects: ComponentProject[] = apiProjects.map((project: ApiProject) => ({
-    id: project.id,
-    title: project.title,
-    description: project.description,
-    image: project.imageUrl || 'default-image.jpg', // Map imageUrl to image
-    technologies: Array.isArray(project.technologies) 
-      ? project.technologies.map((tech: string) => ({ name: tech }))
-      : []
-  }));
-
-  // Create a properly structured stats object
-  const statsData = {
-    completedProjects: (apiStats as ApiStats)?.projectsCompleted || 3,
+  // Create state variables to safely store processed data
+  const [processedSkills, setProcessedSkills] = useState<ComponentSkill[]>(fallbackSkills);
+  const [processedServices, setProcessedServices] = useState<ComponentService[]>(fallbackServices);
+  const [processedProjects, setProcessedProjects] = useState<ComponentProject[]>(fallbackProjects);
+  const [statsData, setStatsData] = useState({
+    completedProjects: 3,
     satisfaction: 95,
     experience: 2
-  };
+  });
+
+  // Fetch skills data
+  const { data: apiSkills, isLoading: skillsLoading } = useQuery({
+    queryKey: ['skills'],
+    queryFn: async () => {
+      try {
+        return await portfolioService.getSkills();
+      } catch (error) {
+        console.error("Error fetching skills:", error);
+        return [];
+      }
+    }
+  });
+
+  // Fetch services data
+  const { data: apiServices, isLoading: servicesLoading } = useQuery({
+    queryKey: ['services'],
+    queryFn: async () => {
+      try {
+        return await portfolioService.getServices();
+      } catch (error) {
+        console.error("Error fetching services:", error);
+        return [];
+      }
+    }
+  });
+
+  // Fetch projects data
+  const { data: apiProjects, isLoading: projectsLoading } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      try {
+        return await portfolioService.getProjects();
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        return [];
+      }
+    }
+  });
+
+  // Fetch stats data
+  const { data: apiStats, isLoading: statsLoading } = useQuery({
+    queryKey: ['stats'],
+    queryFn: async () => {
+      try {
+        return await portfolioService.getStats();
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+        return { visitors: 0, projectsCompleted: 0, happyClients: 0 };
+      }
+    }
+  });
+
+  // Process data when API responses change
+  useEffect(() => {
+    if (apiSkills && Array.isArray(apiSkills)) {
+      const processed = apiSkills.map((skill: ApiSkill) => ({
+        ...skill,
+        icon: `icon-${skill.name.toLowerCase().replace(/\s+/g, '-')}`
+      }));
+      setProcessedSkills(processed.length > 0 ? processed : fallbackSkills);
+    }
+  }, [apiSkills]);
+
+  useEffect(() => {
+    if (apiServices && Array.isArray(apiServices)) {
+      const processed = apiServices.map((service: ApiService) => ({
+        ...service,
+        icon: `icon-${service.title.toLowerCase().replace(/\s+/g, '-')}`
+      }));
+      setProcessedServices(processed.length > 0 ? processed : fallbackServices);
+    }
+  }, [apiServices]);
+
+  useEffect(() => {
+    if (apiProjects && Array.isArray(apiProjects)) {
+      const processed = apiProjects.map((project: ApiProject) => ({
+        id: project.id,
+        title: project.title,
+        description: project.description,
+        image: project.imageUrl || 'default-image.jpg',
+        technologies: Array.isArray(project.technologies) 
+          ? project.technologies.map((tech: string) => ({ name: tech }))
+          : []
+      }));
+      setProcessedProjects(processed.length > 0 ? processed : fallbackProjects);
+    }
+  }, [apiProjects]);
+
+  useEffect(() => {
+    if (apiStats && typeof apiStats === 'object') {
+      setStatsData({
+        completedProjects: apiStats.projectsCompleted || 3,
+        satisfaction: 95,
+        experience: 2
+      });
+    }
+  }, [apiStats]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground overflow-hidden">
