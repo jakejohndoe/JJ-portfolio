@@ -1,14 +1,17 @@
 {
-  "rewrites": [
-    { "source": "/api/:path*", "destination": "https://hellojakejohn.onrender.com/api/:path*" },
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "headers": [
+  "version": 2,
+  "routes": [
     {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "s-maxage=1, stale-while-revalidate" }
-      ]
+      "src": "/api/(.*)",
+      "dest": "https://hellojakejohn.onrender.com/api/$1"
+    },
+    {
+      "src": "/(.*)\\.(.+)",
+      "dest": "/$1.$2"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
