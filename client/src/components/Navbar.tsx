@@ -41,18 +41,18 @@ const Navbar = () => {
   return (
     <nav className={`fixed w-full z-10 bg-opacity-90 backdrop-blur-sm transition-all duration-300 ${scrolled ? "py-3" : "py-4"} bg-[#0F172A]`}>
       <div className="container mx-auto px-4 flex justify-between items-center">
-      <Link
-        href="/"
-        onClick={() =>
-          window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-    })
-  }
-  className="text-white text-xl font-bold cursor-pointer"
->
-  Jakob Johnson
-</Link>
+        <Link
+          href="/"
+          onClick={() =>
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            })
+          }
+          className="text-white text-xl font-bold cursor-pointer"
+        >
+          Jakob Johnson
+        </Link>
         <div className="hidden md:flex space-x-8">
           <a href="#home" onClick={handleNavClick} className="text-white hover:text-primary transition">
             Home
@@ -66,6 +66,9 @@ const Navbar = () => {
           <a href="#contact" onClick={handleNavClick} className="text-white hover:text-primary transition">
             Contact
           </a>
+          <Link href="/blogs" className="text-white hover:text-primary transition">
+            Blog
+          </Link>
         </div>
         <button
           className="md:hidden text-white"
@@ -91,6 +94,9 @@ const Navbar = () => {
           <a href="#contact" onClick={handleNavClick} className="text-white hover:text-primary transition py-2">
             Contacts
           </a>
+          <Link href="/blogs" className="text-white hover:text-primary transition py-2">
+            Blog
+          </Link>
         </div>
       </div>
     </nav>
