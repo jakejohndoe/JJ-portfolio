@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'wouter';
 import { blogService } from '@/services/apiService';
 
-// Match this interface with what's defined in apiService.ts
+// Updated interface to match MongoDB's document structure
 interface Blog {
-  id: number;  // Changed from _id: string
+  _id: string;  // Changed from id: number to _id: string to match MongoDB format
   title: string;
   excerpt: string;
   content?: string;
@@ -23,6 +23,8 @@ export default function BlogList() {
     setIsLoading(true);
     blogService.getAllBlogs()
       .then(data => {
+        // For debugging - log the actual structure of returned data
+        console.log('API blog data:', data);
         setBlogs(data);
         setIsLoading(false);
       })
@@ -46,8 +48,8 @@ export default function BlogList() {
       )}
       
       {blogs.map(blog => (
-        <div key={blog.id} className="mb-6 p-4 border rounded-lg">
-          <Link href={`/blogs/${blog.id}`} className="text-xl font-semibold hover:underline">
+        <div key={blog._id} className="mb-6 p-4 border rounded-lg">
+          <Link href={`/blogs/${blog._id}`} className="text-xl font-semibold hover:underline">
             {blog.title}
           </Link>
           <p className="text-gray-300 mt-2">{blog.excerpt}</p>

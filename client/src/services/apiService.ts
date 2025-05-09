@@ -1,7 +1,7 @@
 // client/src/services/apiService.ts
 
 interface Blog {
-  id: number;
+  _id: string;
   title: string;
   excerpt: string;
   content: string;
@@ -203,11 +203,11 @@ function getFallbackData<T>(endpoint: string): T {
 export const blogService = {
   getAllBlogs: async (): Promise<Blog[]> => apiFetch('/blogs'),
   getBlogById: async (id: string | number): Promise<Blog> => apiFetch(`/blogs/${id}`),
-  createBlog: async (blog: Omit<Blog, 'id' | 'createdAt'>): Promise<Blog> => 
+  createBlog: async (blog: Omit<Blog, '_id' | 'createdAt'>): Promise<Blog> => 
     apiFetch('/blogs', { method: 'POST', body: JSON.stringify(blog) }),
-  updateBlog: async (id: number, blog: Partial<Blog>): Promise<Blog> => 
+  updateBlog: async (id: string, blog: Partial<Blog>): Promise<Blog> => 
     apiFetch(`/blogs/${id}`, { method: 'PUT', body: JSON.stringify(blog) }),
-  deleteBlog: async (id: number): Promise<void> => 
+  deleteBlog: async (id: string): Promise<void> => 
     apiFetch(`/blogs/${id}`, { method: 'DELETE' })
 };
 

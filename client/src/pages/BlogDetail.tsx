@@ -6,8 +6,9 @@ import Footer from "@/components/Footer";
 import { format } from "date-fns";
 import { blogService } from "@/services/apiService";
 
+// Updated interface to match MongoDB's document structure
 interface Blog {
-  id: number;
+  _id: string;  // Changed from id: number to _id: string
   title: string;
   content: string;
   author: string;
@@ -34,6 +35,7 @@ const BlogDetail = () => {
     setIsLoading(true);
     blogService.getBlogById(blogId)
       .then(data => {
+        console.log('Blog detail data:', data); // For debugging
         setBlog(data);
         setIsLoading(false);
       })
@@ -65,8 +67,8 @@ const BlogDetail = () => {
             {error || "Error loading blog post. Please try again later."}
           </div>
           <div className="mt-4">
-            <Link href="/blogs">
-              <a className="text-primary hover:underline">← Back to blog list</a>
+            <Link href="/blogs" className="text-primary hover:underline">
+              ← Back to blog list
             </Link>
           </div>
         </div>
@@ -81,8 +83,8 @@ const BlogDetail = () => {
       
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="mb-6">
-          <Link href="/blogs">
-            <a className="text-primary hover:underline">← Back to blog list</a>
+          <Link href="/blogs" className="text-primary hover:underline">
+            ← Back to blog list
           </Link>
         </div>
         
@@ -90,7 +92,7 @@ const BlogDetail = () => {
           <h1 className="mb-4">{blog.title}</h1>
           
           <div className="flex items-center text-muted-foreground mb-6">
-            <span className="mr-4">{blog.author}</span>
+            <span className="mr-4">{blog.author || "Anonymous"}</span>
             <span>{format(new Date(blog.createdAt), 'MMMM d, yyyy')}</span>
           </div>
           

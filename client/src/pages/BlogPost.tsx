@@ -5,8 +5,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { blogService } from "@/services/apiService";
 
+// Update this interface to match the one in apiService.ts
 interface Blog {
-  id: number;
+  _id: string;  // Changed from id: number to _id: string
   title: string;
   content: string;
   author: string;
@@ -33,6 +34,7 @@ const BlogPost = () => {
     setIsLoading(true);
     blogService.getBlogById(blogId)
       .then(data => {
+        console.log('Blog data:', data); // For debugging
         setBlog(data);
         setIsLoading(false);
       })
@@ -64,8 +66,9 @@ const BlogPost = () => {
             {error || "Error loading blog post. Please try again later."}
           </div>
           <div className="mt-4">
-            <Link href="/blogs">
-              <a className="text-primary hover:underline">← Back to blog list</a>
+            {/* Fixed Link component usage */}
+            <Link href="/blogs" className="text-primary hover:underline">
+              ← Back to blog list
             </Link>
           </div>
         </div>
