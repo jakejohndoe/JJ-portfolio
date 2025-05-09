@@ -3,25 +3,41 @@ import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { useForm } from 'react-hook-form';
 
+type FormValues = {
+  email: string;
+  password: string;
+};
+
 const AdminLogin = () => {
   const [, setLocation] = useLocation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
   
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
     setError('');
     
     try {
-      const response = await fetch('/api/auth/login', {
+      // Use the full URL to your backend API
+      const response = await fetch('https://hellojakejohn.onrender.com/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
+        // Add credentials if your API uses cookies for authentication
+        credentials: 'include'
       });
+      
+      // Check if the response is JSON before parsing
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const textResponse = await response.text();
+        console.error('Non-JSON response:', textResponse);
+        throw new Error('Server returned non-JSON response. Check API endpoint.');
+      }
       
       const result = await response.json();
       
@@ -29,14 +45,17 @@ const AdminLogin = () => {
         throw new Error(result.message || 'Authentication failed');
       }
       
-      // Store token in localStorage
+      // Store token and user info in localStorage
       localStorage.setItem('userInfo', JSON.stringify(result));
+      
+      // Log successful login for debugging
+      console.log('Login successful, user info stored:', result);
       
       // Redirect to admin dashboard
       setLocation('/admin');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
-      setError(error.message || 'Authentication failed');
+      setError(error.message || 'Authentication failed. Please check the console for details.');
     } finally {
       setIsSubmitting(false);
     }
@@ -65,7 +84,7 @@ const AdminLogin = () => {
               {...register("email", { required: "Email is required" })}
             />
             {errors.email && (
-              <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
+              <p className="text-sm text-red-500 mt-1">{errors.email?.message}</p>
             )}
           </div>
           
@@ -80,7 +99,7 @@ const AdminLogin = () => {
               {...register("password", { required: "Password is required" })}
             />
             {errors.password && (
-              <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
+              <p className="text-sm text-red-500 mt-1">{errors.password?.message}</p>
             )}
           </div>
           
