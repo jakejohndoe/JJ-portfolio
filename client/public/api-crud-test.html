@@ -52,11 +52,24 @@
             color: red;
             font-weight: bold;
         }
-        textarea {
+        textarea, input[type="text"] {
             width: 100%;
-            height: 100px;
             margin-top: 10px;
             font-family: monospace;
+        }
+        textarea {
+            height: 100px;
+        }
+        input[type="text"] {
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .auth-input {
+            display: flex;
+            gap: 10px;
+        }
+        .auth-input input {
+            flex-grow: 1;
         }
     </style>
 </head>
@@ -70,21 +83,33 @@
     </div>
 
     <div class="test-group">
+        <h2>Authentication</h2>
+        <p>JWT token is required for POST, PUT, and DELETE operations.</p>
+        <div class="auth-input">
+            <input type="text" id="auth-token" placeholder="Enter your JWT token here" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDk3YmJjMzM0ODQ2MGViZGE4NDMxNiIsImlhdCI6MTc0NjgzMzA4NiwiZXhwIjoxNzQ5NDI1MDg2fQ.LoGSgvESBTKluLCwhkdxxnsGqzRsTKCIGVE3PJdRYd0">
+            <button onclick="updateAuthToken()">Update Token</button>
+        </div>
+        <div class="test-result" id="auth-status">
+            <div class="success">Token loaded from default value</div>
+        </div>
+    </div>
+
+    <div class="test-group">
         <h2>1. GET Request Test</h2>
         <p>Testing GET method to retrieve data.</p>
         <button onclick="testGetRequest('/health')">Test GET /api/health</button>
         <button onclick="testGetRequest('/skills')">Test GET /api/skills</button>
+        <button onclick="testGetRequest('/blogs')">Test GET /api/blogs</button>
         <div class="test-result" id="get-result"></div>
     </div>
 
     <div class="test-group">
         <h2>2. POST Request Test</h2>
-        <p>Testing POST method to create data.</p>
+        <p>Testing POST method to create data (requires authentication).</p>
         <textarea id="post-data">{
   "title": "Test Blog Post",
   "excerpt": "This is a test post created by the API test tool.",
-  "content": "This is the body content of a test blog post.",
-  "author": "API Tester"
+  "content": "This is the body content of a test blog post."
 }</textarea>
         <br>
         <button onclick="testPostRequest('/blogs')">Test POST /api/blogs</button>
@@ -93,7 +118,7 @@
 
     <div class="test-group">
         <h2>3. PUT Request Test</h2>
-        <p>Testing PUT method to update data. First create a post with POST, then update it with PUT.</p>
+        <p>Testing PUT method to update data (requires authentication). First create a post with POST, then update it with PUT.</p>
         <textarea id="put-data">{
   "title": "Updated Test Blog Post",
   "excerpt": "This post has been updated by the API test tool."
@@ -105,7 +130,7 @@
 
     <div class="test-group">
         <h2>4. DELETE Request Test</h2>
-        <p>Testing DELETE method to remove data. Will try to delete the post created above.</p>
+        <p>Testing DELETE method to remove data (requires authentication). Will try to delete the post created above.</p>
         <button onclick="testDeleteRequest('/blogs')">Test DELETE /api/blogs/{id}</button>
         <div class="test-result" id="delete-result"></div>
     </div>
@@ -113,6 +138,25 @@
     <script>
         // Store last created blog ID
         let lastCreatedBlogId = null;
+        
+        // Store authentication token
+        let authToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDk3YmJjMzM0ODQ2MGViZGE4NDMxNiIsImlhdCI6MTc0NjgzMzA4NiwiZXhwIjoxNzQ5NDI1MDg2fQ.LoGSgvESBTKluLCWhkdxxnsGqzRsTKCIGVE3PJdRYd0";
+
+        // Function to update the auth token
+        function updateAuthToken() {
+            const tokenInput = document.getElementById('auth-token');
+            const token = tokenInput.value.trim();
+            
+            if (!token) {
+                showResult('auth-status', false, 'No token provided');
+                return;
+            }
+            
+            // Update the token
+            authToken = token;
+            
+            showResult('auth-status', true, 'Token updated. You can now test protected endpoints.');
+        }
 
         // Display environment info
         function showEnvironmentInfo() {
@@ -123,6 +167,7 @@ Hostname: ${window.location.hostname}
 Protocol: ${window.location.protocol}
 User Agent: ${navigator.userAgent}
 Date: ${new Date().toISOString()}
+API URL: https://hellojakejohn.onrender.com/api
 `;
         }
         showEnvironmentInfo();
@@ -151,6 +196,12 @@ ${details ? `<pre>${details}</pre>` : ''}
                     'Content-Type': 'application/json'
                 }
             };
+            
+            // Add authentication header if we have a token
+            if (authToken && (method === 'POST' || method === 'PUT' || method === 'DELETE')) {
+                options.headers['Authorization'] = `Bearer ${authToken}`;
+                console.log('Using authentication token');
+            }
             
             if (body) {
                 options.body = JSON.stringify(body);
@@ -219,6 +270,16 @@ ${details ? `<pre>${details}</pre>` : ''}
             const resultElement = document.getElementById('post-result');
             resultElement.innerHTML = '<div>Testing POST request...</div>';
             
+            if (!authToken) {
+                showResult(
+                    'post-result',
+                    false,
+                    'Authentication token required for POST requests',
+                    'Please enter a valid JWT token in the authentication section'
+                );
+                return;
+            }
+            
             try {
                 const postDataElement = document.getElementById('post-data');
                 let postData;
@@ -243,9 +304,13 @@ ${details ? `<pre>${details}</pre>` : ''}
                 console.log('POST response data:', response.data);
                 
                 if (response.ok) {
-                    // Save the ID for later tests
-                    if (response.data && response.data.id) {
-                        lastCreatedBlogId = response.data.id;
+                    // Save the ID for later tests - check both formats _id and id
+                    if (response.data) {
+                        if (response.data._id) {
+                            lastCreatedBlogId = response.data._id;
+                        } else if (response.data.id) {
+                            lastCreatedBlogId = response.data.id;
+                        }
                     }
                     
                     showResult(
@@ -277,6 +342,16 @@ ${details ? `<pre>${details}</pre>` : ''}
         async function testPutRequest(endpoint) {
             const resultElement = document.getElementById('put-result');
             resultElement.innerHTML = '<div>Testing PUT request...</div>';
+            
+            if (!authToken) {
+                showResult(
+                    'put-result',
+                    false,
+                    'Authentication token required for PUT requests',
+                    'Please enter a valid JWT token in the authentication section'
+                );
+                return;
+            }
             
             if (!lastCreatedBlogId) {
                 showResult(
@@ -343,6 +418,16 @@ ${details ? `<pre>${details}</pre>` : ''}
         async function testDeleteRequest(endpoint) {
             const resultElement = document.getElementById('delete-result');
             resultElement.innerHTML = '<div>Testing DELETE request...</div>';
+            
+            if (!authToken) {
+                showResult(
+                    'delete-result',
+                    false,
+                    'Authentication token required for DELETE requests',
+                    'Please enter a valid JWT token in the authentication section'
+                );
+                return;
+            }
             
             if (!lastCreatedBlogId) {
                 showResult(
