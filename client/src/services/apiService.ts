@@ -1,3 +1,5 @@
+// client/src/services/apiService.ts
+
 interface Blog {
   id: number;
   title: string;
@@ -9,11 +11,11 @@ interface Blog {
 }
 
 interface User {
-  id: number;
+  _id: string;
   username: string;
   email: string;
-  role: string;
-  createdAt: string;
+  isAdmin: boolean;
+  createdAt?: string;
 }
 
 interface Skill {
@@ -40,12 +42,12 @@ interface Stats {
 // CONFIG: This will try different methods to connect to the API
 // and use whatever works
 const API_STRATEGIES = {
-  // Strategy 1: Direct call to render backend - Now working!
+  // Strategy 1: Direct call to render backend
   DIRECT_BACKEND: {
     name: 'Direct Backend',
     getUrl: (endpoint: string) => `https://hellojakejohn.onrender.com/api${endpoint}`,
     fetchOptions: {
-      credentials: 'include'
+      credentials: 'include' as RequestCredentials
     },
     enabled: true
   },
@@ -54,16 +56,16 @@ const API_STRATEGIES = {
     name: 'Direct Local API',
     getUrl: (endpoint: string) => `/api${endpoint}`,
     fetchOptions: {
-      credentials: 'include'
+      credentials: 'include' as RequestCredentials
     },
     enabled: false  // Disabled as it returns 404s
   }
 };
 
-const API_TIMEOUT = 5000;
+const API_TIMEOUT = 8000; // Increased timeout
 
 // Keep track of which strategy worked last
-let lastSuccessfulStrategy = API_STRATEGIES.DIRECT_BACKEND;  // Start with Direct Backend by default
+let lastSuccessfulStrategy: typeof API_STRATEGIES[keyof typeof API_STRATEGIES] | null = API_STRATEGIES.DIRECT_BACKEND;
 
 // Debug info
 console.log('API Service loaded with direct backend connection and user authentication');
@@ -75,31 +77,10 @@ function getAuthToken() {
     
     if (!userInfo) return null;
     
-    // Check if the user info contains a token directly
-    if (userInfo.token) {
-      return userInfo.token;
-    }
+    // For our backend, we're actually sending the token in a cookie
+    // automatically with credentials: 'include', so we just need to 
+    // return a signal that the user is authenticated
     
-    // Check for other common token fields
-    if (userInfo.accessToken) {
-      return userInfo.accessToken;
-    }
-    
-    if (userInfo.jwt) {
-      return userInfo.jwt;
-    }
-    
-    // If the user is logged in but there's no explicit token,
-    // we'll use the user ID as authentication. This assumes your
-    // backend is using cookies or sessions for authentication.
-    // In this case, we'll include the user ID in the request headers
-    // but rely on the credentials: 'include' option to send cookies.
-    if (userInfo._id || userInfo.id) {
-      return userInfo._id || userInfo.id;
-    }
-    
-    // If no token is found but user info exists, return the user info
-    // itself as a signal that the user is authenticated
     return 'USER_AUTHENTICATED';
   } catch (e) {
     console.error('Error parsing userInfo from localStorage:', e);
@@ -167,30 +148,13 @@ async function tryStrategy<T>(
   
   try {
     // Include auth token if available
-    const authToken = getAuthToken();
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       ...(options?.headers as Record<string, string> || {})
     };
     
-    // Add Authorization header if we have a token
-    if (authToken && typeof authToken === 'string' && authToken !== 'USER_AUTHENTICATED') {
-      headers['Authorization'] = `Bearer ${authToken}`;
-    }
-    
-    // Add User-Id header if we have a user ID
-    const userInfo = localStorage.getItem('userInfo');
-    if (userInfo) {
-      try {
-        const parsedUserInfo = JSON.parse(userInfo);
-        if (parsedUserInfo && (parsedUserInfo._id || parsedUserInfo.id)) {
-          headers['User-Id'] = parsedUserInfo._id || parsedUserInfo.id;
-        }
-      } catch (e) {
-        // Ignore parsing errors
-      }
-    }
+    // We're using cookie-based authentication so we don't need to add token to headers
     
     const response = await fetch(url, {
       ...options,
@@ -202,7 +166,19 @@ async function tryStrategy<T>(
     clearTimeout(timeoutId);
     
     if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
+      try {
+        // Try to parse error response
+        const errorData = await response.json();
+        throw new Error(errorData.message || `API request failed with status ${response.status}`);
+      } catch (jsonError) {
+        // If parsing fails, throw generic error
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+    }
+    
+    // For empty responses (like DELETE operations)
+    if (response.status === 204) {
+      return {} as T;
     }
     
     return response.json();
@@ -216,28 +192,57 @@ function getFallbackData<T>(endpoint: string): T {
   console.warn(`[API] Using fallback data for ${endpoint}`);
   
   const fallbacks: Record<string, any> = {
+    '/blogs': [
+      { id: 1, title: 'Getting Started with React', excerpt: 'Learn the basics of React', content: 'This is a sample blog post about React.', author: 'Jakob Johnson', createdAt: '2023-05-01T12:00:00Z' },
+      { id: 2, title: 'Advanced TypeScript Techniques', excerpt: 'Take your TypeScript to the next level', content: 'This is a sample blog post about TypeScript.', author: 'Jakob Johnson', createdAt: '2023-05-15T12:00:00Z' }
+    ],
+    '/users': [
+      { _id: "1", username: 'admin', email: 'admin@example.com', isAdmin: true, createdAt: '2023-01-01T12:00:00Z' },
+      { _id: "2", username: 'editor', email: 'editor@example.com', isAdmin: false, createdAt: '2023-02-01T12:00:00Z' }
+    ],
     '/skills': [
       { id: 1, name: 'React', level: 90, category: 'Frontend' },
-      { id: 2, name: 'Node.js', level: 85, category: 'Backend' }
+      { id: 2, name: 'Node.js', level: 85, category: 'Backend' },
+      { id: 3, name: 'TypeScript', level: 80, category: 'Language' },
+      { id: 4, name: 'MongoDB', level: 75, category: 'Database' }
     ],
     '/projects': [
-      { id: 1, title: 'Portfolio Site', description: 'My personal portfolio', technologies: ['React', 'Tailwind'] }
+      { id: 1, title: 'Portfolio Website', description: 'A modern portfolio website built with React and TypeScript', technologies: ['React', 'TypeScript', 'Tailwind CSS'] },
+      { id: 2, title: 'E-commerce Platform', description: 'A full-stack e-commerce platform with secure payments', technologies: ['React', 'Node.js', 'MongoDB', 'Stripe'] }
     ],
     '/stats': {
-      visitors: 1000,
+      visitors: 1200,
       projectsCompleted: 15,
       happyClients: 10
     },
     '/services': [
-      { id: 1, title: 'Web Development', description: 'Full-stack web development services' },
-      { id: 2, title: 'UI/UX Design', description: 'User interface and experience design' }
+      { id: 1, title: 'Web Development', description: 'Full-stack web development services using modern technologies.' },
+      { id: 2, title: 'UI/UX Design', description: 'User-centered design with a focus on usability and aesthetics.' },
+      { id: 3, title: 'API Development', description: 'RESTful and GraphQL API development for your applications.' }
     ]
   };
 
-  return fallbacks[endpoint] || null;
+  // Check if the endpoint is a specific item request like /blogs/1
+  const matches = endpoint.match(/^\/(\w+)\/(\d+)$/);
+  if (matches) {
+    const [, collection, idStr] = matches;
+    const id = parseInt(idStr, 10);
+    const items = fallbacks[`/${collection}`] || [];
+    
+    // Handle different ID field names based on collection
+    if (collection === 'users') {
+      const item = items.find((item: any) => item._id === idStr);
+      return (item || null) as T;
+    } else {
+      const item = items.find((item: any) => item.id === id);
+      return (item || null) as T;
+    }
+  }
+
+  return (fallbacks[endpoint] || null) as T;
 }
 
-// Services remain the same
+// Services remain the same but updated return types
 export const blogService = {
   getAllBlogs: async (): Promise<Blog[]> => apiFetch('/blogs'),
   getBlogById: async (id: string | number): Promise<Blog> => apiFetch(`/blogs/${id}`),
@@ -251,7 +256,7 @@ export const blogService = {
 
 export const userService = {
   getAllUsers: async (): Promise<User[]> => apiFetch('/users'),
-  getCurrentUser: async (): Promise<User> => apiFetch('/users/me')
+  getCurrentUser: async (): Promise<User> => apiFetch('/auth/profile')
 };
 
 export const authService = {

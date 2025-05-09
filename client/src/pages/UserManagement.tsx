@@ -1,23 +1,24 @@
-// src/pages/UserManagement.tsx
+// src/pages/UserManagement.tsx - Updated User interface & usage
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { userService } from "@/services/apiService";
 
+// Updated to match the interface in apiService.ts
 interface User {
-  id: number;
+  _id: string;  // Changed from id to _id
   username: string;
   email: string;
-  role: string;
-  createdAt: string;
+  isAdmin: boolean;
+  createdAt?: string;
 }
 
 const UserManagement = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]); // Changed from number[] to string[]
   
   useEffect(() => {
     setIsLoading(true);
@@ -33,7 +34,7 @@ const UserManagement = () => {
       });
   }, []);
   
-  const toggleUserSelection = (userId: number) => {
+  const toggleUserSelection = (userId: string) => { // Changed from number to string
     setSelectedUsers(prev => 
       prev.includes(userId) 
         ? prev.filter(id => id !== userId)
@@ -90,12 +91,12 @@ const UserManagement = () => {
                   </thead>
                   <tbody>
                     {users?.map(user => (
-                      <tr key={user.id} className="border-b">
+                      <tr key={user._id} className="border-b">
                         <td className="px-3 py-4">{user.username}</td>
                         <td className="px-3 py-4">{user.email}</td>
                         <td className="px-3 py-4">
-                          <span className={`inline-block px-2 py-1 rounded-full text-xs ${user.role === "Administrator" ? "bg-blue-100 text-blue-800" : user.role === "Editor" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}>
-                            {user.role}
+                          <span className={`inline-block px-2 py-1 rounded-full text-xs ${user.isAdmin ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-800"}`}>
+                            {user.isAdmin ? "Administrator" : "User"}
                           </span>
                         </td>
                         <td className="px-3 py-4">

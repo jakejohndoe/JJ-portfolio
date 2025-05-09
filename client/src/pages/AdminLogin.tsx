@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { useForm } from 'react-hook-form';
+import { authService } from '@/services/apiService';
 
 type FormValues = {
   email: string;
@@ -20,32 +21,10 @@ const AdminLogin = () => {
     setError('');
     
     try {
-      // Use the full URL to your backend API
-      const response = await fetch('https://hellojakejohn.onrender.com/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-        // Add credentials if your API uses cookies for authentication
-        credentials: 'include'
-      });
+      // Use the authService to handle login
+      const result = await authService.login(data.email, data.password);
       
-      // Check if the response is JSON before parsing
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        const textResponse = await response.text();
-        console.error('Non-JSON response:', textResponse);
-        throw new Error('Server returned non-JSON response. Check API endpoint.');
-      }
-      
-      const result = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(result.message || 'Authentication failed');
-      }
-      
-      // Store token and user info in localStorage
+      // Store user info in localStorage
       localStorage.setItem('userInfo', JSON.stringify(result));
       
       // Log successful login for debugging

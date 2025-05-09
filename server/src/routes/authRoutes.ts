@@ -1,7 +1,8 @@
+// server/src/routes/authRoutes.ts
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
-import User, { IUserDocument } from '../models/User.js';
+import User from '../models/User.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -38,9 +39,9 @@ router.post('/register', async (req, res) => {
       isAdmin: (await User.countDocuments({})) === 0,
     });
 
-    // Use mongoose.Types.ObjectId explicitly
-    const userId = user._id as mongoose.Types.ObjectId;
-    const token = generateToken(userId.toString());
+    // Fix: Use type assertion for _id
+    const userId = (user._id as mongoose.Types.ObjectId).toString();
+    const token = generateToken(userId);
     
     res.cookie('token', token, {
       httpOnly: true,
@@ -51,7 +52,8 @@ router.post('/register', async (req, res) => {
       _id: user._id,
       username: user.username,
       email: user.email,
-      isAdmin: user.isAdmin
+      isAdmin: user.isAdmin,
+      token: token // Include token in response
     });
   } catch (error) {
     console.error('Registration error:', error);
@@ -71,9 +73,9 @@ router.post('/login', async (req, res) => {
     const user = await User.findOne({ email }).select('+password');
     
     if (user && (await user.matchPassword(password))) {
-      // Use mongoose.Types.ObjectId explicitly
-      const userId = user._id as mongoose.Types.ObjectId;
-      const token = generateToken(userId.toString());
+      // Fix: Use type assertion for _id
+      const userId = (user._id as mongoose.Types.ObjectId).toString();
+      const token = generateToken(userId);
       
       res.cookie('token', token, {
         httpOnly: true,
@@ -84,7 +86,8 @@ router.post('/login', async (req, res) => {
         _id: user._id,
         username: user.username,
         email: user.email,
-        isAdmin: user.isAdmin
+        isAdmin: user.isAdmin,
+        token: token // Include token in response
       });
     } else {
       res.status(401).json({ message: 'Invalid credentials' });
@@ -101,10 +104,28 @@ router.post('/logout', (req, res) => {
 });
 
 // @route GET /api/auth/profile
-router.get('/profile', protect, async (req: express.Request, res) => {
+router.get('/profile', protect, async (req, res) => {
   try {
-    const user = (await User.findById((req as any).user._id)) as IUserDocument | null;
-    res.json(user || { message: 'User not found' });
+    if (!req.user) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+    
+    // Fix: Use type assertion for _id
+    const userId = req.user._id as unknown as mongoose.Types.ObjectId;
+    
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    res.json({
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      createdAt: user.createdAt
+    });
   } catch (error) {
     console.error('Profile error:', error);
     res.status(500).json({ message: 'Server error' });

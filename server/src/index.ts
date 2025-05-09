@@ -7,6 +7,7 @@ import contactRoutes from './routes/contactRoutes.js';
 import blogRoutes from './routes/blogRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import portfolioRouter from './routes/portfolioRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 // Load env vars
 config({ path: path.resolve(process.cwd(), '.env') });
@@ -53,7 +54,7 @@ const corsOptions = {
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With', 'Origin'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With', 'Origin', 'User-Id'],
   credentials: true,
   optionsSuccessStatus: 204, // Use 204 for OPTIONS success
   preflightContinue: false,
@@ -129,6 +130,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/contact', contactRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 
 // Portfolio Routes with debug
 console.log('\n[Route Debug] Registering portfolio routes...');
