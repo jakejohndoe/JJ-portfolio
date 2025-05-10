@@ -66,7 +66,7 @@ interface ComponentProject {
   image: string;
 }
 
-// Fallback data - ensure we always have something to display
+// Fallback data - complete set of skills to display
 const fallbackSkills: ComponentSkill[] = [
   { id: 1, name: 'React', level: 90, category: 'Frontend', icon: 'icon-react' },
   { id: 2, name: 'TypeScript', level: 85, category: 'Language', icon: 'icon-typescript' },
@@ -158,15 +158,22 @@ const Home = () => {
     }
   });
 
-  // Process data when API responses change
+  // UPDATED: Modified useEffect to preserve our complete set of skills
   useEffect(() => {
-    if (apiSkills && Array.isArray(apiSkills)) {
+    // Always use our complete fallback set for now
+    // This ignores the API result to ensure we always show all skills
+    setProcessedSkills(fallbackSkills);
+    
+    // Uncomment the code below if you update your backend API with all skills
+    /*
+    if (apiSkills && Array.isArray(apiSkills) && apiSkills.length > 0) {
       const processed = apiSkills.map((skill: ApiSkill) => ({
         ...skill,
         icon: `icon-${skill.name.toLowerCase().replace(/\s+/g, '-')}`
       }));
-      setProcessedSkills(processed.length > 0 ? processed : fallbackSkills);
+      setProcessedSkills(processed);
     }
+    */
   }, [apiSkills]);
 
   useEffect(() => {
