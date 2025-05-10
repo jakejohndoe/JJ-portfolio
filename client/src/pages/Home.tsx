@@ -70,7 +70,14 @@ interface ComponentProject {
 const fallbackSkills: ComponentSkill[] = [
   { id: 1, name: 'React', level: 90, category: 'Frontend', icon: 'icon-react' },
   { id: 2, name: 'TypeScript', level: 85, category: 'Language', icon: 'icon-typescript' },
-  { id: 3, name: 'Node.js', level: 80, category: 'Backend', icon: 'icon-nodejs' }
+  { id: 3, name: 'JavaScript', level: 88, category: 'Language', icon: 'icon-javascript' },
+  { id: 4, name: 'MongoDB', level: 80, category: 'Database', icon: 'icon-mongodb' },
+  { id: 5, name: 'Tailwind CSS', level: 85, category: 'Frontend', icon: 'icon-tailwind-css' },
+  { id: 6, name: 'HTML5', level: 90, category: 'Frontend', icon: 'icon-html5' },
+  { id: 7, name: 'CSS3', level: 90, category: 'Frontend', icon: 'icon-css3' },
+  { id: 8, name: 'Git', level: 85, category: 'Tool', icon: 'icon-git' },
+  { id: 9, name: 'GitHub', level: 85, category: 'Platform', icon: 'icon-github' },
+  { id: 10, name: 'Node.js', level: 80, category: 'Backend', icon: 'icon-nodejs' }
 ];
 
 const fallbackServices: ComponentService[] = [
