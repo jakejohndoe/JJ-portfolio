@@ -22,40 +22,6 @@ interface ServicesSectionProps {
   };
 }
 
-// Top 6 services optimized for employer appeal
-const DEFAULT_SERVICES: Service[] = [
-  {
-    title: "React & Modern Frontend",
-    description: "Enterprise-grade applications with React, Redux, and Next.js that deliver exceptional user experiences while maintaining robust architecture.",
-    icon: "fab fa-react"
-  },
-  {
-    title: "Full-Stack TypeScript",
-    description: "End-to-end type safety with TypeScript across frontend and backend, reducing bugs by up to 40% and accelerating development velocity for business-critical applications.",
-    icon: "fas fa-shield-alt"
-  },
-  {
-    title: "Cloud-Native Development",
-    description: "Scalable, resilient applications built for AWS, Azure, or GCP using container orchestration, microservices architecture, and infrastructure as code.",
-    icon: "fas fa-cloud"
-  },
-  {
-    title: "API Development & Integration",
-    description: "RESTful and GraphQL APIs that connect seamlessly with third-party services, legacy systems, and microservices while maintaining industry-standard documentation.",
-    icon: "fas fa-exchange-alt"
-  },
-  {
-    title: "Database Architecture",
-    description: "Strategic data management with MongoDB, PostgreSQL, and Redis, implementing advanced patterns like CQRS and event sourcing for optimal performance at scale.",
-    icon: "fas fa-database"
-  },
-  {
-    title: "Performance Optimization",
-    description: "Sub-second loading times through advanced bundling techniques, SSR/SSG implementation, and Web Vitals optimization that directly impact conversion rates and SEO.",
-    icon: "fas fa-tachometer-alt"
-  }
-];
-
 const DEFAULT_STATS: Stats = {
   completedProjects: 3,
   satisfaction: 95,
@@ -67,8 +33,6 @@ const ServicesSection = ({
   stats = DEFAULT_STATS, 
   isLoading = { services: false, stats: false } 
 }: ServicesSectionProps) => {
-  const displayServices = services.length > 0 ? services : DEFAULT_SERVICES;
-  
   const counters = {
     projects: useCounter(stats.completedProjects, 2000),
     satisfaction: useCounter(stats.satisfaction, 2000),
@@ -80,16 +44,16 @@ const ServicesSection = ({
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Services Column */}
-          <div className="w-full md:w-1/2">
+          <div className="w-full md:w-3/5">
             <h2 className="text-3xl font-bold text-white mb-8">My Services</h2>
             
-            <div className="space-y-8">
+            <div className="grid grid-cols-1 gap-6">
               {isLoading.services ? (
-                Array(3).fill(0).map((_, index) => (
+                Array(6).fill(0).map((_, index) => (
                   <ServiceSkeleton key={index} />
                 ))
               ) : (
-                displayServices.map((service, index) => (
+                services.map((service, index) => (
                   <ServiceCard 
                     key={index} 
                     service={service} 
@@ -101,7 +65,7 @@ const ServicesSection = ({
           </div>
           
           {/* About Me Column */}
-          <div className="w-full md:w-1/2">
+          <div className="w-full md:w-2/5">
             <AboutSection 
               isLoading={isLoading.stats} 
               counters={counters} 
@@ -113,7 +77,6 @@ const ServicesSection = ({
   );
 };
 
-// Modified ServiceCard component to handle your specific icon naming pattern
 const ServiceCard = ({ service, index }: { service: Service; index: number }) => {
   // Map your existing icon names to Font Awesome classes
   const getIconClass = (iconName: string) => {

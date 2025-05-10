@@ -165,7 +165,7 @@ const Home = () => {
     setProcessedSkills(fallbackSkills);
     
     // Uncomment the code below if you update your backend API with all skills
-    /*
+    
     if (apiSkills && Array.isArray(apiSkills) && apiSkills.length > 0) {
       const processed = apiSkills.map((skill: ApiSkill) => ({
         ...skill,
@@ -173,7 +173,7 @@ const Home = () => {
       }));
       setProcessedSkills(processed);
     }
-    */
+    
   }, [apiSkills]);
 
   useEffect(() => {
