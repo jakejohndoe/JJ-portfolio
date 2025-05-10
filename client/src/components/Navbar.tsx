@@ -1,11 +1,15 @@
 // Modified Navbar.tsx
 import { useState, useEffect } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Menu } from "lucide-react"; // Using lucide-react for icons
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [location] = useLocation();
+  
+  // Check if we're on an admin page
+  const isAdminPage = location.startsWith('/admin');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,39 +49,66 @@ const Navbar = () => {
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link
           href="/"
-          onClick={() =>
-            window.scrollTo({
-              top: 0,
-              behavior: "smooth",
-            })
-          }
+          onClick={() => {
+            if (!isAdminPage) {
+              window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+              });
+            }
+            setIsOpen(false);
+          }}
           className="text-white text-xl font-bold cursor-pointer"
         >
           Jakob Johnson
         </Link>
+        
+        {/* Desktop Menu */}
         <div className="hidden md:flex space-x-8">
-          <a href="#home" onClick={handleNavClick} className="text-white hover:text-primary transition">
-            Home
-          </a>
-          <a href="#services" onClick={handleNavClick} className="text-white hover:text-primary transition">
-            About
-          </a>
-          <a href="#projects" onClick={handleNavClick} className="text-white hover:text-primary transition">
-            Projects
-          </a>
-          <a href="#contact" onClick={handleNavClick} className="text-white hover:text-primary transition">
-            Contact
-          </a>
-          <Link href="/blogs" className="text-white hover:text-primary transition">
-            Blog
-          </Link>
+          {isAdminPage ? (
+            // Admin Navigation Links
+            <>
+              <Link href="/" className="text-white hover:text-primary transition">
+                View Site
+              </Link>
+              <Link href="/admin" className={`text-white hover:text-primary transition ${location === '/admin' ? 'text-primary' : ''}`}>
+                Dashboard
+              </Link>
+              <Link href="/admin/blogs" className={`text-white hover:text-primary transition ${location === '/admin/blogs' ? 'text-primary' : ''}`}>
+                Manage Blogs
+              </Link>
+              <Link href="/admin/users" className={`text-white hover:text-primary transition ${location === '/admin/users' ? 'text-primary' : ''}`}>
+                Manage Users
+              </Link>
+            </>
+          ) : (
+            // Regular Site Navigation
+            <>
+              <a href="#home" onClick={handleNavClick} className="text-white hover:text-primary transition">
+                Home
+              </a>
+              <a href="#services" onClick={handleNavClick} className="text-white hover:text-primary transition">
+                About
+              </a>
+              <a href="#projects" onClick={handleNavClick} className="text-white hover:text-primary transition">
+                Projects
+              </a>
+              <a href="#contact" onClick={handleNavClick} className="text-white hover:text-primary transition">
+                Contact
+              </a>
+              <Link href="/blogs" className="text-white hover:text-primary transition">
+                Blog
+              </Link>
+            </>
+          )}
         </div>
+        
         <button
           className="md:hidden text-white"
           onClick={toggleMenu}
           aria-label="Toggle menu"
         >
-          <Menu size={24} /> {/* Using Lucide icon instead of FontAwesome */}
+          <Menu size={24} />
         </button>
       </div>
       
@@ -88,21 +119,62 @@ const Navbar = () => {
         }`}
       >
         <div className="container mx-auto px-4 py-4 flex flex-col space-y-4">
-          <a href="#home" onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
-            Home
-          </a>
-          <a href="#services" onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
-            About
-          </a>
-          <a href="#projects" onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
-            Projects
-          </a>
-          <a href="#contact" onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
-            Contact
-          </a>
-          <Link href="/blogs" className="text-white hover:text-primary transition py-2 px-4">
-            Blog
-          </Link>
+          {isAdminPage ? (
+            // Admin Mobile Navigation
+            <>
+              <Link 
+                href="/" 
+                className="text-white hover:text-primary transition py-2 px-4"
+                onClick={() => setIsOpen(false)}
+              >
+                View Site
+              </Link>
+              <Link 
+                href="/admin" 
+                className={`text-white hover:text-primary transition py-2 px-4 ${location === '/admin' ? 'text-primary' : ''}`}
+                onClick={() => setIsOpen(false)}
+              >
+                Dashboard
+              </Link>
+              <Link 
+                href="/admin/blogs" 
+                className={`text-white hover:text-primary transition py-2 px-4 ${location === '/admin/blogs' ? 'text-primary' : ''}`}
+                onClick={() => setIsOpen(false)}
+              >
+                Manage Blogs
+              </Link>
+              <Link 
+                href="/admin/users" 
+                className={`text-white hover:text-primary transition py-2 px-4 ${location === '/admin/users' ? 'text-primary' : ''}`}
+                onClick={() => setIsOpen(false)}
+              >
+                Manage Users
+              </Link>
+            </>
+          ) : (
+            // Regular Mobile Navigation
+            <>
+              <a href="#home" onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
+                Home
+              </a>
+              <a href="#services" onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
+                About
+              </a>
+              <a href="#projects" onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
+                Projects
+              </a>
+              <a href="#contact" onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
+                Contact
+              </a>
+              <Link 
+                href="/blogs" 
+                className="text-white hover:text-primary transition py-2 px-4"
+                onClick={() => setIsOpen(false)}
+              >
+                Blog
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>
