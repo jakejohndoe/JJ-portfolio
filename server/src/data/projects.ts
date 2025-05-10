@@ -1,15 +1,20 @@
 export const projects = [
-    {
-      title: "StretchSmart",
-      description: "A smart stretching app that targets body parts using AI.",
-      link: "https://hellojakejohn.com/stretchsmart",
-      tech: ["React", "Three.js", "MongoDB"],
-    },
-    {
-      title: "VibeCheck",
-      description: "A mood-based to-do list that adapts to your emotional state.",
-      link: "https://hellojakejohn.com/vibecheck",
-      tech: ["React", "Express", "Weather API"],
-    },
-  ];
-  
+  {
+    title: "StretchSmart",
+    description: "A smart stretching app that targets body parts using AI.",
+    link: "https://v0-stretch-app.vercel.app/",
+    tech: ["React", "Three.js", "MongoDB"],
+  },
+  {
+    title: "ReWork",
+    description: "Rework your resume for any job in one click.",
+    link: "https://github.com/jakejohndoe",
+    tech: ["React", "Express", "OpenAI API"],
+  },
+  {
+    title: "PackPerfect",
+    description: "PackPerfect finds the best moving services for your space and belongings, with personalized cost breakdowns for a seamless move.",
+    link: "https://github.com/jakejohndoe",
+    tech: ["React", "TypeScript", "Tailwind CSS"],
+  }
+];

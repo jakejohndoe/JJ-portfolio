@@ -99,32 +99,32 @@ const fallbackProjects: ComponentProject[] = [
       { name: 'Three.js' }, 
       { name: 'MongoDB' }
     ],
-    image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1170&q=80',
-    link: 'https://hellojakejohn.com/stretchsmart'
+    image: 'https://plus.unsplash.com/premium_photo-1665673312770-f80cac75b319?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    link: 'https://v0-stretch-app.vercel.app/'
   },
   { 
     id: 2, 
-    title: 'VibeCheck', 
-    description: 'A mood-based to-do list that adapts to your emotional state.', 
+    title: 'ReWork', 
+    description: 'Rework your resume for any job in one click.', 
     technologies: [
       { name: 'React' }, 
       { name: 'Express' }, 
-      { name: 'Weather API' }
+      { name: 'OpenAI API' }
     ],
-    image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1170&q=80',
-    link: 'https://hellojakejohn.com/vibecheck'
+    image: 'https://images.pexels.com/photos/4560150/pexels-photo-4560150.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    link: 'https://github.com/jakejohndoe'
   },
   { 
     id: 3, 
-    title: 'Portfolio Website', 
-    description: 'A modern portfolio built with React, TypeScript, and Tailwind CSS.', 
+    title: 'PackPerfect', 
+    description: 'PackPerfect finds the best moving services for your space and belongings, with personalized cost breakdowns for a seamless move.', 
     technologies: [
       { name: 'React' }, 
       { name: 'TypeScript' },
       { name: 'Tailwind CSS' }
     ],
-    image: 'https://images.unsplash.com/photo-1487017159836-4e23ece2e4cf?auto=format&fit=crop&w=1170&q=80',
-    link: 'https://hellojakejohn.com'
+    image: 'https://images.pexels.com/photos/4569340/pexels-photo-4569340.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    link: 'https://github.com/jakejohndoe'
   }
 ];
 
