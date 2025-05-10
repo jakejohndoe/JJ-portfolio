@@ -96,27 +96,34 @@ const UserManagement = () => {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     
     try {
       if (modalMode === 'add') {
-        // Call API to create user (use a mock implementation for now)
-        // TODO: Implement actual API call once endpoint is available
-        const newUser = {
-          _id: Date.now().toString(), // Mock ID for now
-          ...formData,
-          createdAt: new Date().toISOString()
-        };
-        setUsers([...users, newUser]);
+        await userService.createUser({
+          username: formData.username,
+          email: formData.email,
+          password: formData.password || '',
+          isAdmin: formData.isAdmin
+        });
+        // Reload users from API to get the newly created user
+        loadUsers();
         alert('User created successfully!');
       } else if (modalMode === 'edit' && currentUser) {
-        // Call API to update user (use a mock implementation for now)
-        // TODO: Implement actual API call once endpoint is available
-        const updatedUsers = users.map(user => 
-          user._id === currentUser._id 
-            ? { ...user, username: formData.username, email: formData.email, isAdmin: formData.isAdmin }
-            : user
-        );
-        setUsers(updatedUsers);
+        // Only send password if it's provided
+        const updateData: Partial<User> = {
+          username: formData.username,
+          email: formData.email,
+          isAdmin: formData.isAdmin
+        };
+        
+        if (formData.password) {
+          (updateData as any).password = formData.password;
+        }
+        
+        await userService.updateUser(currentUser._id, updateData);
+        // Reload users to get updated data
+        loadUsers();
         alert('User updated successfully!');
       }
       
@@ -129,13 +136,12 @@ const UserManagement = () => {
   };
   
   // Handle user deletion
-  const handleDeleteUser = (userId: string) => {
+  const handleDeleteUser = async (userId: string) => {
     if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       try {
-        // Call API to delete user (use a mock implementation for now)
-        // TODO: Implement actual API call once endpoint is available
-        const filteredUsers = users.filter(user => user._id !== userId);
-        setUsers(filteredUsers);
+        await userService.deleteUser(userId);
+        // Remove user from the local state
+        setUsers(users.filter(user => user._id !== userId));
         alert('User deleted successfully!');
       } catch (error) {
         console.error('Error deleting user:', error);
@@ -281,19 +287,19 @@ const UserManagement = () => {
                   />
                 </div>
                 
-                {modalMode === 'add' && (
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Password</label>
-                    <input
-                      type="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border rounded-md bg-background"
-                      required={modalMode === 'add'}
-                    />
-                  </div>
-                )}
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    {modalMode === 'add' ? 'Password' : 'New Password (leave blank to keep current)'}
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border rounded-md bg-background"
+                    required={modalMode === 'add'}
+                  />
+                </div>
                 
                 <div className="flex items-center">
                   <input

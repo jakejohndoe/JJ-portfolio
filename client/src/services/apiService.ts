@@ -213,7 +213,15 @@ export const blogService = {
 
 export const userService = {
   getAllUsers: async (): Promise<User[]> => apiFetch('/users'),
-  getCurrentUser: async (): Promise<User> => apiFetch('/auth/profile')
+  getCurrentUser: async (): Promise<User> => apiFetch('/auth/profile'),
+  // Add these new methods:
+  getUserById: async (id: string): Promise<User> => apiFetch(`/users/${id}`),
+  createUser: async (userData: {username: string, email: string, password: string, isAdmin: boolean}): Promise<User> => 
+    apiFetch('/users', { method: 'POST', body: JSON.stringify(userData) }),
+  updateUser: async (id: string, userData: Partial<User>): Promise<User> => 
+    apiFetch(`/users/${id}`, { method: 'PUT', body: JSON.stringify(userData) }),
+  deleteUser: async (id: string): Promise<void> => 
+    apiFetch(`/users/${id}`, { method: 'DELETE' })
 };
 
 export const authService = {
