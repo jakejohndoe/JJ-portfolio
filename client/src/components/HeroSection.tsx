@@ -73,7 +73,7 @@ const HeroSection = () => {
       {/* Animated Code Flow */}
       <div className={`code-flow absolute inset-0 z-0 transition-opacity duration-1000 ${isVisible ? 'opacity-30' : 'opacity-30'}`}></div>
 
-      <div className="container mx-auto px-4 flex flex-col md:flex-row items-center relative z-10">
+      <div className="container mx-auto px-4 flex flex-col md:flex-row items-center relative z-0">
         {/* Left side content */}
         <div className="md:w-1/2 mb-10 md:mb-0">
           <div className="flex items-center">
@@ -92,9 +92,9 @@ const HeroSection = () => {
               <span className="text-primary">Software</span> Developer
             </h3>
           </div>
-          <div className="mt-8 flex flex-wrap gap-4">
+          <div className="mt-8 flex flex-wrap gap-4 relative z-30">
             <Button
-              className="relative z-20 px-6 py-3 h-auto bg-primary text-white font-medium rounded hover:bg-opacity-90 transition"
+              className="px-6 py-3 h-auto bg-primary text-white font-medium rounded hover:bg-opacity-90 transition"
               onClick={() => {
                 console.log("Got a project button clicked!");
                 const contactSection = document.querySelector("#contact");

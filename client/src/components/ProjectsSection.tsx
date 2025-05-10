@@ -1,5 +1,7 @@
+// Modified ProjectsSection.tsx
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ExternalLink } from "lucide-react";
 
 interface Technology {
   name: string;
@@ -10,6 +12,7 @@ interface Project {
   description: string;
   image: string;
   technologies: Technology[];
+  link?: string; // Added link property
 }
 
 interface ProjectsSectionProps {
@@ -29,7 +32,8 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
         { name: "Node.js" },
         { name: "MongoDB" },
         { name: "Express" }
-      ]
+      ],
+      link: "https://github.com/jakejohndoe" // Replace with actual project link
     },
     {
       title: "Rework",
@@ -41,7 +45,8 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
         { name: "Node.js" },
         { name: "Express" },
         { name: "MongoDB" }
-      ]
+      ],
+      link: "https://github.com/jakejohndoe" // Replace with actual project link
     },
     {
       title: "Moodo",
@@ -51,7 +56,8 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
         { name: "Vue.js" },
         { name: "D3.js" },
         { name: "Express" }
-      ]
+      ],
+      link: "https://github.com/jakejohndoe" // GitHub Repo -- edit if needed.
     }
   ];
 
@@ -85,9 +91,12 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
           ) : (
             // Display projects
             displayProjects.map((project, index) => (
-              <div 
+              <a 
+                href={project.link || "#"} 
+                target="_blank" 
+                rel="noopener noreferrer"
                 key={index} 
-                className="project-card bg-card rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:transform hover:scale-105"
+                className="project-card bg-card rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:transform hover:scale-105 group"
               >
                 <div className="relative h-48">
                   <img 
@@ -96,8 +105,9 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 p-4">
+                  <div className="absolute bottom-0 left-0 p-4 w-full flex justify-between items-center">
                     <h3 className="text-xl font-semibold text-white">{project.title}</h3>
+                    <ExternalLink className="text-primary opacity-0 group-hover:opacity-100 transition-opacity" size={18} />
                   </div>
                 </div>
                 <div className="p-4">
@@ -110,14 +120,19 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
                     ))}
                   </div>
                 </div>
-              </div>
+              </a>
             ))
           )}
         </div>
         
         <div className="mt-10 text-center">
-          <Button className="inline-block px-8 py-6 h-auto bg-primary text-white font-medium rounded hover:bg-opacity-90 transition">
-            View All Projects
+          <Button 
+            className="inline-block px-8 py-6 h-auto bg-primary text-white font-medium rounded hover:bg-opacity-90 transition"
+            asChild
+          >
+            <a href="https://github.com/jakejohndoe" target="_blank" rel="noopener noreferrer">
+              View All Projects
+            </a>
           </Button>
         </div>
       </div>
