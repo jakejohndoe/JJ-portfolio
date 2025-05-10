@@ -25,11 +25,13 @@ interface ApiService {
 }
 
 interface ApiProject {
-  id: number;
+  id?: number;
   title: string;
   description: string;
-  technologies: string[];
+  technologies?: string[];
+  tech?: string[];
   imageUrl?: string;
+  link?: string;
 }
 
 interface ApiStats {
@@ -59,11 +61,12 @@ interface Technology {
 }
 
 interface ComponentProject {
-  id: number;
+  id?: number;
   title: string;
   description: string;
   technologies: Technology[];
   image: string;
+  link?: string;
 }
 
 // Fallback data - complete set of skills to display
@@ -85,13 +88,43 @@ const fallbackServices: ComponentService[] = [
   { id: 2, title: 'API Development', description: 'Creating robust backend services', icon: 'icon-api' }
 ];
 
+// Updated fallback projects to include the ones from your server data
 const fallbackProjects: ComponentProject[] = [
   { 
     id: 1, 
+    title: 'StretchSmart', 
+    description: 'A smart stretching app that targets body parts using AI.', 
+    technologies: [
+      { name: 'React' }, 
+      { name: 'Three.js' }, 
+      { name: 'MongoDB' }
+    ],
+    image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1170&q=80',
+    link: 'https://hellojakejohn.com/stretchsmart'
+  },
+  { 
+    id: 2, 
+    title: 'VibeCheck', 
+    description: 'A mood-based to-do list that adapts to your emotional state.', 
+    technologies: [
+      { name: 'React' }, 
+      { name: 'Express' }, 
+      { name: 'Weather API' }
+    ],
+    image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1170&q=80',
+    link: 'https://hellojakejohn.com/vibecheck'
+  },
+  { 
+    id: 3, 
     title: 'Portfolio Website', 
-    description: 'A modern portfolio built with React', 
-    technologies: [{ name: 'React' }, { name: 'TypeScript' }],
-    image: 'default-image.jpg'
+    description: 'A modern portfolio built with React, TypeScript, and Tailwind CSS.', 
+    technologies: [
+      { name: 'React' }, 
+      { name: 'TypeScript' },
+      { name: 'Tailwind CSS' }
+    ],
+    image: 'https://images.unsplash.com/photo-1487017159836-4e23ece2e4cf?auto=format&fit=crop&w=1170&q=80',
+    link: 'https://hellojakejohn.com'
   }
 ];
 
@@ -137,7 +170,9 @@ const Home = () => {
     queryKey: ['projects'],
     queryFn: async () => {
       try {
-        return await portfolioService.getProjects();
+        const projects = await portfolioService.getProjects();
+        console.log("API Projects response:", projects);
+        return projects;
       } catch (error) {
         console.error("Error fetching projects:", error);
         return [];
@@ -165,7 +200,7 @@ const Home = () => {
     setProcessedSkills(fallbackSkills);
     
     // Uncomment the code below if you update your backend API with all skills
-    
+    /*
     if (apiSkills && Array.isArray(apiSkills) && apiSkills.length > 0) {
       const processed = apiSkills.map((skill: ApiSkill) => ({
         ...skill,
@@ -173,7 +208,7 @@ const Home = () => {
       }));
       setProcessedSkills(processed);
     }
-    
+    */
   }, [apiSkills]);
 
   // UPDATED: Modified useEffect to always show all 6 services
@@ -217,32 +252,42 @@ const Home = () => {
         icon: 'fas fa-tachometer-alt' 
       }
     ]);
-    
-    // Uncomment the code below if you want to restore API functionality later
-    /*
-    if (apiServices && Array.isArray(apiServices)) {
-      const processed = apiServices.map((service: ApiService) => ({
-        ...service,
-        icon: `icon-${service.title.toLowerCase().replace(/\s+/g, '-')}`
-      }));
-      setProcessedServices(processed.length > 0 ? processed : fallbackServices);
-    }
-    */
   }, [apiServices]);
 
+  // UPDATED: Fixed project processing to handle both data formats
   useEffect(() => {
-    if (apiProjects && Array.isArray(apiProjects)) {
-      const processed = apiProjects.map((project: ApiProject) => ({
-        id: project.id,
-        title: project.title,
-        description: project.description,
-        image: project.imageUrl || 'default-image.jpg',
-        technologies: Array.isArray(project.technologies) 
-          ? project.technologies.map((tech: string) => ({ name: tech }))
-          : []
-      }));
-      setProcessedProjects(processed.length > 0 ? processed : fallbackProjects);
+    // Log for debugging
+    console.log("API Projects in useEffect:", apiProjects);
+    
+    // Always start with fallback projects
+    let projects = [...fallbackProjects];
+    
+    if (apiProjects && Array.isArray(apiProjects) && apiProjects.length > 0) {
+      console.log("Processing API projects");
+      
+      const processed = apiProjects.map((project: ApiProject) => {
+        // Handle tech vs technologies format difference
+        const techArray = project.technologies || project.tech || [];
+        
+        return {
+          id: project.id,
+          title: project.title,
+          description: project.description,
+          image: project.imageUrl || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1170&q=80',
+          technologies: Array.isArray(techArray) 
+            ? techArray.map((tech: string) => ({ name: tech }))
+            : [],
+          link: project.link
+        };
+      });
+      
+      if (processed.length > 0) {
+        projects = processed;
+      }
     }
+    
+    console.log("Final processed projects:", projects);
+    setProcessedProjects(projects);
   }, [apiProjects]);
 
   useEffect(() => {

@@ -1,4 +1,3 @@
-// Modified ProjectsSection.tsx
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ExternalLink } from "lucide-react";
@@ -10,9 +9,10 @@ interface Technology {
 interface Project {
   title: string;
   description: string;
-  image: string;
-  technologies: Technology[];
-  link?: string; // Added link property
+  image?: string; // Make image optional
+  technologies?: Technology[];
+  tech?: string[]; // Add support for the server format
+  link?: string;
 }
 
 interface ProjectsSectionProps {
@@ -33,7 +33,7 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
         { name: "MongoDB" },
         { name: "Express" }
       ],
-      link: "https://github.com/jakejohndoe" // Replace with actual project link
+      link: "https://github.com/jakobjohnson"
     },
     {
       title: "Rework",
@@ -46,7 +46,7 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
         { name: "Express" },
         { name: "MongoDB" }
       ],
-      link: "https://github.com/jakejohndoe" // Replace with actual project link
+      link: "https://github.com/jakobjohnson"
     },
     {
       title: "Moodo",
@@ -57,11 +57,26 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
         { name: "D3.js" },
         { name: "Express" }
       ],
-      link: "https://github.com/jakejohndoe" // GitHub Repo -- edit if needed.
+      link: "https://github.com/jakobjohnson"
     }
   ];
 
-  const displayProjects = projects.length > 0 ? projects : defaultProjects;
+  // Normalize projects to ensure they have the correct format
+  const normalizedProjects = projects.map(project => {
+    // Convert tech array to technologies format if needed
+    const technologies = project.technologies || 
+      (project.tech ? project.tech.map(name => ({ name })) : []);
+    
+    return {
+      ...project,
+      technologies,
+      // Use a default image if none is provided
+      image: project.image || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTR8fGNvZGluZ3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
+    };
+  });
+
+  // Use normalized projects if available, otherwise fallback to defaults
+  const displayProjects = normalizedProjects.length > 0 ? normalizedProjects : defaultProjects;
 
   return (
     <section id="projects" className="py-16 bg-[#0F172A]">
@@ -113,7 +128,7 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
                 <div className="p-4">
                   <p className="text-gray-400 mb-4">{project.description}</p>
                   <div className="flex flex-wrap gap-2">
-                    {project.technologies.map((tech, techIndex) => (
+                    {project.technologies && project.technologies.map((tech, techIndex) => (
                       <span key={techIndex} className="px-2 py-1 bg-background text-xs text-primary rounded">
                         {tech.name}
                       </span>
@@ -130,7 +145,7 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
             className="inline-block px-8 py-6 h-auto bg-primary text-white font-medium rounded hover:bg-opacity-90 transition"
             asChild
           >
-            <a href="https://github.com/jakejohndoe" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/jakobjohnson" target="_blank" rel="noopener noreferrer">
               View All Projects
             </a>
           </Button>
