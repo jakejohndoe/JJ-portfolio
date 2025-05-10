@@ -30,3 +30,5 @@ export const services = [
     icon: "fas fa-tachometer-alt"
   }
 ];
+
+export default services;

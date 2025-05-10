@@ -113,19 +113,66 @@ const ServicesSection = ({
   );
 };
 
-// Modified ServiceCard to handle both Font Awesome icons and emoji icons
+// Modified ServiceCard component to handle your specific icon naming pattern
 const ServiceCard = ({ service, index }: { service: Service; index: number }) => {
-  // Check if the icon is a Font Awesome class (starts with fa- or fab)
-  const isFontAwesome = service.icon.startsWith('fa') || service.icon.startsWith('fas ') || 
-                       service.icon.startsWith('fab ') || service.icon.startsWith('far ');
+  // Map your existing icon names to Font Awesome classes
+  const getIconClass = (iconName: string) => {
+    switch (iconName) {
+      case 'icon-web':
+        return 'fas fa-globe';
+      case 'icon-api':
+        return 'fas fa-server';
+      case 'icon-react':
+        return 'fab fa-react';
+      case 'icon-nodejs':
+      case 'icon-node-js':
+        return 'fab fa-node-js';
+      case 'icon-typescript':
+        return 'fab fa-js-square'; // No specific TS icon in Font Awesome free
+      case 'icon-database':
+        return 'fas fa-database';
+      case 'icon-cloud':
+        return 'fas fa-cloud';
+      case 'icon-git':
+        return 'fab fa-git-alt';
+      case 'icon-github':
+        return 'fab fa-github';
+      case 'icon-tailwind-css':
+      case 'icon-css':
+      case 'icon-css3':
+        return 'fab fa-css3-alt';
+      case 'icon-html':
+      case 'icon-html5':
+        return 'fab fa-html5';
+      case 'icon-javascript':
+      case 'icon-js':
+        return 'fab fa-js';
+      // Add other mappings as needed
+      default:
+        // If the icon is already a Font Awesome class (starts with fa)
+        if (iconName.startsWith('fa') || iconName.startsWith('fas ') || 
+            iconName.startsWith('fab ') || iconName.startsWith('far ')) {
+          return iconName;
+        }
+        // Handle emoji icons
+        if (iconName.length <= 2) {
+          return ''; // It's likely an emoji
+        }
+        // Fallback
+        return 'fas fa-code';
+    }
+  };
+  
+  const iconClass = getIconClass(service.icon);
+  const isEmoji = service.icon.length <= 2 && !iconClass;
   
   return (
     <div className="flex items-start gap-4 p-6 bg-card rounded-lg hover:bg-card-hover transition-colors">
       <div className="p-2 bg-primary/10 rounded-full">
-        {isFontAwesome ? (
-          <i className={`${service.icon} text-primary text-xl`} />
-        ) : (
+        {isEmoji ? (
           <span className="text-primary text-2xl">{service.icon}</span>
+        ) : (
+          <i className={`${iconClass} text-primary text-xl`} />
         )}
       </div>
       <div>
