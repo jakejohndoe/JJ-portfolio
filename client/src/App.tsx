@@ -4,7 +4,9 @@ import BlogList from "@/pages/BlogList";
 import BlogPost from "@/pages/BlogPost";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
+import AdminBlogList from "@/pages/AdminBlogList";
 import BlogCreation from "@/pages/BlogCreation";
+import BlogEdit from "@/pages/BlogEdit";
 import UserManagement from "@/pages/UserManagement";
 import NotFound from "@/pages/not-found";
 import SpotlightCursor from "@/components/CustomCursor";
@@ -44,7 +46,7 @@ function App() {
         <Route path="/admin/blogs">
           {() => (
             <ProtectedRoute>
-              <BlogList />
+              <AdminBlogList />
             </ProtectedRoute>
           )}
         </Route>
@@ -53,6 +55,14 @@ function App() {
           {() => (
             <ProtectedRoute>
               <BlogCreation />
+            </ProtectedRoute>
+          )}
+        </Route>
+        
+        <Route path="/admin/blogs/edit/:id">
+          {() => (
+            <ProtectedRoute>
+              <BlogEdit />
             </ProtectedRoute>
           )}
         </Route>
