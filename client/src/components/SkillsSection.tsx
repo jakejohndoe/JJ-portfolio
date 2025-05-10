@@ -15,10 +15,13 @@ import {
   SiTailwindcss 
 } from "react-icons/si";
 
+// Match the interface from Home.tsx
 interface Skill {
+  id: number;
   name: string;
-  icon?: React.ReactNode;
-  className?: string;
+  level: number;
+  category: string;
+  icon: string;
 }
 
 interface SkillsSectionProps {
@@ -27,61 +30,38 @@ interface SkillsSectionProps {
 }
 
 const SkillsSection = ({ skills, isLoading }: SkillsSectionProps) => {
-  // Define our skills with direct icon components
-  const defaultSkills: Skill[] = [
-    { 
-      name: "React", 
-      icon: <FaReact size={40} color="#61DAFB" />,
-      className: "icon-react" 
-    },
-    { 
-      name: "TypeScript", 
-      icon: <SiTypescript size={40} color="#3178C6" />,
-      className: "icon-typescript" 
-    },
-    { 
-      name: "JavaScript", 
-      icon: <FaJs size={40} color="#F7DF1E" />,
-      className: "icon-javascript" 
-    },
-    { 
-      name: "MongoDB", 
-      icon: <SiMongodb size={40} color="#47A248" />,
-      className: "icon-mongodb" 
-    },
-    { 
-      name: "Tailwind CSS", 
-      icon: <SiTailwindcss size={40} color="#06B6D4" />,
-      className: "icon-tailwind-css" 
-    },
-    { 
-      name: "HTML5", 
-      icon: <FaHtml5 size={40} color="#E34F26" />,
-      className: "icon-html" 
-    },
-    { 
-      name: "CSS", 
-      icon: <FaCss3Alt size={40} color="#1572B6" />,
-      className: "icon-css" 
-    },
-    { 
-      name: "Git", 
-      icon: <FaGitAlt size={40} color="#F05032" />,
-      className: "icon-git" 
-    },
-    { 
-      name: "GitHub", 
-      icon: <FaGithub size={40} color="#181717" />,
-      className: "icon-github" 
-    },
-    { 
-      name: "Node.js", 
-      icon: <FaNodeJs size={40} color="#339933" />,
-      className: "icon-nodejs" 
-    },
-  ];
-
-  const displaySkills = skills && skills.length > 0 ? skills : defaultSkills;
+  // Map icon strings to React components
+  const getIconComponent = (iconName: string) => {
+    switch (iconName) {
+      case 'icon-react':
+        return <FaReact size={40} color="#61DAFB" />;
+      case 'icon-typescript':
+        return <SiTypescript size={40} color="#3178C6" />;
+      case 'icon-javascript':
+      case 'icon-js':
+        return <FaJs size={40} color="#F7DF1E" />;
+      case 'icon-mongodb':
+        return <SiMongodb size={40} color="#47A248" />;
+      case 'icon-tailwind-css':
+        return <SiTailwindcss size={40} color="#06B6D4" />;
+      case 'icon-html5':
+      case 'icon-html':
+        return <FaHtml5 size={40} color="#E34F26" />;
+      case 'icon-css':
+      case 'icon-css3-alt':
+        return <FaCss3Alt size={40} color="#1572B6" />;
+      case 'icon-git':
+      case 'icon-git-alt':
+        return <FaGitAlt size={40} color="#F05032" />;
+      case 'icon-github':
+        return <FaGithub size={40} color="#181717" />;
+      case 'icon-nodejs':
+      case 'icon-node-js':
+        return <FaNodeJs size={40} color="#339933" />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <section className="py-12 bg-[#0F172A]">
@@ -96,11 +76,11 @@ const SkillsSection = ({ skills, isLoading }: SkillsSectionProps) => {
               </div>
             ))
           ) : (
-            // Display skills with more explicit styling
-            displaySkills.map((skill, index) => (
-              <div key={index} className={`flex flex-col items-center ${skill.className || ''}`}>
-                <div className="mb-4 text-gray-300 hover:text-white transition-colors" style={{ fontSize: '40px', lineHeight: 1 }}>
-                  {skill.icon}
+            // Display skills with icon mapping
+            skills.map((skill, index) => (
+              <div key={index} className="flex flex-col items-center">
+                <div className="mb-4 text-gray-300 hover:text-white transition-colors">
+                  {getIconComponent(skill.icon)}
                 </div>
                 <p className="text-gray-400">{skill.name}</p>
               </div>
