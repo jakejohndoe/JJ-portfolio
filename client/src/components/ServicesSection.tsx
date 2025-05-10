@@ -22,31 +22,37 @@ interface ServicesSectionProps {
   };
 }
 
+// Top 6 services optimized for employer appeal
 const DEFAULT_SERVICES: Service[] = [
   {
-    title: "React/Next.js Development",
-    description: "High-performance React applications with SSR and optimized rendering.",
+    title: "React & Modern Frontend",
+    description: "Enterprise-grade applications with React, Redux, and Next.js that deliver exceptional user experiences while maintaining robust architecture.",
     icon: "fab fa-react"
   },
   {
-    title: "Node.js Backends",
-    description: "Scalable server-side applications with Express or NestJS.",
-    icon: "fab fa-node-js"
-  },
-  {
-    title: "TypeScript Expertise",
-    description: "Type-safe JavaScript development for more robust applications.",
+    title: "Full-Stack TypeScript",
+    description: "End-to-end type safety with TypeScript across frontend and backend, reducing bugs by up to 40% and accelerating development velocity for business-critical applications.",
     icon: "fas fa-shield-alt"
   },
   {
-    title: "Database Solutions",
-    description: "PostgreSQL, MongoDB, and ORMs like Prisma/Drizzle.",
+    title: "Cloud-Native Development",
+    description: "Scalable, resilient applications built for AWS, Azure, or GCP using container orchestration, microservices architecture, and infrastructure as code.",
+    icon: "fas fa-cloud"
+  },
+  {
+    title: "API Development & Integration",
+    description: "RESTful and GraphQL APIs that connect seamlessly with third-party services, legacy systems, and microservices while maintaining industry-standard documentation.",
+    icon: "fas fa-exchange-alt"
+  },
+  {
+    title: "Database Architecture",
+    description: "Strategic data management with MongoDB, PostgreSQL, and Redis, implementing advanced patterns like CQRS and event sourcing for optimal performance at scale.",
     icon: "fas fa-database"
   },
   {
-    title: "Cloud Architecture",
-    description: "AWS/Vercel deployments with Terraform and Docker.",
-    icon: "fas fa-cloud"
+    title: "Performance Optimization",
+    description: "Sub-second loading times through advanced bundling techniques, SSR/SSG implementation, and Web Vitals optimization that directly impact conversion rates and SEO.",
+    icon: "fas fa-tachometer-alt"
   }
 ];
 
@@ -107,25 +113,35 @@ const ServicesSection = ({
   );
 };
 
-// Sub-components for better organization
+// Modified ServiceCard to handle both Font Awesome icons and emoji icons
+const ServiceCard = ({ service, index }: { service: Service; index: number }) => {
+  // Check if the icon is a Font Awesome class (starts with fa- or fab)
+  const isFontAwesome = service.icon.startsWith('fa') || service.icon.startsWith('fas ') || 
+                       service.icon.startsWith('fab ') || service.icon.startsWith('far ');
+  
+  return (
+    <div className="flex items-start gap-4 p-6 bg-card rounded-lg hover:bg-card-hover transition-colors">
+      <div className="p-2 bg-primary/10 rounded-full">
+        {isFontAwesome ? (
+          <i className={`${service.icon} text-primary text-xl`} />
+        ) : (
+          <span className="text-primary text-2xl">{service.icon}</span>
+        )}
+      </div>
+      <div>
+        <h3 className="text-xl font-semibold text-white mb-2">{service.title}</h3>
+        <p className="text-gray-400">{service.description}</p>
+      </div>
+    </div>
+  );
+};
+
 const ServiceSkeleton = () => (
   <div className="flex items-start gap-4 p-4 bg-card rounded-lg">
     <Skeleton className="h-10 w-10 rounded-full" />
     <div className="flex-1 space-y-2">
       <Skeleton className="h-6 w-3/4" />
       <Skeleton className="h-4 w-full" />
-    </div>
-  </div>
-);
-
-const ServiceCard = ({ service, index }: { service: Service; index: number }) => (
-  <div className="flex items-start gap-4 p-6 bg-card rounded-lg hover:bg-card-hover transition-colors">
-    <div className="p-2 bg-primary/10 rounded-full">
-      <i className={`${service.icon} text-primary text-xl`} />
-    </div>
-    <div>
-      <h3 className="text-xl font-semibold text-white mb-2">{service.title}</h3>
-      <p className="text-gray-400">{service.description}</p>
     </div>
   </div>
 );
