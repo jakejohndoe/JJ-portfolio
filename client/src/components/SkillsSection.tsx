@@ -1,15 +1,23 @@
 import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { 
-  FaHtml5, FaCss3Alt, FaJs, FaNodeJs, FaReact, FaGitAlt, FaGithub
+  FaReact, 
+  FaHtml5, 
+  FaCss3Alt, 
+  FaJs, 
+  FaNodeJs, 
+  FaGitAlt, 
+  FaGithub 
 } from "react-icons/fa";
-import { SiTypescript, SiMongodb, SiTailwindcss } from "react-icons/si";
+import { 
+  SiTypescript, 
+  SiMongodb, 
+  SiTailwindcss 
+} from "react-icons/si";
 
-// Updated interface to match how skills are used
 interface Skill {
   name: string;
-  component?: React.ReactNode;
-  icon?: string;
+  icon?: React.ReactNode;
 }
 
 interface SkillsSectionProps {
@@ -17,20 +25,23 @@ interface SkillsSectionProps {
   isLoading: boolean;
 }
 
+
 const SkillsSection = ({ skills, isLoading }: SkillsSectionProps) => {
+  // Use a simpler approach with direct icon elements
   const defaultSkills: Skill[] = [
-    { name: "React", component: <FaReact className="text-3xl text-blue-400" /> },
-    { name: "TypeScript", component: <SiTypescript className="text-3xl text-blue-600" /> },
-    { name: "JavaScript", component: <FaJs className="text-3xl text-yellow-400" /> },
-    { name: "MongoDB", component: <SiMongodb className="text-3xl text-green-500" /> },
-    { name: "Tailwind CSS", component: <SiTailwindcss className="text-3xl text-cyan-400" /> },
-    { name: "HTML5", component: <FaHtml5 className="text-3xl text-orange-500" /> },
-    { name: "CSS", component: <FaCss3Alt className="text-3xl text-blue-500" /> },
-    { name: "Git", component: <FaGitAlt className="text-3xl text-orange-600" /> },
-    { name: "GitHub", component: <FaGithub className="text-3xl text-gray-800" /> },
-    { name: "Node.js", component: <FaNodeJs className="text-3xl text-green-600" /> },
+    { name: "React", icon: <FaReact size={36} color="#61DAFB" /> },
+    { name: "TypeScript", icon: <SiTypescript size={36} color="#3178C6" /> },
+    { name: "JavaScript", icon: <FaJs size={36} color="#F7DF1E" /> },
+    { name: "MongoDB", icon: <SiMongodb size={36} color="#47A248" /> },
+    { name: "Tailwind CSS", icon: <SiTailwindcss size={36} color="#06B6D4" /> },
+    { name: "HTML5", icon: <FaHtml5 size={36} color="#E34F26" /> },
+    { name: "CSS", icon: <FaCss3Alt size={36} color="#1572B6" /> },
+    { name: "Git", icon: <FaGitAlt size={36} color="#F05032" /> },
+    { name: "GitHub", icon: <FaGithub size={36} color="#181717" /> },
+    { name: "Node.js", icon: <FaNodeJs size={36} color="#339933" /> },
   ];
 
+  // Use default skills if none provided
   const displaySkills = skills.length > 0 ? skills : defaultSkills;
 
   return (
@@ -46,17 +57,11 @@ const SkillsSection = ({ skills, isLoading }: SkillsSectionProps) => {
               </div>
             ))
           ) : (
-            // Display skills
+            // Display skills with simplified rendering
             displaySkills.map((skill, index) => (
-              <div key={index} className="skill-item flex flex-col items-center">
-                <div className="text-gray-400 hover:text-primary transition duration-300 flex flex-col items-center">
-                  {skill.component ? (
-                    <div className="mb-2">{skill.component}</div>
-                  ) : skill.icon ? (
-                    <i className={`${skill.icon} text-3xl mb-2`}></i>
-                  ) : null}
-                  <p className="mt-2">{skill.name}</p>
-                </div>
+              <div key={index} className="flex flex-col items-center">
+                <div className="mb-2">{skill.icon}</div>
+                <p className="text-gray-400">{skill.name}</p>
               </div>
             ))
           )}
