@@ -1,107 +1,111 @@
-// src/components/Navbar.tsx
-import { Link, useLocation } from "wouter";
+// Modified Navbar.tsx
 import { useState, useEffect } from "react";
-// Import other dependencies you have
+import { Link } from "wouter";
+import { Menu } from "lucide-react"; // Using lucide-react for icons
 
 const Navbar = () => {
-  const [location] = useLocation();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
-  // Check if we're in admin area
-  const isAdmin = location.startsWith('/admin');
-  
-  // Function to handle navigation and close mobile menu
-  const navigateAndClose = () => {
-    setIsMenuOpen(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
   };
-  
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const targetId = e.currentTarget.getAttribute("href") || "";
+    
+    if (targetId.startsWith("#")) {
+      const targetElement = document.querySelector(targetId);
+      if (targetElement) {
+        window.scrollTo({
+          top: targetElement.getBoundingClientRect().top + window.scrollY - 80,
+          behavior: "smooth",
+        });
+        setIsOpen(false);
+      }
+    }
+  };
+
   return (
-    <header className="fixed w-full z-50 bg-[#0F172A] border-b border-gray-800">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center py-4">
-          {/* Logo/Name */}
-          <Link href="/" onClick={navigateAndClose}>
-            <a className="text-xl font-bold text-white">Jakob Johnson</a>
+    <nav className={`fixed w-full z-50 bg-opacity-90 backdrop-blur-sm transition-all duration-300 ${scrolled ? "py-3" : "py-4"} bg-[#0F172A]`}>
+      <div className="container mx-auto px-4 flex justify-between items-center">
+        <Link
+          href="/"
+          onClick={() =>
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            })
+          }
+          className="text-white text-xl font-bold cursor-pointer"
+        >
+          Jakob Johnson
+        </Link>
+        <div className="hidden md:flex space-x-8">
+          <a href="#home" onClick={handleNavClick} className="text-white hover:text-primary transition">
+            Home
+          </a>
+          <a href="#services" onClick={handleNavClick} className="text-white hover:text-primary transition">
+            About
+          </a>
+          <a href="#projects" onClick={handleNavClick} className="text-white hover:text-primary transition">
+            Projects
+          </a>
+          <a href="#contact" onClick={handleNavClick} className="text-white hover:text-primary transition">
+            Contact
+          </a>
+          <Link href="/blogs" className="text-white hover:text-primary transition">
+            Blog
           </Link>
-          
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-6">
-            {/* If in admin area, show admin links, otherwise show normal links */}
-            {isAdmin ? (
-              <>
-                <Link href="/">
-                  <a className="text-gray-300 hover:text-white transition-colors">Back to Site</a>
-                </Link>
-                <Link href="/admin">
-                  <a className={`${location === '/admin' ? 'text-primary' : 'text-gray-300 hover:text-white'} transition-colors`}>Dashboard</a>
-                </Link>
-                <Link href="/admin/blogs">
-                  <a className={`${location === '/admin/blogs' ? 'text-primary' : 'text-gray-300 hover:text-white'} transition-colors`}>Manage Blogs</a>
-                </Link>
-                <Link href="/admin/users">
-                  <a className={`${location === '/admin/users' ? 'text-primary' : 'text-gray-300 hover:text-white'} transition-colors`}>Manage Users</a>
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link href="/">
-                  <a className={`${location === '/' ? 'text-primary' : 'text-gray-300 hover:text-white'} transition-colors`}>Home</a>
-                </Link>
-                <Link href="/blogs">
-                  <a className={`${location === '/blogs' ? 'text-primary' : 'text-gray-300 hover:text-white'} transition-colors`}>Blog</a>
-                </Link>
-                {/* Add your other public navigation links here */}
-              </>
-            )}
-          </nav>
-          
-          {/* Mobile menu button */}
-          <button 
-            className="md:hidden text-gray-300 hover:text-white"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {/* Menu icon - you can use Lucide icons here if you prefer */}
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
         </div>
-        
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden border-t border-gray-800 py-4">
-            <nav className="flex flex-col space-y-4">
-              {isAdmin ? (
-                <>
-                  <Link href="/" onClick={navigateAndClose}>
-                    <a className="text-gray-300 hover:text-white transition-colors">Back to Site</a>
-                  </Link>
-                  <Link href="/admin" onClick={navigateAndClose}>
-                    <a className={`${location === '/admin' ? 'text-primary' : 'text-gray-300 hover:text-white'} transition-colors`}>Dashboard</a>
-                  </Link>
-                  <Link href="/admin/blogs" onClick={navigateAndClose}>
-                    <a className={`${location === '/admin/blogs' ? 'text-primary' : 'text-gray-300 hover:text-white'} transition-colors`}>Manage Blogs</a>
-                  </Link>
-                  <Link href="/admin/users" onClick={navigateAndClose}>
-                    <a className={`${location === '/admin/users' ? 'text-primary' : 'text-gray-300 hover:text-white'} transition-colors`}>Manage Users</a>
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link href="/" onClick={navigateAndClose}>
-                    <a className={`${location === '/' ? 'text-primary' : 'text-gray-300 hover:text-white'} transition-colors`}>Home</a>
-                  </Link>
-                  <Link href="/blogs" onClick={navigateAndClose}>
-                    <a className={`${location === '/blogs' ? 'text-primary' : 'text-gray-300 hover:text-white'} transition-colors`}>Blog</a>
-                  </Link>
-                  {/* Add your other public navigation links here */}
-                </>
-              )}
-            </nav>
-          </div>
-        )}
+        <button
+          className="md:hidden text-white"
+          onClick={toggleMenu}
+          aria-label="Toggle menu"
+        >
+          <Menu size={24} /> {/* Using Lucide icon instead of FontAwesome */}
+        </button>
       </div>
-    </header>
+      
+      {/* Mobile Menu */}
+      <div 
+        className={`md:hidden bg-[#0F172A] w-full absolute top-full left-0 shadow-md z-50 transform transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+        }`}
+      >
+        <div className="container mx-auto px-4 py-4 flex flex-col space-y-4">
+          <a href="#home" onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
+            Home
+          </a>
+          <a href="#services" onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
+            About
+          </a>
+          <a href="#projects" onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
+            Projects
+          </a>
+          <a href="#contact" onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
+            Contact
+          </a>
+          <Link href="/blogs" className="text-white hover:text-primary transition py-2 px-4">
+            Blog
+          </Link>
+        </div>
+      </div>
+    </nav>
   );
 };
 
