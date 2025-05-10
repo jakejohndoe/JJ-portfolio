@@ -145,7 +145,7 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
             className="inline-block px-8 py-6 h-auto bg-primary text-white font-medium rounded hover:bg-opacity-90 transition"
             asChild
           >
-            <a href="https://github.com/jakobjohnson" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/jakejohndoe" target="_blank" rel="noopener noreferrer">
               View All Projects
             </a>
           </Button>
