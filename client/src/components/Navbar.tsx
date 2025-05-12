@@ -1,4 +1,3 @@
-// Modified Navbar.tsx
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Menu } from "lucide-react"; // Using lucide-react for icons
@@ -8,8 +7,9 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
   
-  // Check if we're on an admin page
+  // Check if we're on an admin page or home page
   const isAdminPage = location.startsWith('/admin');
+  const isHomePage = location === '/';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,6 +29,13 @@ const Navbar = () => {
   };
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // If not on homepage, don't prevent default - let it navigate to home page + anchor
+    if (!isHomePage) {
+      setIsOpen(false);
+      return;
+    }
+    
+    // Original smooth scrolling behavior for homepage
     e.preventDefault();
     const targetId = e.currentTarget.getAttribute("href") || "";
     
@@ -84,16 +91,16 @@ const Navbar = () => {
           ) : (
             // Regular Site Navigation
             <>
-              <a href="#home" onClick={handleNavClick} className="text-white hover:text-primary transition">
+              <a href={isHomePage ? "#home" : "/#home"} onClick={handleNavClick} className="text-white hover:text-primary transition">
                 Home
               </a>
-              <a href="#services" onClick={handleNavClick} className="text-white hover:text-primary transition">
+              <a href={isHomePage ? "#services" : "/#services"} onClick={handleNavClick} className="text-white hover:text-primary transition">
                 About
               </a>
-              <a href="#projects" onClick={handleNavClick} className="text-white hover:text-primary transition">
+              <a href={isHomePage ? "#projects" : "/#projects"} onClick={handleNavClick} className="text-white hover:text-primary transition">
                 Projects
               </a>
-              <a href="#contact" onClick={handleNavClick} className="text-white hover:text-primary transition">
+              <a href={isHomePage ? "#contact" : "/#contact"} onClick={handleNavClick} className="text-white hover:text-primary transition">
                 Contact
               </a>
               <Link href="/blogs" className="text-white hover:text-primary transition">
@@ -154,16 +161,16 @@ const Navbar = () => {
           ) : (
             // Regular Mobile Navigation
             <>
-              <a href="#home" onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
+              <a href={isHomePage ? "#home" : "/#home"} onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
                 Home
               </a>
-              <a href="#services" onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
+              <a href={isHomePage ? "#services" : "/#services"} onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
                 About
               </a>
-              <a href="#projects" onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
+              <a href={isHomePage ? "#projects" : "/#projects"} onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
                 Projects
               </a>
-              <a href="#contact" onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
+              <a href={isHomePage ? "#contact" : "/#contact"} onClick={handleNavClick} className="text-white hover:text-primary transition py-2 px-4">
                 Contact
               </a>
               <Link 
