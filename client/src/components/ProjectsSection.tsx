@@ -214,7 +214,6 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
                       }}
                     />
                   </div>
-                  </motion.div>
                 </motion.a>
               </motion.div>
             ))
