@@ -11,7 +11,7 @@ export const projects = [
     description: "Rework your resume for any job in one click.",
     link: "https://www.rework.solutions",
     tech: ["React", "Express", "OpenAI API"],
-    imageUrl: "https://images.pexels.com/photos/4560150/pexels-photo-4560150.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+    imageUrl: "https://www.rework.solutions/_next/image?url=%2Frework-logo-detailed.png&w=1920&q=75"
   },
   {
     title: "PackPerfect",

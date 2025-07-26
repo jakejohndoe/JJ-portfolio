@@ -111,7 +111,7 @@ const fallbackProjects: ComponentProject[] = [
       { name: 'Express' }, 
       { name: 'OpenAI API' }
     ],
-    image: 'https://images.pexels.com/photos/4560150/pexels-photo-4560150.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    image: 'https://www.rework.solutions/_next/image?url=%2Frework-logo-detailed.png&w=1920&q=75',
     link: 'https://www.rework.solutions'
   },
   { 

@@ -156,7 +156,7 @@ function getFallbackData<T>(endpoint: string): T {
     ],
     '/projects': [
       { id: 1, title: 'StretchSmart', description: 'A smart stretching app that targets body parts using AI.', tech: ['React', 'Three.js', 'MongoDB'], imageUrl: 'https://plus.unsplash.com/premium_photo-1665673312770-f80cac75b319?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', link: 'https://v0-stretch-app.vercel.app/' },
-      { id: 2, title: 'ReWork', description: 'Rework your resume for any job in one click.', tech: ['React', 'Express', 'OpenAI API'], imageUrl: 'https://images.pexels.com/photos/4560150/pexels-photo-4560150.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', link: 'https://www.rework.solutions' },
+      { id: 2, title: 'ReWork', description: 'Rework your resume for any job in one click.', tech: ['React', 'Express', 'OpenAI API'], imageUrl: 'https://www.rework.solutions/_next/image?url=%2Frework-logo-detailed.png&w=1920&q=75', link: 'https://www.rework.solutions' },
       { id: 3, title: 'PackPerfect', description: 'PackPerfect finds the best moving services for your space and belongings, with personalized cost breakdowns for a seamless move.', tech: ['React', 'TypeScript', 'Tailwind CSS'], imageUrl: 'https://images.pexels.com/photos/4569340/pexels-photo-4569340.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', link: 'https://github.com/jakejohndoe' }
     ],
     '/stats': {
