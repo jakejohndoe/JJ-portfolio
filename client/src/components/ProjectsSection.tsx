@@ -3,7 +3,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import { useScrollAnimation, sectionVariants, staggerContainerVariants, staggerItemVariants } from "@/hooks/useScrollAnimation";
-import HolographicText from "@/components/HolographicText";
 
 interface Technology {
   name: string;
@@ -59,13 +58,7 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          <HolographicText 
-            holographicEffect={true} 
-            glitchIntensity={0.08}
-            animateOnHover={true}
-          >
-            &lt;Projects /&gt;
-          </HolographicText>
+          Projects
         </motion.h2>
         
         {/* Projects grid */}
@@ -98,122 +91,95 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
               </motion.div>
             ))
           ) : (
-            // Terminal-themed project cards
+            // Enhanced project cards
             displayProjects.map((project, index) => (
               <motion.div key={index} variants={staggerItemVariants}>
                 <motion.a
                   href={project.link || "#"}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="terminal-window group block h-full flex flex-col relative overflow-hidden"
+                  className="project-card bg-card rounded-lg overflow-hidden shadow-lg group block h-full flex flex-col"
                   whileHover={{ 
                     y: -8,
                     transition: { type: "spring", stiffness: 300, damping: 20 }
                   }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  {/* Terminal Header */}
-                  <div className="terminal-header px-4 py-3 flex items-center gap-2 relative">
-                    <div className="flex gap-2">
-                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    </div>
-                    <div className="flex-1 text-center">
-                      <span className="text-gray-400 text-sm font-mono">~/projects/{project.title.toLowerCase().replace(/\s+/g, '-')}</span>
-                    </div>
+                  <div className="relative h-48 overflow-hidden flex-shrink-0">
+                    <motion.img
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full h-full object-cover object-center"
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ duration: 0.6, ease: "easeInOut" }}
+                      style={{ aspectRatio: '16/9' }}
+                    />
+                    
+                    {/* Enhanced gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
+                    
+                    {/* Animated border effect */}
                     <motion.div
-                      initial={{ opacity: 0.5 }}
-                      whileHover={{ opacity: 1 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <ExternalLink className="text-primary" size={16} />
-                    </motion.div>
-                  </div>
-
-                  {/* Terminal Body */}
-                  <div className="flex-1 p-4 font-mono text-sm relative">
-                    {/* Code-like project display */}
-                    <div className="space-y-2">
-                      {/* File header */}
-                      <div className="text-gray-500">
-                        <span className="text-purple-400">const</span> 
-                        <span className="text-blue-400 ml-2">{project.title.replace(/\s+/g, '')}</span>
-                        <span className="text-white ml-1">=</span>
-                        <span className="text-yellow-400 ml-1">&#123;</span>
-                      </div>
-                      
-                      {/* Project details as code */}
-                      <div className="ml-4 space-y-1">
-                        <div>
-                          <span className="text-green-400">name:</span>
-                          <span className="text-orange-400 ml-2">"{project.title}"</span><span className="text-white">,</span>
-                        </div>
-                        <div>
-                          <span className="text-green-400">description:</span>
-                          <span className="text-orange-400 ml-2">"{project.description}"</span><span className="text-white">,</span>
-                        </div>
-                        <div>
-                          <span className="text-green-400">tech_stack:</span>
-                          <span className="text-white ml-2">[</span>
-                        </div>
-                        <div className="ml-4">
-                          {project.technologies?.map((tech, techIndex) => (
-                            <motion.div 
-                              key={techIndex}
-                              className="text-cyan-400"
-                              whileHover={{ x: 2, color: "#ff5e3a" }}
-                              transition={{ duration: 0.2 }}
-                            >
-                              "{tech.name}"{techIndex < (project.technologies?.length || 0) - 1 ? ',' : ''}
-                            </motion.div>
-                          ))}
-                        </div>
-                        <div>
-                          <span className="text-white">],</span>
-                        </div>
-                        <div>
-                          <span className="text-green-400">status:</span>
-                          <span className="text-green-400 ml-2">"deployed"</span><span className="text-white">,</span>
-                        </div>
-                        <div>
-                          <span className="text-green-400">live_demo:</span>
-                          <span className="text-blue-400 ml-2 underline">"{project.link || '#'}"</span>
-                        </div>
-                      </div>
-                      
-                      <div className="text-yellow-400">&#125;;</div>
-                      
-                      {/* Terminal cursor */}
-                      <motion.div 
-                        className="inline-block w-2 h-4 bg-primary opacity-75"
-                        animate={{ opacity: [0.75, 0, 0.75] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                      ></motion.div>
-                    </div>
-
-                    {/* Preview image as ASCII art representation */}
-                    <div className="absolute top-4 right-4 w-16 h-16 opacity-20 group-hover:opacity-40 transition-opacity">
-                      <img 
-                        src={project.image} 
-                        alt={project.title}
-                        className="w-full h-full object-cover rounded border border-primary/30"
-                      />
-                    </div>
-
-                    {/* Glitch effect overlay */}
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      animate={{
-                        x: ['-100%', '100%'],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "linear"
+                      className="absolute inset-0 border-2 border-primary/0 group-hover:border-primary/50 transition-colors duration-300 rounded-lg"
+                      whileHover={{
+                        boxShadow: "inset 0 0 20px rgba(255, 94, 58, 0.1)"
                       }}
                     />
+                    
+                    <div className="absolute bottom-0 left-0 p-4 w-full flex justify-between items-center">
+                      <motion.h3 
+                        className="text-xl font-semibold text-white"
+                        initial={{ x: 0 }}
+                        whileHover={{ x: 4 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                      >
+                        {project.title}
+                      </motion.h3>
+                      
+                      <motion.div
+                        initial={{ opacity: 0, x: -10 }}
+                        whileHover={{ opacity: 1, x: 0 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                      >
+                        <ExternalLink className="text-primary" size={18} />
+                      </motion.div>
+                    </div>
                   </div>
+                  
+                  <motion.div 
+                    className="p-4 flex-grow flex flex-col"
+                    initial={{ opacity: 0.8 }}
+                    whileHover={{ opacity: 1 }}
+                  >
+                    <p className="text-gray-400 mb-4 group-hover:text-gray-300 transition-colors duration-300 flex-grow">
+                      {project.description}
+                    </p>
+                    {/* Enhanced tech tags with stagger */}
+                    <motion.div 
+                      className="flex flex-wrap gap-2 mt-auto"
+                      variants={{
+                        hover: {
+                          transition: { staggerChildren: 0.05 }
+                        }
+                      }}
+                      whileHover="hover"
+                    >
+                      {project.technologies?.map((tech, techIndex) => (
+                        <motion.span
+                          key={techIndex}
+                          className="px-2 py-1 bg-background text-xs text-primary rounded border border-primary/20 hover:border-primary/50 transition-colors duration-200"
+                          variants={{
+                            hover: {
+                              scale: 1.05,
+                              backgroundColor: "rgba(255, 94, 58, 0.1)"
+                            }
+                          }}
+                        >
+                          {tech.name}
+                        </motion.span>
+                      ))}
+                    </motion.div>
+                  </motion.div>
                 </motion.a>
               </motion.div>
             ))
