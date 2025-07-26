@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { motion } from "framer-motion";
+import { useScrollAnimation, sectionVariants, staggerItemVariants } from "@/hooks/useScrollAnimation";
 
 const contactFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -19,6 +21,7 @@ const contactFormSchema = z.object({
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 const ContactSection = () => {
+  const [ref, isInView] = useScrollAnimation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const { toast } = useToast();
@@ -71,19 +74,48 @@ const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="py-16 bg-background">
+    <motion.section 
+      ref={ref}
+      id="contact" 
+      className="py-16 bg-background"
+      variants={sectionVariants}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+    >
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-white mb-6">Let's work together</h2>
-          <p className="text-gray-300 mb-10">
+          <motion.h2 
+            className="text-4xl font-bold text-white mb-6"
+            variants={staggerItemVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+          >
+            Let's work together
+          </motion.h2>
+          <motion.p 
+            className="text-gray-300 mb-10"
+            variants={staggerItemVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+          >
             Have a project in mind? I'd love to hear about it. Let's discuss how we can work together to bring your ideas to life.
-          </p>
+          </motion.p>
           
-          <div className="bg-card p-8 rounded-lg shadow-lg">
+          <motion.div 
+            className="bg-card p-8 rounded-lg shadow-lg"
+            variants={staggerItemVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+          >
             {submitted ? (
-              <div className="p-4 bg-green-100 text-green-800 rounded-md">
+              <motion.div 
+                className="p-4 bg-green-100 text-green-800 rounded-md"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
                 Message sent successfully! I'll get back to you soon.
-              </div>
+              </motion.div>
             ) : (
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -160,17 +192,19 @@ const ContactSection = () => {
                   <Button 
                     type="submit" 
                     disabled={isSubmitting}
-                    className="w-full bg-primary text-white font-medium rounded-lg py-3 px-6 hover:bg-opacity-90 transition"
+                    className="enhanced-button w-full bg-primary text-white font-medium rounded-lg py-3 px-6 hover:bg-opacity-90 transition relative"
                   >
-                    {isSubmitting ? "Sending..." : "Send Message"}
+                    <span className="relative z-10">
+                      {isSubmitting ? "Sending..." : "Send Message"}
+                    </span>
                   </Button>
                 </form>
               </Form>
             )}
-          </div>
+          </motion.div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 

@@ -79,7 +79,7 @@ const HeroSection = () => {
           <div className="flex items-center">
             <div className="font-mono text-muted-foreground opacity-70 mr-2">01</div>
             <h1 className="text-5xl md:text-6xl font-bold text-white">
-              Hello<span className="text-primary">!</span>
+              Hello<span className="text-primary text-glow">!</span>
             </h1>
           </div>
           <div className="my-4 border-l-2 border-primary pl-4">
@@ -94,7 +94,7 @@ const HeroSection = () => {
           </div>
           <div className="mt-8 flex flex-wrap gap-4 relative z-30">
             <Button
-              className="px-6 py-3 h-auto bg-primary text-white font-medium rounded hover:bg-opacity-90 transition"
+              className="enhanced-button px-6 py-3 h-auto bg-primary text-white font-medium rounded hover:bg-opacity-90 transition relative"
               onClick={() => {
                 const contactSection = document.querySelector("#contact");
                 if (contactSection) {
@@ -102,14 +102,16 @@ const HeroSection = () => {
                 }
               }}
             >
-              Got a project?
+              <span className="relative z-10">Got a project?</span>
             </Button>
             <Button 
               variant="outline"
-              className="px-6 py-3 h-auto border border-primary text-white font-medium rounded hover:bg-primary hover:bg-opacity-10 transition"
+              className="enhanced-button px-6 py-3 h-auto border border-primary text-white font-medium rounded hover:bg-primary hover:bg-opacity-10 transition relative"
               asChild
             >
-              <a href="/assets/resume.html" target="_blank" rel="noopener noreferrer">My resume</a>
+              <a href="/assets/resume.html" target="_blank" rel="noopener noreferrer">
+                <span className="relative z-10">My resume</span>
+              </a>
             </Button>
           </div>
         </div>

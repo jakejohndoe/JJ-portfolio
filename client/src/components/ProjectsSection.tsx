@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ExternalLink } from "lucide-react";
+import { motion } from "framer-motion";
+import { useScrollAnimation, sectionVariants, staggerContainerVariants, staggerItemVariants } from "@/hooks/useScrollAnimation";
 
 interface Technology {
   name: string;
@@ -21,6 +23,8 @@ interface ProjectsSectionProps {
 }
 
 const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
+  const [ref, isInView] = useScrollAnimation();
+  
   // Normalize projects to ensure they have the correct format
   const normalizedProjects = projects.map(project => {
     // Convert tech array to technologies format if needed
@@ -39,16 +43,39 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
   const displayProjects = normalizedProjects;
 
   return (
-    <section id="projects" className="py-16 bg-[#0F172A]">
+    <motion.section 
+      ref={ref}
+      id="projects" 
+      className="py-16 bg-[#0F172A]"
+      variants={sectionVariants}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+    >
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold text-white mb-12">Projects</h2>
+        <motion.h2 
+          className="text-4xl font-bold text-white mb-12"
+          variants={staggerItemVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
+          Projects
+        </motion.h2>
         
         {/* Projects grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          variants={staggerContainerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
           {isLoading ? (
-            // Skeleton loading state
+            // Enhanced skeleton loading state
             Array(3).fill(0).map((_, index) => (
-              <div key={index} className="bg-card rounded-lg overflow-hidden shadow-lg">
+              <motion.div 
+                key={index} 
+                className="bg-card rounded-lg overflow-hidden shadow-lg"
+                variants={staggerItemVariants}
+              >
                 <div className="relative h-48">
                   <Skeleton className="w-full h-full" />
                 </div>
@@ -61,57 +88,120 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
                     <Skeleton className="h-6 w-24" />
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))
           ) : (
-            // Display projects
+            // Enhanced project cards
             displayProjects.map((project, index) => (
-              <a 
-                href={project.link || "#"} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                key={index} 
-                className="project-card bg-card rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:transform hover:scale-105 group"
-              >
-                <div className="relative h-48">
-                  <img 
-                    src={project.image}
-                    alt={project.title} 
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 p-4 w-full flex justify-between items-center">
-                    <h3 className="text-xl font-semibold text-white">{project.title}</h3>
-                    <ExternalLink className="text-primary opacity-0 group-hover:opacity-100 transition-opacity" size={18} />
+              <motion.div key={index} variants={staggerItemVariants}>
+                <motion.a
+                  href={project.link || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="project-card bg-card rounded-lg overflow-hidden shadow-lg group block"
+                  whileHover={{ 
+                    y: -8,
+                    transition: { type: "spring", stiffness: 300, damping: 20 }
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <motion.img
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ duration: 0.6, ease: "easeInOut" }}
+                    />
+                    
+                    {/* Enhanced gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
+                    
+                    {/* Animated border effect */}
+                    <motion.div
+                      className="absolute inset-0 border-2 border-primary/0 group-hover:border-primary/50 transition-colors duration-300 rounded-lg"
+                      whileHover={{
+                        boxShadow: "inset 0 0 20px rgba(255, 94, 58, 0.1)"
+                      }}
+                    />
+                    
+                    <div className="absolute bottom-0 left-0 p-4 w-full flex justify-between items-center">
+                      <motion.h3 
+                        className="text-xl font-semibold text-white"
+                        initial={{ x: 0 }}
+                        whileHover={{ x: 4 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                      >
+                        {project.title}
+                      </motion.h3>
+                      
+                      <motion.div
+                        initial={{ opacity: 0, x: -10 }}
+                        whileHover={{ opacity: 1, x: 0 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                      >
+                        <ExternalLink className="text-primary" size={18} />
+                      </motion.div>
+                    </div>
                   </div>
-                </div>
-                <div className="p-4">
-                  <p className="text-gray-400 mb-4">{project.description}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {project.technologies && project.technologies.map((tech, techIndex) => (
-                      <span key={techIndex} className="px-2 py-1 bg-background text-xs text-primary rounded">
-                        {tech.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </a>
+                  
+                  <motion.div 
+                    className="p-4"
+                    initial={{ opacity: 0.8 }}
+                    whileHover={{ opacity: 1 }}
+                  >
+                    <p className="text-gray-400 mb-4 group-hover:text-gray-300 transition-colors duration-300">
+                      {project.description}
+                    </p>
+                    {/* Enhanced tech tags with stagger */}
+                    <motion.div 
+                      className="flex flex-wrap gap-2"
+                      variants={{
+                        hover: {
+                          transition: { staggerChildren: 0.05 }
+                        }
+                      }}
+                      whileHover="hover"
+                    >
+                      {project.technologies?.map((tech, techIndex) => (
+                        <motion.span
+                          key={techIndex}
+                          className="px-2 py-1 bg-background text-xs text-primary rounded border border-primary/20 hover:border-primary/50 transition-colors duration-200"
+                          variants={{
+                            hover: {
+                              scale: 1.05,
+                              backgroundColor: "rgba(255, 94, 58, 0.1)"
+                            }
+                          }}
+                        >
+                          {tech.name}
+                        </motion.span>
+                      ))}
+                    </motion.div>
+                  </motion.div>
+                </motion.a>
+              </motion.div>
             ))
           )}
-        </div>
+        </motion.div>
         
-        <div className="mt-10 text-center">
+        <motion.div 
+          className="mt-10 text-center"
+          variants={staggerItemVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+        >
           <Button 
-            className="inline-block px-8 py-6 h-auto bg-primary text-white font-medium rounded hover:bg-opacity-90 transition"
+            className="enhanced-button inline-block px-8 py-6 h-auto bg-primary text-white font-medium rounded hover:bg-opacity-90 transition relative"
             asChild
           >
             <a href="https://github.com/jakejohndoe" target="_blank" rel="noopener noreferrer">
-              View All Projects
+              <span className="relative z-10">View All Projects</span>
             </a>
           </Button>
-        </div>
+        </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 

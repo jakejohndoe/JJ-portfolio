@@ -1,5 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import useCounter from "@/hooks/useCounter";
+import { motion } from "framer-motion";
+import { useScrollAnimation, sectionVariants, staggerContainerVariants, staggerItemVariants } from "@/hooks/useScrollAnimation";
 
 interface Service {
   title: string;
@@ -33,6 +35,7 @@ const ServicesSection = ({
   stats = DEFAULT_STATS, 
   isLoading = { services: false, stats: false } 
 }: ServicesSectionProps) => {
+  const [ref, isInView] = useScrollAnimation();
   const counters = {
     projects: useCounter(stats.completedProjects, 2000),
     satisfaction: useCounter(stats.satisfaction, 2000),
@@ -40,40 +43,68 @@ const ServicesSection = ({
   };
 
   return (
-    <section className="py-16 bg-background" id="services">
+    <motion.section 
+      ref={ref}
+      className="py-16 bg-background" 
+      id="services"
+      variants={sectionVariants}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+    >
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Services Column */}
-          <div className="w-full md:w-3/5">
-            <h2 className="text-3xl font-bold text-white mb-8">My Services</h2>
+          <motion.div 
+            className="w-full md:w-3/5"
+            variants={staggerContainerVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+          >
+            <motion.h2 
+              className="text-3xl font-bold text-white mb-8"
+              variants={staggerItemVariants}
+            >
+              My Services
+            </motion.h2>
             
-            <div className="grid grid-cols-1 gap-6">
+            <motion.div 
+              className="grid grid-cols-1 gap-6"
+              variants={staggerContainerVariants}
+              initial="hidden"
+              animate={isInView ? "visible" : "hidden"}
+            >
               {isLoading.services ? (
                 Array(6).fill(0).map((_, index) => (
                   <ServiceSkeleton key={index} />
                 ))
               ) : (
                 services.map((service, index) => (
-                  <ServiceCard 
-                    key={index} 
-                    service={service} 
-                    index={index} 
-                  />
+                  <motion.div key={index} variants={staggerItemVariants}>
+                    <ServiceCard 
+                      service={service} 
+                      index={index} 
+                    />
+                  </motion.div>
                 ))
               )}
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
           
           {/* About Me Column */}
-          <div className="w-full md:w-2/5">
+          <motion.div 
+            className="w-full md:w-2/5"
+            variants={staggerItemVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+          >
             <AboutSection 
               isLoading={isLoading.stats} 
               counters={counters} 
             />
-          </div>
+          </motion.div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 
