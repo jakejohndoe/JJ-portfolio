@@ -1,8 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import { useTerminalTyping } from "@/hooks/useTerminalTyping";
+import HolographicText from "@/components/HolographicText";
 
 const HeroSection = () => {
   const [isVisible, setIsVisible] = useState(false);
+
+  const { displayText: typedRole } = useTerminalTyping({
+    texts: [
+      'Software Developer',
+      'Full-Stack Engineer', 
+      'React Specialist',
+      'TypeScript Expert',
+      'Problem Solver'
+    ],
+    typeSpeed: 120,
+    deleteSpeed: 80,
+    pauseDuration: 2500,
+    loop: true,
+    cursor: '|'
+  });
 
   useEffect(() => {
     setIsVisible(true);
@@ -73,14 +90,21 @@ const HeroSection = () => {
       {/* Animated Code Flow */}
       <div className={`code-flow absolute inset-0 z-0 transition-opacity duration-1000 ${isVisible ? 'opacity-30' : 'opacity-30'}`}></div>
 
+      {/* Mesh Gradient Background */}
+      <div className="absolute inset-0 mesh-gradient opacity-40 z-0"></div>
+
+      {/* Liquid Animation Elements */}
+      <div className="absolute top-10 right-10 w-32 h-32 liquid-bg opacity-20 z-0"></div>
+      <div className="absolute bottom-10 left-10 w-24 h-24 liquid-bg opacity-15 z-0" style={{ animationDelay: '5s' }}></div>
+
       <div className="container mx-auto px-4 flex flex-col md:flex-row items-center relative z-0">
         {/* Left side content */}
         <div className="md:w-1/2 mb-10 md:mb-0">
           <div className="flex items-center">
             <div className="font-mono text-muted-foreground opacity-70 mr-2">01</div>
-            <h1 className="text-5xl md:text-6xl font-bold text-white">
+            <HolographicText className="text-5xl md:text-6xl font-bold text-white" holographicEffect={true} glitchIntensity={0.05}>
               Hello<span className="text-primary text-glow">!</span>
-            </h1>
+            </HolographicText>
           </div>
           <div className="my-4 border-l-2 border-primary pl-4">
             <div className="font-mono text-muted-foreground opacity-70 mb-1">02</div>
@@ -89,30 +113,44 @@ const HeroSection = () => {
             </h2>
             <div className="font-mono text-muted-foreground opacity-70 mt-2 mb-1">03</div>
             <h3 className="text-4xl md:text-5xl font-bold text-white">
-              <span className="text-primary">Software</span> Developer
+              <div className="terminal-window bg-gray-900 rounded p-3 font-mono text-lg border border-primary/30">
+                <div className="terminal-header bg-gray-800 -m-3 mb-2 p-2 flex items-center gap-2">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span className="text-gray-400 text-sm ml-2">~$ role</span>
+                </div>
+                <span className="text-primary">
+                  {typedRole}
+                </span>
+              </div>
             </h3>
           </div>
           <div className="mt-8 flex flex-wrap gap-4 relative z-30">
-            <Button
-              className="enhanced-button px-6 py-3 h-auto bg-primary text-white font-medium rounded hover:bg-opacity-90 transition relative"
-              onClick={() => {
-                const contactSection = document.querySelector("#contact");
-                if (contactSection) {
-                  contactSection.scrollIntoView({ behavior: "smooth" });
-                }
-              }}
-            >
-              <span className="relative z-10">Got a project?</span>
-            </Button>
-            <Button 
-              variant="outline"
-              className="enhanced-button px-6 py-3 h-auto border border-primary text-white font-medium rounded hover:bg-primary hover:bg-opacity-10 transition relative"
-              asChild
-            >
-              <a href="/assets/resume.html" target="_blank" rel="noopener noreferrer">
-                <span className="relative z-10">My resume</span>
-              </a>
-            </Button>
+            <div className="gradient-border">
+              <Button
+                className="enhanced-button px-6 py-3 h-auto bg-background text-white font-medium rounded-md hover:bg-opacity-90 transition relative w-full"
+                onClick={() => {
+                  const contactSection = document.querySelector("#contact");
+                  if (contactSection) {
+                    contactSection.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+              >
+                <span className="relative z-10 text-gradient-animated font-bold">Got a project?</span>
+              </Button>
+            </div>
+            <div className="gradient-border">
+              <Button 
+                variant="ghost"
+                className="enhanced-button px-6 py-3 h-auto text-white font-medium rounded-md hover:bg-primary hover:bg-opacity-10 transition relative w-full"
+                asChild
+              >
+                <a href="/assets/resume.html" target="_blank" rel="noopener noreferrer">
+                  <span className="relative z-10 text-gradient-animated font-bold">My resume</span>
+                </a>
+              </Button>
+            </div>
           </div>
         </div>
 

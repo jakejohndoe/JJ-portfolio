@@ -236,17 +236,215 @@
     cursor: none;
   }
   
+  /* Holographic text animation */
+  @keyframes holographic {
+    0%, 100% {
+      background-position: 0% 50%;
+      filter: hue-rotate(0deg);
+    }
+    50% {
+      background-position: 100% 50%;
+      filter: hue-rotate(180deg);
+    }
+  }
+  
+  /* 3D floating animation */
+  @keyframes float3d {
+    0%, 100% {
+      transform: translateY(0px) rotateX(0deg) rotateY(0deg);
+    }
+    33% {
+      transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+    }
+    66% {
+      transform: translateY(-5px) rotateX(-5deg) rotateY(-5deg);
+    }
+  }
+  
+  /* Pulsing glow effect */
+  @keyframes pulseGlow {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(255, 94, 58, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 40px rgba(255, 94, 58, 0.6), 0 0 60px rgba(255, 94, 58, 0.3);
+    }
+  }
+  
+  /* Terminal cursor blink */
+  @keyframes terminalBlink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+  
+  /* Floating code blocks */
+  .floating-code {
+    animation: float3d 6s ease-in-out infinite;
+  }
+  
+  .floating-code:nth-child(even) {
+    animation-delay: 2s;
+  }
+  
+  .floating-code:nth-child(3n) {
+    animation-delay: 4s;
+  }
+  
+  /* Terminal styling */
+  .terminal-window {
+    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+    border: 1px solid #444;
+    box-shadow: 
+      0 0 0 1px rgba(255, 94, 58, 0.1),
+      0 4px 32px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  .terminal-header {
+    background: linear-gradient(135deg, #3c3c3c 0%, #2d2d2d 100%);
+    border-bottom: 1px solid #444;
+  }
+
+  /* Dynamic gradient animations */
+  .animated-gradient-1 {
+    background: linear-gradient(-45deg, #ff5e3a, #ff8c42, #ff5e3a, #d63031);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+  }
+
+  .animated-gradient-2 {
+    background: linear-gradient(45deg, #0f172a, #1e293b, #334155, #1e293b);
+    background-size: 400% 400%;
+    animation: gradientShift 12s ease infinite;
+  }
+
+  .animated-gradient-3 {
+    background: linear-gradient(90deg, #ff5e3a, #00ff41, #64ffda, #ff5e3a);
+    background-size: 400% 400%;
+    animation: gradientShift 6s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  /* Mesh gradient background */
+  .mesh-gradient {
+    background: radial-gradient(circle at 25% 25%, #ff5e3a22 0%, transparent 50%),
+                radial-gradient(circle at 75% 25%, #00ff4122 0%, transparent 50%),
+                radial-gradient(circle at 25% 75%, #64ffda22 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, #ff5e3a22 0%, transparent 50%);
+    animation: meshFloat 20s ease-in-out infinite;
+  }
+
+  @keyframes meshFloat {
+    0%, 100% {
+      background: radial-gradient(circle at 25% 25%, #ff5e3a22 0%, transparent 50%),
+                  radial-gradient(circle at 75% 25%, #00ff4122 0%, transparent 50%),
+                  radial-gradient(circle at 25% 75%, #64ffda22 0%, transparent 50%),
+                  radial-gradient(circle at 75% 75%, #ff5e3a22 0%, transparent 50%);
+    }
+    25% {
+      background: radial-gradient(circle at 30% 30%, #ff5e3a22 0%, transparent 50%),
+                  radial-gradient(circle at 70% 30%, #00ff4122 0%, transparent 50%),
+                  radial-gradient(circle at 30% 70%, #64ffda22 0%, transparent 50%),
+                  radial-gradient(circle at 70% 70%, #ff5e3a22 0%, transparent 50%);
+    }
+    50% {
+      background: radial-gradient(circle at 20% 40%, #ff5e3a22 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, #00ff4122 0%, transparent 50%),
+                  radial-gradient(circle at 40% 80%, #64ffda22 0%, transparent 50%),
+                  radial-gradient(circle at 60% 60%, #ff5e3a22 0%, transparent 50%);
+    }
+    75% {
+      background: radial-gradient(circle at 35% 20%, #ff5e3a22 0%, transparent 50%),
+                  radial-gradient(circle at 65% 40%, #00ff4122 0%, transparent 50%),
+                  radial-gradient(circle at 20% 60%, #64ffda22 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, #ff5e3a22 0%, transparent 50%);
+    }
+  }
+
+  /* Animated border gradients */
+  .gradient-border {
+    position: relative;
+    border-radius: 8px;
+    padding: 2px;
+    background: linear-gradient(45deg, #ff5e3a, #00ff41, #64ffda, #ff5e3a);
+    background-size: 400% 400%;
+    animation: gradientShift 4s ease infinite;
+  }
+
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    background: #0f172a;
+    border-radius: 6px;
+    z-index: -1;
+  }
+
+  /* Animated text backgrounds */
+  .text-gradient-animated {
+    background: linear-gradient(45deg, #ff5e3a, #00ff41, #64ffda, #ff5e3a);
+    background-size: 400% 400%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: gradientShift 3s ease infinite;
+  }
+
+  /* Liquid animation effect */
+  .liquid-bg {
+    background: linear-gradient(45deg, #ff5e3a33, #00ff4133, #64ffda33);
+    background-size: 600% 600%;
+    animation: liquidMove 15s ease infinite;
+  }
+
+  @keyframes liquidMove {
+    0%, 100% {
+      background-position: 0% 50%;
+      border-radius: 60% 40% 30% 70%/60% 30% 70% 40%;
+    }
+    25% {
+      background-position: 50% 100%;
+      border-radius: 30% 60% 70% 40%/50% 60% 30% 60%;
+    }
+    50% {
+      background-position: 100% 50%;
+      border-radius: 50% 30% 50% 60%/30% 70% 40% 50%;
+    }
+    75% {
+      background-position: 50% 0%;
+      border-radius: 40% 50% 40% 70%/60% 40% 60% 30%;
+    }
+  }
+  
   /* Respect reduced motion preferences */
   @media (prefers-reduced-motion: reduce) {
     .enhanced-button,
     .glow-primary,
     .text-glow,
-    .code-symbols div {
+    .code-symbols div,
+    .floating-code {
       transition: none !important;
       animation: none !important;
     }
     
     .enhanced-button::before {
       display: none;
+    }
+    
+    * {
+      animation-duration: 0.001s !important;
+      animation-delay: 0s !important;
+      transition-duration: 0.001s !important;
     }
   }

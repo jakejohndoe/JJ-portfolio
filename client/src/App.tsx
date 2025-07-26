@@ -11,10 +11,16 @@ import UserManagement from "@/pages/UserManagement";
 import NotFound from "@/pages/not-found";
 import SpotlightCursor from "@/components/CustomCursor";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import MatrixRain from "@/components/MatrixRain";
+import FloatingCodeElements from "@/components/FloatingCodeElements";
+import InteractiveParticles from "@/components/InteractiveParticles";
 
 function App() {
   return (
     <>
+      <MatrixRain intensity={0.015} speed={60} />
+      <FloatingCodeElements />
+      <InteractiveParticles particleCount={60} maxDistance={120} mouseRadius={80} />
       <SpotlightCursor />
       <Switch>
         <Route path="/" component={Home} />
