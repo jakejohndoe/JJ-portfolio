@@ -66,16 +66,7 @@ const SpotlightCursor = () => {
 
   return (
     <>
-      {/* Original spotlight effect */}
-      <div
-        className="pointer-events-none fixed top-0 left-0 w-full h-full z-[9998] mix-blend-soft-light"
-        style={{
-          background: `radial-gradient(circle at ${position.x}px ${position.y}px, rgba(255,255,255,0.3) 0px, rgba(255,255,255,0) 180px)`,
-          transition: "all 100ms ease-out",
-        }}
-      />
-      
-      {/* Enhanced cursor elements - only show if motion is allowed */}
+      {/* Clean cursor dot - only show if motion is allowed */}
       {!prefersReducedMotion && isVisible && (
         <>
           {/* Main cursor dot */}
@@ -91,24 +82,6 @@ const SpotlightCursor = () => {
               stiffness: 500,
               damping: 28,
               mass: 0.5
-            }}
-          />
-          
-          {/* Trailing ring */}
-          <motion.div
-            className="fixed top-0 left-0 w-6 h-6 border border-primary/40 rounded-full pointer-events-none z-[9997]"
-            animate={{
-              x: position.x - 12,
-              y: position.y - 12,
-              scale: isHovering ? 2.5 : 1,
-              opacity: isHovering ? 0.8 : 0.4
-            }}
-            transition={{
-              type: "spring",
-              stiffness: 150,
-              damping: 15,
-              mass: 0.8,
-              opacity: { duration: 0.2 }
             }}
           />
           

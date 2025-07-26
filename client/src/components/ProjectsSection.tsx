@@ -63,7 +63,7 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
         
         {/* Projects grid */}
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch"
           variants={staggerContainerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
@@ -98,20 +98,21 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
                   href={project.link || "#"}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="project-card bg-card rounded-lg overflow-hidden shadow-lg group block"
+                  className="project-card bg-card rounded-lg overflow-hidden shadow-lg group block h-full flex flex-col"
                   whileHover={{ 
                     y: -8,
                     transition: { type: "spring", stiffness: 300, damping: 20 }
                   }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <div className="relative h-48 overflow-hidden">
+                  <div className="relative h-48 overflow-hidden flex-shrink-0">
                     <motion.img
                       src={project.image}
                       alt={project.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-center"
                       whileHover={{ scale: 1.1 }}
                       transition={{ duration: 0.6, ease: "easeInOut" }}
+                      style={{ aspectRatio: '16/9' }}
                     />
                     
                     {/* Enhanced gradient overlay */}
@@ -146,16 +147,16 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
                   </div>
                   
                   <motion.div 
-                    className="p-4"
+                    className="p-4 flex-grow flex flex-col"
                     initial={{ opacity: 0.8 }}
                     whileHover={{ opacity: 1 }}
                   >
-                    <p className="text-gray-400 mb-4 group-hover:text-gray-300 transition-colors duration-300">
+                    <p className="text-gray-400 mb-4 group-hover:text-gray-300 transition-colors duration-300 flex-grow">
                       {project.description}
                     </p>
                     {/* Enhanced tech tags with stagger */}
                     <motion.div 
-                      className="flex flex-wrap gap-2"
+                      className="flex flex-wrap gap-2 mt-auto"
                       variants={{
                         hover: {
                           transition: { staggerChildren: 0.05 }
