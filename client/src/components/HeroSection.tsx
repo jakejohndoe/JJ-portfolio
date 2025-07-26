@@ -73,12 +73,6 @@ const HeroSection = () => {
       {/* Animated Code Flow */}
       <div className={`code-flow absolute inset-0 z-0 transition-opacity duration-1000 ${isVisible ? 'opacity-30' : 'opacity-30'}`}></div>
 
-      {/* Mesh Gradient Background */}
-      <div className="absolute inset-0 mesh-gradient opacity-40 z-0"></div>
-
-      {/* Liquid Animation Elements */}
-      <div className="absolute top-10 right-10 w-32 h-32 liquid-bg opacity-20 z-0"></div>
-      <div className="absolute bottom-10 left-10 w-24 h-24 liquid-bg opacity-15 z-0" style={{ animationDelay: '5s' }}></div>
 
       <div className="container mx-auto px-4 flex flex-col md:flex-row items-center relative z-0">
         {/* Left side content */}

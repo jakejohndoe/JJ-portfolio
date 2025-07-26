@@ -1,5 +1,6 @@
 import { Switch, Route, Redirect } from "wouter";
 import Home from "@/pages/Home";
+import SimpleHome from "@/pages/SimpleHome";
 import BlogList from "@/pages/BlogList";
 import BlogPost from "@/pages/BlogPost";
 import AdminLogin from "@/pages/AdminLogin";
@@ -18,10 +19,6 @@ import InteractiveParticles from "@/components/InteractiveParticles";
 function App() {
   return (
     <>
-      <MatrixRain intensity={0.015} speed={60} />
-      <FloatingCodeElements />
-      <InteractiveParticles particleCount={60} maxDistance={120} mouseRadius={80} />
-      <SpotlightCursor />
       <Switch>
         <Route path="/" component={Home} />
         
