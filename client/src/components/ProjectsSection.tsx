@@ -21,46 +21,6 @@ interface ProjectsSectionProps {
 }
 
 const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
-  const defaultProjects = [
-    {
-      title: "Promptly",
-      description: "Promptly makes talking to any AI smarter, faster, and way easier.",
-      image: "https://images.unsplash.com/photo-1603791440384-56cd371ee9a7?auto=format&fit=crop&w=1170&q=80",
-      technologies: [
-        { name: "React" },
-        { name: "Tailwind CSS" },
-        { name: "Node.js" },
-        { name: "MongoDB" },
-        { name: "Express" }
-      ],
-      link: "https://github.com/jakobjohnson"
-    },
-    {
-      title: "Rework",
-      description: "Rework instantly refines your resume to match any job—optimized, personalized, and ready to send.",
-      image: "https://images.unsplash.com/photo-1603791440384-56cd371ee9a7?auto=format&fit=crop&w=1170&q=80",
-      technologies: [
-        { name: "React" },
-        { name: "Tailwind CSS" },
-        { name: "Node.js" },
-        { name: "Express" },
-        { name: "MongoDB" }
-      ],
-      link: "https://www.rework.solutions"
-    },
-    {
-      title: "Moodo",
-      description: "A Mood-Based To-Do List App that helps you manage tasks based on your mood.",
-      image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTR8fGRhc2hib2FyZHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
-      technologies: [
-        { name: "Vue.js" },
-        { name: "D3.js" },
-        { name: "Express" }
-      ],
-      link: "https://github.com/jakobjohnson"
-    }
-  ];
-
   // Normalize projects to ensure they have the correct format
   const normalizedProjects = projects.map(project => {
     // Convert tech array to technologies format if needed
@@ -75,8 +35,8 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
     };
   });
 
-  // Use normalized projects if available, otherwise fallback to defaults
-  const displayProjects = normalizedProjects.length > 0 ? normalizedProjects : defaultProjects;
+  // Use normalized projects
+  const displayProjects = normalizedProjects;
 
   return (
     <section id="projects" className="py-16 bg-[#0F172A]">

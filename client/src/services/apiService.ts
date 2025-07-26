@@ -155,8 +155,9 @@ function getFallbackData<T>(endpoint: string): T {
       { id: 4, name: 'MongoDB', level: 75, category: 'Database' }
     ],
     '/projects': [
-      { id: 1, title: 'Portfolio Website', description: 'A modern portfolio website built with React and TypeScript', technologies: ['React', 'TypeScript', 'Tailwind CSS'] },
-      { id: 2, title: 'E-commerce Platform', description: 'A full-stack e-commerce platform with secure payments', technologies: ['React', 'Node.js', 'MongoDB', 'Stripe'] }
+      { id: 1, title: 'StretchSmart', description: 'A smart stretching app that targets body parts using AI.', tech: ['React', 'Three.js', 'MongoDB'], imageUrl: 'https://plus.unsplash.com/premium_photo-1665673312770-f80cac75b319?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', link: 'https://v0-stretch-app.vercel.app/' },
+      { id: 2, title: 'ReWork', description: 'Rework your resume for any job in one click.', tech: ['React', 'Express', 'OpenAI API'], imageUrl: 'https://images.pexels.com/photos/4560150/pexels-photo-4560150.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', link: 'https://www.rework.solutions' },
+      { id: 3, title: 'PackPerfect', description: 'PackPerfect finds the best moving services for your space and belongings, with personalized cost breakdowns for a seamless move.', tech: ['React', 'TypeScript', 'Tailwind CSS'], imageUrl: 'https://images.pexels.com/photos/4569340/pexels-photo-4569340.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', link: 'https://github.com/jakejohndoe' }
     ],
     '/stats': {
       visitors: 1200,
