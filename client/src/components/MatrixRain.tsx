@@ -28,7 +28,14 @@ const MatrixRain = ({ intensity = 0.02, speed = 50, className = "" }: MatrixRain
     window.addEventListener('resize', resizeCanvas);
 
     // Matrix characters - mix of code symbols, letters, and numbers
-    const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン{}[]()<>=+-*/%&|^~!?:;.,@#$_`"\'\\'.split('');
+    const chars = [
+      '0', '1', 'ア', 'イ', 'ウ', 'エ', 'オ', 'カ', 'キ', 'ク', 'ケ', 'コ', 
+      'サ', 'シ', 'ス', 'セ', 'ソ', 'タ', 'チ', 'ツ', 'テ', 'ト', 'ナ', 'ニ', 
+      'ヌ', 'ネ', 'ノ', 'ハ', 'ヒ', 'フ', 'ヘ', 'ホ', 'マ', 'ミ', 'ム', 'メ', 
+      'モ', 'ヤ', 'ユ', 'ヨ', 'ラ', 'リ', 'ル', 'レ', 'ロ', 'ワ', 'ヲ', 'ン',
+      '{', '}', '[', ']', '(', ')', '<', '>', '=', '+', '-', '*', '/', '%', 
+      '&', '|', '^', '~', '!', '?', ':', ';', '.', ',', '@', '#', '$', '_'
+    ];
     const fontSize = 14;
     const columns = canvas.width / fontSize;
     
