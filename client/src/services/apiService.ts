@@ -39,14 +39,13 @@ interface Stats {
   happyClients: number;
 }
 
-// Set base URL for backend
-const API_BASE_URL = 'https://hellojakejohn.onrender.com/api';
+// Set base URL for backend with fallback for development
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL 
+  ? `${import.meta.env.VITE_API_BASE_URL}/api`
+  : 'http://localhost:3000/api';
 
 // API timeout value (8 seconds)
 const API_TIMEOUT = 8000;
-
-// Debug info
-console.log('[API Service] Configured with API URL:', API_BASE_URL);
 
 // Helper to get auth token from user info
 function getAuthToken() {
@@ -72,7 +71,6 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
   
-  console.debug(`[API] Fetching from: ${url}`);
   
   try {
     const headers: Record<string, string> = {
@@ -96,12 +94,6 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> 
     
     clearTimeout(timeoutId);
     
-    // Log the response for debugging
-    console.debug(`[API] Response for ${endpoint}:`, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: Object.fromEntries(response.headers.entries())
-    });
     
     if (!response.ok) {
       let errorMessage = `API request failed with status ${response.status}`;
@@ -115,10 +107,9 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> 
         } else {
           // If not JSON, try to get text
           const textResponse = await response.text();
-          console.debug('[API] Non-JSON error response:', textResponse);
         }
       } catch (jsonError) {
-        console.debug('[API] Error parsing error response:', jsonError);
+        // Error parsing response
       }
       
       throw new Error(errorMessage);
@@ -131,7 +122,6 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> 
     
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
-      console.warn('[API] Response not JSON:', await response.text());
       return {} as T;
     }
     
@@ -145,10 +135,11 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> 
   }
 }
 
+type FallbackItem = Blog | User | Skill | Project | Stats | any[];
+
 function getFallbackData<T>(endpoint: string): T {
-  console.warn(`[API] Using fallback data for ${endpoint}`);
   
-  const fallbacks: Record<string, any> = {
+  const fallbacks: Record<string, FallbackItem> = {
     '/blogs': [
       { id: 1, title: 'Getting Started with React', excerpt: 'Learn the basics of React', content: 'This is a sample blog post about React.', author: 'Jakob Johnson', createdAt: '2023-05-01T12:00:00Z' },
       { id: 2, title: 'Advanced TypeScript Techniques', excerpt: 'Take your TypeScript to the next level', content: 'This is a sample blog post about TypeScript.', author: 'Jakob Johnson', createdAt: '2023-05-15T12:00:00Z' }
@@ -188,10 +179,10 @@ function getFallbackData<T>(endpoint: string): T {
     
     // Handle different ID field names based on collection
     if (collection === 'users') {
-      const item = items.find((item: any) => item._id === idStr);
+      const item = items.find((item: User) => item._id === idStr);
       return (item || null) as T;
     } else {
-      const item = items.find((item: any) => item.id === id);
+      const item = items.find((item: Skill | Project) => item.id === id);
       return (item || null) as T;
     }
   }
@@ -224,8 +215,16 @@ export const userService = {
     apiFetch(`/users/${id}`, { method: 'DELETE' })
 };
 
+interface LoginResponse {
+  _id: string;
+  username: string;
+  email: string;
+  isAdmin: boolean;
+  token: string;
+}
+
 export const authService = {
-  login: async (email: string, password: string): Promise<any> => 
+  login: async (email: string, password: string): Promise<LoginResponse> => 
     apiFetch('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
   logout: async (): Promise<void> => 
     apiFetch('/auth/logout', { method: 'POST' }),
@@ -239,11 +238,17 @@ export const authService = {
   }
 };
 
+interface Service {
+  id: number;
+  title: string;
+  description: string;
+}
+
 export const portfolioService = {
   getSkills: async (): Promise<Skill[]> => apiFetch('/skills'),
   getProjects: async (): Promise<Project[]> => apiFetch('/projects'),
   getStats: async (): Promise<Stats> => apiFetch('/stats'),
-  getServices: async (): Promise<any[]> => apiFetch('/services')
+  getServices: async (): Promise<Service[]> => apiFetch('/services')
 };
 
 // Add this debug function to test the API connection

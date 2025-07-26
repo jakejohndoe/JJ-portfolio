@@ -46,7 +46,7 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
         { name: "Express" },
         { name: "MongoDB" }
       ],
-      link: "https://github.com/jakobjohnson"
+      link: "https://www.rework.solutions"
     },
     {
       title: "Moodo",

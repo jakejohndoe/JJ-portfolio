@@ -112,7 +112,7 @@ const fallbackProjects: ComponentProject[] = [
       { name: 'OpenAI API' }
     ],
     image: 'https://images.pexels.com/photos/4560150/pexels-photo-4560150.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    link: 'https://github.com/jakejohndoe'
+    link: 'https://www.rework.solutions'
   },
   { 
     id: 3, 
@@ -171,7 +171,6 @@ const Home = () => {
     queryFn: async () => {
       try {
         const projects = await portfolioService.getProjects();
-        console.log("API Projects response:", projects);
         return projects;
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -256,14 +255,11 @@ const Home = () => {
 
   // UPDATED: Fixed project processing to handle both data formats
   useEffect(() => {
-    // Log for debugging
-    console.log("API Projects in useEffect:", apiProjects);
     
     // Always start with fallback projects
     let projects = [...fallbackProjects];
     
     if (apiProjects && Array.isArray(apiProjects) && apiProjects.length > 0) {
-      console.log("Processing API projects");
       
       const processed = apiProjects.map((project: ApiProject) => {
         // Handle tech vs technologies format difference
@@ -286,7 +282,6 @@ const Home = () => {
       }
     }
     
-    console.log("Final processed projects:", projects);
     setProcessedProjects(projects);
   }, [apiProjects]);
 

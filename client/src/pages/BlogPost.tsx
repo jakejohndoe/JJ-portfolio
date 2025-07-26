@@ -35,7 +35,6 @@ const BlogPost = () => {
     setIsLoading(true);
     blogService.getBlogById(blogId)
       .then(data => {
-        console.log('Blog data:', data); // For debugging
         setBlog(data);
         setIsLoading(false);
       })

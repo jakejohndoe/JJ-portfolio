@@ -27,9 +27,6 @@ const AdminLogin = () => {
       // Store user info in localStorage
       localStorage.setItem('userInfo', JSON.stringify(result));
       
-      // Log successful login for debugging
-      console.log('Login successful, user info stored:', result);
-      
       // Redirect to admin dashboard
       setLocation('/admin');
     } catch (error: any) {

@@ -26,8 +26,6 @@ export default function BlogList() {
     setIsLoading(true);
     blogService.getAllBlogs()
       .then(data => {
-        // For debugging - log the actual structure of returned data
-        console.log('API blog data:', data);
         setBlogs(data);
         setIsLoading(false);
       })

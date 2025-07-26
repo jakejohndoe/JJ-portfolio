@@ -27,7 +27,6 @@ export default function AdminBlogList() {
     setIsLoading(true);
     blogService.getAllBlogs()
       .then(data => {
-        console.log('API blog data:', data);
         setBlogs(data);
         setIsLoading(false);
       })

@@ -8,7 +8,7 @@ export const projects = [
   {
     title: "ReWork",
     description: "Rework your resume for any job in one click.",
-    link: "https://github.com/jakejohndoe",
+    link: "https://www.rework.solutions",
     tech: ["React", "Express", "OpenAI API"],
   },
   {

@@ -13,9 +13,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     const checkAuth = () => {
       try {
         const userInfo = localStorage.getItem('userInfo');
-        console.log("ProtectedRoute - userInfo:", userInfo); // Add this
         if (!userInfo) {
-          console.log("ProtectedRoute - redirecting to login"); // Add this
           setLocation('/admin/login');
         }
       } catch (error) {

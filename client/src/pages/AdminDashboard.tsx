@@ -33,8 +33,6 @@ const AdminDashboard = () => {
       userService.getAllUsers()
     ])
       .then(([blogData, userData]) => {
-        console.log('Fetched blogs:', blogData);
-        console.log('Fetched users:', userData);
         setBlogs(blogData);
         setUsers(userData);
         setIsLoading(false);

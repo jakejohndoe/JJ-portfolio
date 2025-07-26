@@ -36,7 +36,6 @@ const BlogEdit = () => {
     setIsLoading(true);
     blogService.getBlogById(blogId)
       .then(data => {
-        console.log('Blog data for editing:', data);
         // Pre-fill form with existing blog data
         reset({
           title: data.title,

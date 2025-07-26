@@ -96,7 +96,6 @@ const HeroSection = () => {
             <Button
               className="px-6 py-3 h-auto bg-primary text-white font-medium rounded hover:bg-opacity-90 transition"
               onClick={() => {
-                console.log("Got a project button clicked!");
                 const contactSection = document.querySelector("#contact");
                 if (contactSection) {
                   contactSection.scrollIntoView({ behavior: "smooth" });
