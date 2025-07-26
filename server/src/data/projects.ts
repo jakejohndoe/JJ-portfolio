@@ -10,7 +10,7 @@ export const projects = [
     title: "ReWork",
     description: "Rework your resume for any job in one click.",
     link: "https://www.rework.solutions",
-    tech: ["React", "Express", "OpenAI API"],
+    tech: ["Next.js", "React", "Tailwind CSS", "AI/ML", "Vercel"],
     imageUrl: "https://www.rework.solutions/_next/image?url=%2Frework-logo-detailed.png&w=1920&q=75"
   },
   {

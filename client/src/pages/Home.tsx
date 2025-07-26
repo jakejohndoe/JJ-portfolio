@@ -107,9 +107,11 @@ const fallbackProjects: ComponentProject[] = [
     title: 'ReWork', 
     description: 'Rework your resume for any job in one click.', 
     technologies: [
+      { name: 'Next.js' }, 
       { name: 'React' }, 
-      { name: 'Express' }, 
-      { name: 'OpenAI API' }
+      { name: 'Tailwind CSS' },
+      { name: 'AI/ML' },
+      { name: 'Vercel' }
     ],
     image: 'https://www.rework.solutions/_next/image?url=%2Frework-logo-detailed.png&w=1920&q=75',
     link: 'https://www.rework.solutions'
