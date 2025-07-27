@@ -61,10 +61,10 @@ const ServicesSection = ({
             animate={isInView ? "visible" : "hidden"}
           >
             <motion.h2 
-              className="text-3xl font-bold text-white mb-8"
+              className="text-3xl font-bold text-white mb-8 glow-primary"
               variants={staggerItemVariants}
             >
-              My Services
+              <span className="text-primary text-glow">My</span> Services
             </motion.h2>
             
             <motion.div 

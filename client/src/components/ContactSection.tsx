@@ -85,12 +85,12 @@ const ContactSection = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center">
           <motion.h2 
-            className="text-4xl font-bold text-white mb-6"
+            className="text-4xl font-bold text-white mb-6 glow-primary"
             variants={staggerItemVariants}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
           >
-            Let's work together
+            Let's <span className="text-primary text-glow">work</span> together
           </motion.h2>
           <motion.p 
             className="text-gray-300 mb-10"

@@ -53,12 +53,12 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
     >
       <div className="container mx-auto px-4">
         <motion.h2 
-          className="text-4xl font-bold text-white mb-12"
+          className="text-4xl font-bold text-white mb-12 glow-primary"
           variants={staggerItemVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          Projects
+          <span className="text-primary text-glow">Projects</span>
         </motion.h2>
         
         {/* Projects grid */}
@@ -69,23 +69,30 @@ const ProjectsSection = ({ projects, isLoading }: ProjectsSectionProps) => {
           animate={isInView ? "visible" : "hidden"}
         >
           {isLoading ? (
-            // Enhanced skeleton loading state
+            // Enhanced code-themed skeleton loading state
             Array(3).fill(0).map((_, index) => (
               <motion.div 
                 key={index} 
-                className="bg-card rounded-lg overflow-hidden shadow-lg"
+                className="bg-card rounded-lg overflow-hidden shadow-lg relative"
                 variants={staggerItemVariants}
               >
-                <div className="relative h-48">
-                  <Skeleton className="w-full h-full" />
+                <div className="relative h-48 code-skeleton-primary">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-primary/40 font-mono text-2xl">
+                      {"{ }"}
+                    </div>
+                  </div>
                 </div>
-                <div className="p-4">
-                  <Skeleton className="h-6 w-32 mb-2" />
-                  <Skeleton className="h-4 w-full mb-4" />
-                  <div className="flex flex-wrap gap-2">
-                    <Skeleton className="h-6 w-16" />
-                    <Skeleton className="h-6 w-20" />
-                    <Skeleton className="h-6 w-24" />
+                <div className="p-4 space-y-3">
+                  <div className="code-skeleton-primary h-6 w-32 skeleton-with-code"></div>
+                  <div className="space-y-2">
+                    <div className="code-skeleton h-4 w-full"></div>
+                    <div className="code-skeleton h-4 w-3/4"></div>
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    <div className="code-skeleton h-6 w-16 rounded-full"></div>
+                    <div className="code-skeleton h-6 w-20 rounded-full"></div>
+                    <div className="code-skeleton h-6 w-18 rounded-full"></div>
                   </div>
                 </div>
               </motion.div>

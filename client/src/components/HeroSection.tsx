@@ -79,7 +79,7 @@ const HeroSection = () => {
         <div className="md:w-1/2 mb-10 md:mb-0">
           <div className="flex items-center">
             <div className="font-mono text-muted-foreground opacity-70 mr-2">01</div>
-            <h1 className="text-5xl md:text-6xl font-bold text-white">
+            <h1 className="text-5xl md:text-6xl font-bold text-white glow-primary">
               Hello<span className="text-primary text-glow">!</span>
             </h1>
           </div>
@@ -90,7 +90,7 @@ const HeroSection = () => {
             </h2>
             <div className="font-mono text-muted-foreground opacity-70 mt-2 mb-1">03</div>
             <h3 className="text-4xl md:text-5xl font-bold text-white">
-              <span className="text-primary">Software</span> Developer
+              <span className="text-primary text-glow">Software</span> Developer
             </h3>
           </div>
           <div className="mt-8 flex flex-wrap gap-4 relative z-30">
