@@ -19,6 +19,7 @@ import InteractiveParticles from "@/components/InteractiveParticles";
 function App() {
   return (
     <>
+      <SpotlightCursor />
       <Switch>
         <Route path="/" component={Home} />
         
