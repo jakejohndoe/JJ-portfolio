@@ -1,0 +1,11 @@
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark background -->
+  <rect width="16" height="16" rx="3" fill="#0F172A"/>
+  
+  <!-- JJ text in orange -->
+  <text x="8" y="12" fill="#ff5e3a" font-family="Arial, sans-serif" font-size="9" font-weight="bold" text-anchor="middle">JJ</text>
+  
+  <!-- Small code brackets -->
+  <text x="1" y="6" fill="#ff5e3a" font-family="monospace" font-size="4" opacity="0.7">&lt;</text>
+  <text x="13" y="6" fill="#ff5e3a" font-family="monospace" font-size="4" opacity="0.7">&gt;</text>
+</svg>
