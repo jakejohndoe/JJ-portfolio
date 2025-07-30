@@ -92,15 +92,17 @@ const fallbackServices: ComponentService[] = [
 const fallbackProjects: ComponentProject[] = [
   { 
     id: 1, 
-    title: 'StretchSmart', 
-    description: 'A smart stretching app that targets body parts using AI.', 
+    title: 'Professional Actor Portfolio', 
+    description: 'A comprehensive digital portfolio for Stevie Johnson, USC professor and accomplished actor with credits in Netflix\'s "Colin in Black & White," TNT\'s "Animal Kingdom," and NBC\'s "This Is Us." Features professional headshots, acting reels, and complete filmography for industry professionals.', 
     technologies: [
-      { name: 'React' }, 
-      { name: 'Three.js' }, 
-      { name: 'MongoDB' }
+      { name: 'HTML5/CSS3' }, 
+      { name: 'JavaScript' }, 
+      { name: 'Responsive Design' },
+      { name: 'Video Embedding' },
+      { name: 'SEO Optimization' }
     ],
-    image: 'https://plus.unsplash.com/premium_photo-1665673312770-f80cac75b319?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    link: 'https://v0-stretch-app.vercel.app/'
+    image: 'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    link: 'http://www.steviejohnson.com'
   },
   { 
     id: 2, 
