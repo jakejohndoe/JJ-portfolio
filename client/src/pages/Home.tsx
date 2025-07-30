@@ -93,7 +93,7 @@ const fallbackProjects: ComponentProject[] = [
   { 
     id: 1, 
     title: 'Professional Actor Portfolio', 
-    description: 'A comprehensive digital portfolio for Stevie Johnson, USC professor and accomplished actor with credits in Netflix\'s "Colin in Black & White," TNT\'s "Animal Kingdom," and NBC\'s "This Is Us." Features professional headshots, acting reels, and complete filmography for industry professionals.', 
+    description: 'A professional portfolio website showcasing an actor\'s headshots, reels, and filmography.', 
     technologies: [
       { name: 'HTML5/CSS3' }, 
       { name: 'JavaScript' }, 
